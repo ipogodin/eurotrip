@@ -27,28 +27,37 @@
 	.bottom {
 		position: fixed;
 		z-index: 40;
-		inset: auto 0 0 0;
-		height: calc(var(--bottomnav-h) + env(safe-area-inset-bottom));
-		padding-bottom: env(safe-area-inset-bottom);
+		left: 12px;
+		right: 12px;
+		bottom: calc(12px + env(safe-area-inset-bottom));
+		height: 64px;
 		display: grid;
 		grid-auto-flow: column;
 		grid-auto-columns: 1fr;
-		background: rgb(255 255 255 / 0.92);
-		backdrop-filter: blur(14px);
-		border-top: 1px solid var(--line);
+		padding: 6px;
+		background: rgb(255 255 255 / 0.9);
+		backdrop-filter: blur(16px) saturate(1.4);
+		border: 2px solid var(--line);
+		border-radius: var(--r-pill);
+		box-shadow: var(--e2);
 	}
 	a {
 		display: grid;
 		place-content: center;
 		justify-items: center;
-		gap: 2px;
+		gap: 1px;
+		border-radius: var(--r-pill);
 		color: var(--ink-3);
 		font-size: 12px;
-		font-weight: 600;
+		font-weight: 800;
 		text-decoration: none;
+		transition:
+			background var(--t-ui) var(--ease),
+			color var(--t-ui) var(--ease);
 	}
 	a[aria-current='page'] {
-		color: var(--accent);
+		background: var(--sun-soft);
+		color: #a0102f;
 	}
 	@media (min-width: 768px) {
 		.bottom {

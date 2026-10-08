@@ -8,7 +8,7 @@
 <style>
 	.sk {
 		display: block;
-		background: linear-gradient(90deg, var(--surface-2) 25%, #e6e9ee 50%, var(--surface-2) 75%);
+		background: linear-gradient(90deg, var(--surface-2) 25%, #fff6e2 50%, var(--surface-2) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.4s infinite linear;
 	}

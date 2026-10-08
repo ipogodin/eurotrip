@@ -25,8 +25,9 @@
 
 <dialog bind:this={dialog} {onclose} onclick={backdrop} aria-label={title}>
 	<div class="panel">
+		<span class="grab" aria-hidden="true"></span>
 		<header>
-			<h2 class="t-headline">{title}</h2>
+			<h2 class="t-title">{title}</h2>
 			<button type="button" class="close" aria-label="Close" onclick={onclose}>
 				<Icon name="x" />
 			</button>
@@ -48,7 +49,7 @@
 		overflow: visible;
 	}
 	dialog::backdrop {
-		background: rgb(15 23 32 / 0.45);
+		background: rgb(12 59 62 / 0.5);
 		backdrop-filter: blur(2px);
 	}
 	.panel {
@@ -58,7 +59,7 @@
 		padding: var(--s4) var(--s4) calc(var(--s6) + env(safe-area-inset-bottom));
 		max-height: 85dvh;
 		overflow: auto;
-		animation: rise var(--t-sheet) var(--ease);
+		animation: rise var(--t-sheet) var(--spring);
 	}
 	header {
 		display: flex;
@@ -79,6 +80,14 @@
 	.close:hover {
 		background: var(--surface-2);
 	}
+	.grab {
+		display: block;
+		width: 44px;
+		height: 5px;
+		margin: 0 auto var(--s3);
+		border-radius: 3px;
+		background: var(--line);
+	}
 	@keyframes rise {
 		from {
 			transform: translateY(24px);
@@ -89,6 +98,9 @@
 		dialog {
 			width: min(520px, 100% - 32px);
 			margin: auto;
+		}
+		.grab {
+			display: none;
 		}
 		.panel {
 			border-radius: var(--r-lg);

@@ -276,3 +276,19 @@ Tokens, Inter, inline icon set and 15 UI components per `docs/design.md`; a
 dev-only `/styleguide` shows them. Old report CSS isolated in
 `src/lib/legacy-report.css` until step 1.4 deletes the report. Details in
 `docs/progress.md`.
+
+---
+
+## 2026-10-08 — Design v2: Tropical Sunset
+
+After seeing the first styleguide the user said the design had "no life",
+"only the corporate feel", and asked for something vivid with tropical fonts
+that feels like vacation, rest, mindfulness, fun, energy and exotic
+(verbatim in `docs/raw_plan.md`). Replaced the "Modern app UI" look with
+**Tropical Sunset**: cream base with turquoise/mango/hibiscus glows, hibiscus
+CTAs, lagoon selection color, mango "sun" point dots, Fraunces (soft/wonky
+display) + Nunito (body) + Caveat Brush (script accent), pill shapes, springy
+motion, floating pill bottom nav, decorative sun/wave/palm-frond components,
+and a sunset hero in `/styleguide`. `docs/design.md` rewritten; step 1.2's
+result updated in place (same components, new skin). The layout principles
+(mobile first, list/map, public votes) are unchanged.

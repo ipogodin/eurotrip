@@ -1,148 +1,105 @@
 # Design — Eurotrip app
 
-Direction chosen 2026-10-08: **Modern app UI.** Crisp and calm, product
-quality (think Linear or the Airbnb app): neutral surfaces, one strong
-accent, rounded cards, dense but legible data, built for the phone first.
-The **login splash** is the one deliberately cinematic screen: a full-bleed
-Canary Islands background with a glass card.
+**Direction (v2, 2026-10-08): "Tropical Sunset".** Replaces the first "Modern
+app UI" pass, which the user found corporate and lifeless. The brief, in the
+user's words: vivid, full of life, tropical fonts; it should feel like
+**vacation, rest, mindfulness, fun, energy, exotic**. Still mobile-first and
+product-clean in layout, but with warm color, soft organic type, big round
+shapes and playful motion. Source of truth for tokens is `src/app.css`; the
+live gallery is `/styleguide` (dev only).
 
 ## Principles
 
-1. **Phone first.** Designed at 390 px, scales up. Every action is reachable
-   with a thumb. Primary nav sits at the bottom on mobile, top on desktop.
-2. **Photos carry the emotion; UI stays quiet.** Color is reserved for the
-   accent (actions, your votes) and data.
-3. **Votes are glanceable.** Totals, ranks and who-voted show without
-   opening anything. Dots (●●○) visualize 1–3 points everywhere.
-4. **Instant feedback.** Optimistic updates, autosave, subtle motion, and
-   "Saved" confirmation; no full-page reloads.
-5. **Accessible by default.** WCAG AA contrast, 44 px touch targets, visible
-   focus rings, `prefers-reduced-motion` respected.
+1. **Phone first.** Designed at 390 px; floating pill nav at the bottom on
+   mobile, top nav on desktop.
+2. **Warm and alive, never noisy.** Cream base, three hot accents used with
+   intent: hibiscus = action, lagoon = navigation/selection/info, mango =
+   points and highlights.
+3. **Round everything.** Pills, 20–28 px card radii, soft glow shadows.
+4. **Motion with a spring.** Buttons lift, point dots bloom, sheets bounce
+   up, the sun logo turns slowly, the sunset hero floats. All of it stops
+   under `prefers-reduced-motion`.
+5. **Photos and gradients carry the mood; text stays calm and readable.**
+6. **Accessible by default.** AA contrast verified for every text/background
+   pair (see below), 44 px+ targets, strong lagoon focus rings.
 
-## Tokens (replace the report tokens in `src/app.css`)
+## Typography
 
-Color (light theme; dark mode is optional, R3):
+| Role | Font | Use |
+| --- | --- | --- |
+| Display | **Fraunces** variable, `SOFT 100`, `WONK 1`, 700-800 | Headlines, brand, titles. Warm, curvy, a bit wonky. Italic + hibiscus (`.t-display-it`) for the emphasized word |
+| Body/UI | **Nunito** variable | Everything else: rounded, friendly, legible. Buttons/labels at 700-900 |
+| Script | **Caveat Brush** | Rare hand-written accents (`.t-script`), e.g. "¡Vamos, familia!", max one per screen |
 
-| Token            | Value     | Use                                         |
-| ---------------- | --------- | ------------------------------------------- |
-| `--bg`           | `#F6F7F9` | App background                              |
-| `--surface`      | `#FFFFFF` | Cards, sheets, bars                         |
-| `--surface-2`    | `#F0F2F5` | Inputs, segmented control track, skeletons  |
-| `--ink`          | `#0F1720` | Primary text                                |
-| `--ink-2`        | `#4A5563` | Secondary text                              |
-| `--ink-3`        | `#8A94A3` | Tertiary text, placeholders                 |
-| `--line`         | `#E4E7EC` | Hairlines, card borders                     |
-| `--accent`       | `#0A7C86` | Primary actions, my votes, active states (Atlantic teal, carried over from the report) |
-| `--accent-ink`   | `#FFFFFF` | Text on accent                              |
-| `--accent-soft`  | `#E3F4F5` | Selected backgrounds, focus halo            |
-| `--sun`          | `#F5B83D` | Rank #1 badge, winner highlight only        |
-| `--danger`       | `#D14343` | Errors, destructive admin actions           |
-| `--success`      | `#1F8A5B` | "Saved", confirmations                      |
-| Member hues      | 8 distinct, AA-checked hues | Avatar backgrounds (fixed per member id) |
+Scale: Display 38/42 (56/58 ≥768px), Title 26/32 (32/38), Headline 18/24 ·
+800, Body 16/24, Caption 14/20 · 600, Overline 12 · 800 · +0.12em, caps,
+lagoon-deep. Numbers (points, countdown, price) use `tabular-nums`.
 
-Type: **Inter Variable** (self-hosted via `@fontsource-variable/inter`),
-`font-feature-settings: 'cv11', 'ss01'`, `tabular-nums` for points,
-countdowns and prices.
+## Color tokens
 
-| Style      | Size / line / weight |
-| ---------- | -------------------- |
-| Display    | 32/38 · 700 (40/46 ≥768px) |
-| Title      | 22/28 · 650          |
-| Headline   | 17/24 · 600          |
-| Body       | 15/22 · 400          |
-| Caption    | 13/18 · 500          |
-| Overline   | 11/16 · 600 · +0.08em · uppercase |
+| Token | Value | Use |
+| --- | --- | --- |
+| `--bg` / sunny gradients | `#fff7e8` + turquoise/mango/hibiscus radial glows (fixed) | Page background |
+| `--surface` / `--surface-2` | `#fff` / `#ffefd0` (sand) | Cards, sheets / tracks, inputs, skeletons |
+| `--ink` / `--ink-2` / `--ink-3` | `#0c3b3e` / `#3d6466` / `#4a6d6f` | Deep-lagoon text (not black) |
+| `--line` | `#f3e2c2` | Borders (2 px, warm) |
+| `--hibiscus` `--accent` | `#d81b60` | Primary actions, the number that matters |
+| `--papaya` | `#d2301f` | Gradient end, danger-adjacent |
+| `--mango` `--sun` | `#ffb020` | Points, #1 rank, highlights |
+| `--lagoon` / `--lagoon-deep` | `#0aa5a8` / `#067a80` | Active segmented control, focus, info chips, links |
+| `--palm` | `#1fa971` | Success, decorative greens |
+| Gradients | `--grad-cta` (hibiscus→papaya), `--grad-sun` (mango→orange), `--grad-sea` (lagoon→palm), `--grad-sunset` (mango→orange→hibiscus→plum, heroes) | |
+| Member hues `--m1..8` | 8 saturated hues, white initials, all ≥ 4.5:1 | Avatars |
 
-Space: 4-pt scale (`4 8 12 16 20 24 32 40 56`). Radius: `--r-sm 10px`,
-`--r-md 14px`, `--r-lg 20px`, `--r-pill 999px`. Elevation: `--e1 0 1px 2px
-rgb(16 24 40 / .06)`, `--e2 0 8px 24px rgb(16 24 40 / .10)`, `--e3` for sheets.
-Motion: 160 ms (`cubic-bezier(.2,.8,.2,1)`) for UI, 240 ms for sheets; all
-reduced to opacity-only under `prefers-reduced-motion`.
+Contrast checked (WCAG): white on hibiscus 4.95, white on CTA gradient end
+5.02, ink on cream 11.5, ink-2 on cream 6.1, ink-3 on cream 5.3, lagoon-deep on
+white 5.1, chip text pairs ≥ 6.6. Re-check any new pair.
 
-Breakpoints: `< 768` mobile (bottom nav, 1-column cards, map + bottom
-sheet) · `768–1099` tablet (2-column cards) · `≥ 1100` desktop (top nav,
-3-column cards; map layout = list pane left + map right).
+## Shape, depth, motion
 
-## Components
+Radii: 14 / 20 / 28 / pill. Shadows are warm brown, not grey. Primary buttons
+have a hibiscus glow. Springs: `cubic-bezier(.34,1.56,.64,1)` for button lift,
+stepper, sheet, toast, point-dot bloom. Ambient: sun logo rotates 40 s, hero
+sun floats 7 s, final-minute countdown throbs.
 
-- **AppBar:** logo mark + "Eurotrip", phase title, countdown chip, avatar
-  menu (name, Admin, Log out). Sticky, translucent with blur.
-- **BottomNav** (mobile): _Villas_ · _People_ · _My votes_ (phase 1);
-  _Villa_ · _Nearby_ · _Flights_ (phase 2). Icons + labels, `aria-current`.
-- **SegmentedControl:** filter (`By villa / By person / My votes`) and
-  layout (`List / Map`) toggles; buttons with `aria-pressed` inside
-  `role="group"`.
-- **VillaCard:** cover photo (16:10, lazy, blur-up), rank badge, name, town,
-  facts row (🛏 bedrooms · sleeps · price/night), highlight chips, total
-  points, `AvatarStack` of voters with dots, `Stepper` (− ●●○ +).
-- **Stepper:** 44 px round buttons, dots in the middle, disabled at 0/3 or
-  when no points are left (tooltip "No points left: take one from another
-  villa").
-- **PointsMeter:** 6 pill segments, filled = spent, label "4 of 6 left".
-  Sticky above the bottom nav on mobile while in _My votes_.
-- **AvatarStack / Avatar:** initials on member hue, 28 px, overlap −8 px,
-  "+2" overflow.
-- **PersonRow** (_By person_): avatar, name, "5 of 6 used", horizontal list of
-  mini villa thumbnails with dots. Members who haven't voted are shown muted
-  with "Hasn't voted yet".
-- **Countdown chip:** `1d 14h` → `2h 05m` → `04:59` (last 5 min) → "Voting
-  closed". Turns `--sun` in the last 24 h.
-- **Sheet:** bottom sheet on mobile (map selection, confirm dialogs), centered
-  modal on desktop. Focus-trapped, Esc and swipe-down to close.
-- **Toast:** bottom, 2.5 s, `aria-live="polite"`.
-- **Map pins:** pill markers showing total points (`14`), accent for
-  villas you voted on, sun for #1, scale up on selection.
-- **Skeletons** for loading; **empty states** with one-line guidance.
+## Components (`src/lib/components/ui/`)
+
+AppBar (sun logo + Fraunces wordmark, pill nav, countdown chip, avatar menu) ·
+BottomNav (floating white pill, active = sand pill + hibiscus text) · Button
+(pill; primary gradient, secondary lagoon outline, ghost, danger) ·
+SegmentedControl (sand pill track, active = lagoon-deep pill) · Card · Chip
+(neutral/accent/sea/sun/success/danger) · Avatar (white ring + shadow) ·
+AvatarStack · PointDots (mango "suns" that bloom) · PointsMeter (6 sunset
+segments, hibiscus number) · Stepper (round, hibiscus plus) · Countdown ·
+Sheet (native dialog, grabber, bouncy) · Toast · Skeleton · decorative **Sun**,
+**Wave** (section divider), **Frond** (generated palm leaf, currentColor).
 
 ## Key screens
 
-**Login splash (`/`, anonymous).** Full-bleed background (Corralejo dunes
-photo now, the user's video later) with a dark gradient scrim at the bottom.
-Centered glass card (`backdrop-filter: blur(16px)`, white 72%): overline
-"Eurotrip · Canary Islands 2027", title "Enter your invite phrase",
-one input with placeholder `word-word`, a large primary button. Below that,
-an error area with the cooldown countdown when locked. Mobile: the card sits
-in the lower third for thumb reach, and the input uses
-`autocapitalize="none" autocomplete="off" spellcheck="false"
-enterkeyhint="go"`.
+**Login splash (`/`).** Full-bleed Canary photo (video later) under a warm
+sunset-tinted scrim; frosted card with the sun mark, Fraunces headline, a
+script tag line, the phrase field and a big hibiscus button; fronds framing
+the corners; wave edge into the cream if the card scrolls. Phrase input uses
+`autocapitalize=none autocomplete=off spellcheck=false enterkeyhint=go`.
 
-**Vote — By villa, list (default).** AppBar + countdown. Under it:
-`PointsMeter` and the filter control. A grid of VillaCards sorted by rank
-(ties share a rank). A "Not voted yet" nudge row at the bottom.
+**Vote.** Sunset hero strip on top of the page (headline "Where are we
+sleeping?", countdown, my points meter), then the filter pill control, then
+villa cards: big rounded photo, rank sticker (mango #1), facts chips, voter
+avatars, stepper. Map layout uses round pills as pins. By person = sticker
+avatars with picks. My votes = sticky points meter.
 
-**Vote — map layout.** Full-height map of the island with pins. Tapping a
-pin opens a bottom sheet with a compact VillaCard and stepper. Desktop: a
-scrollable list on the left and the map on the right, with hover linking
-between them.
+**Trip hub.** Sunset-gradient hero with the villa photo, "You're going to …",
+trip countdown, dates with a "changed" chip, amenity icon grid in sand
+tiles; Nearby with lagoon/palm/hibiscus category colors; Flights with
+origin pills and ticket-style cards.
 
-**Vote — By person.** PersonRows, me first.
+**Admin.** Same visual language but calmer: white cards, lagoon headings.
 
-**Vote — My votes.** Only villas I've given points to at the top, then
-"Other villas" compact rows with steppers. PointsMeter is sticky.
+## Imagery and icons
 
-**Villa detail (`/villas/[id]`).** Swipeable gallery (scroll-snap) with
-counter, title block, facts grid, highlights, blurb, "Open listing ↗",
-voters list, sticky stepper bar at the bottom while voting is open.
-
-**Admin.** Plain, functional cards: Voting window (state, deadline
-picker in PDT, Extend / Close now / Reopen), Results table, Pick winner
-(select + confirm sheet), Trip details (phase 2: dates, check-in/out,
-notes), Security (failed logins 24 h, global pause state).
-
-**Trip hub (phase 2).** _Villa_: hero gallery, "You're going to <villa>",
-dates with a "changed" badge, countdown to trip, facts, amenities icon grid,
-check-in/out, notes. _Nearby_: map + filter chips (Beaches / Attractions /
-Cafés) + list with 🚶 min · 🚗 min and Directions links. _Flights_:
-origin chips (London / Warsaw / Frankfurt), Outbound / Return toggle, flight
-option cards (airline, IATA route, times, duration, stops, typical price,
-Book ↗ to Google Flights / Skyscanner).
-
-## Imagery
-
-- Villa photos: webp, max 1600 px wide, plus 480 px thumbnails, served from
-  `static/villas/{id}/`. Always `width`/`height` attributes (no layout shift).
-- Background: until the user's own footage arrives, use the CC BY-SA
-  Corralejo dunes photo credited in the old Hero (keep the credit as a small
-  caption on the splash).
-- Icons: inline SVG set (Lucide-style 1.5 px stroke) copied into
-  `src/lib/icons/`, with no icon-font dependency.
+- Villa photos: webp, ≤1600 px (+480 px thumbs), `width`/`height` always set,
+  rounded 20 px, slight warm color grade only if needed.
+- Login background: Corralejo dunes (CC BY-SA, credit as a small caption),
+  later the user's own video.
+- Icons: inline SVG, 1.75 px stroke, in `src/lib/icons/`.
+- Decoration (sun, fronds, waves) is `aria-hidden` and never carries info.

@@ -3,7 +3,7 @@
 
 	/**
 	 * @type {{
-	 *   tone?: 'neutral' | 'accent' | 'sun' | 'danger' | 'success',
+	 *   tone?: 'neutral' | 'accent' | 'sea' | 'sun' | 'danger' | 'success',
 	 *   icon?: import('$lib/icons/paths.js').IconName,
 	 *   children: import('svelte').Snippet
 	 * }}
@@ -21,11 +21,11 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 5px;
-		min-height: 26px;
-		padding: 0 10px;
+		min-height: 28px;
+		padding: 0 12px;
 		border-radius: var(--r-pill);
 		font-size: 13px;
-		font-weight: 500;
+		font-weight: 800;
 		line-height: 1;
 		background: var(--surface-2);
 		color: var(--ink-2);
@@ -33,18 +33,22 @@
 	}
 	.accent {
 		background: var(--accent-soft);
-		color: var(--accent-strong);
+		color: #a0102f;
+	}
+	.sea {
+		background: var(--sea-soft);
+		color: #055c61;
 	}
 	.sun {
 		background: var(--sun-soft);
-		color: #7a5400;
+		color: #7a3e00;
 	}
 	.danger {
 		background: var(--danger-soft);
-		color: #a82f2f;
+		color: #a32013;
 	}
 	.success {
 		background: var(--success-soft);
-		color: #17684a;
+		color: #0b5f3b;
 	}
 </style>

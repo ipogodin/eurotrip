@@ -12,16 +12,23 @@
 <style>
 	.dots {
 		display: inline-flex;
-		gap: 4px;
+		gap: 5px;
 	}
 	.dot {
 		width: var(--d);
 		height: var(--d);
 		border-radius: 50%;
 		background: var(--line);
-		transition: background var(--t-ui) var(--ease);
+		box-shadow: inset 0 0 0 2px #ecd3a6;
 	}
 	.on {
-		background: var(--accent);
+		background: radial-gradient(circle at 35% 30%, #ffe08a, #ff9a1f 70%);
+		box-shadow: 0 0 0 3px rgb(255 176 32 / 0.28);
+		animation: bloom 380ms var(--spring);
+	}
+	@keyframes bloom {
+		from {
+			transform: scale(0.4);
+		}
 	}
 </style>

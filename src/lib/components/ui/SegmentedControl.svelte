@@ -31,32 +31,36 @@
 		display: inline-grid;
 		grid-auto-flow: column;
 		grid-auto-columns: 1fr;
-		gap: 2px;
-		padding: 3px;
+		gap: 3px;
+		padding: 4px;
 		background: var(--surface-2);
-		border-radius: var(--r-md);
+		border-radius: var(--r-pill);
 	}
 	button {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 6px;
-		min-height: 38px;
-		padding: 0 var(--s4);
+		min-height: 42px;
+		padding: 0 var(--s5);
 		border: 0;
-		border-radius: calc(var(--r-md) - 3px);
+		border-radius: var(--r-pill);
 		background: transparent;
 		color: var(--ink-2);
-		font-size: 14px;
-		font-weight: 600;
+		font-size: 15px;
+		font-weight: 800;
 		white-space: nowrap;
 		transition:
 			background var(--t-ui) var(--ease),
-			color var(--t-ui) var(--ease);
+			color var(--t-ui) var(--ease),
+			transform var(--t-ui) var(--spring);
+	}
+	button:hover:not(.active) {
+		color: var(--ink);
 	}
 	button.active {
-		background: var(--surface);
-		color: var(--ink);
-		box-shadow: var(--e1);
+		background: var(--lagoon-deep);
+		color: #fff;
+		box-shadow: 0 4px 12px rgb(6 122 128 / 0.35);
 	}
 </style>

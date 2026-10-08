@@ -54,36 +54,38 @@
 	.step {
 		display: grid;
 		place-items: center;
-		width: 44px;
-		height: 44px;
+		width: 48px;
+		height: 48px;
 		border-radius: 50%;
-		border: 1px solid var(--line);
+		border: 2px solid var(--line);
 		background: var(--surface);
 		color: var(--ink);
 		transition:
-			background var(--t-ui) var(--ease),
-			transform var(--t-ui) var(--ease);
+			transform var(--t-ui) var(--spring),
+			background var(--t-ui) var(--ease);
 	}
 	.step:hover:not(:disabled) {
 		background: var(--surface-2);
+		transform: scale(1.08);
 	}
 	.step:active:not(:disabled) {
-		transform: scale(0.92);
+		transform: scale(0.9);
 	}
 	.add:not(:disabled) {
-		background: var(--accent);
-		border-color: var(--accent);
+		background: var(--grad-cta);
+		border-color: transparent;
 		color: var(--accent-ink);
+		box-shadow: var(--glow-cta);
 	}
 	.add:hover:not(:disabled) {
-		background: var(--accent-strong);
+		background: var(--grad-cta);
 	}
 	.step:disabled {
 		opacity: 0.4;
 		cursor: not-allowed;
 	}
 	.mid {
-		min-width: 52px;
+		min-width: 60px;
 		display: grid;
 		place-items: center;
 	}

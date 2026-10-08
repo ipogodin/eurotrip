@@ -59,3 +59,9 @@ Consider, and add this to agents.md, each medium size step track in files so I c
 Earlier answers (first round): storage = Upstash Redis; votes editable until
 deadline and public live; phase 2 data in config files + redeploy; whole site
 behind login.
+
+---
+
+## Design feedback — 2026-10-08 (verbatim, after seeing the first styleguide)
+
+> I feel no life in this design thb, only the corporate feel of existance, can we make it vivid and full of life ? Make fonts tropical. I want feel vacation,rest, mindfullness, fun, enegry, exotic when I am looking at the design

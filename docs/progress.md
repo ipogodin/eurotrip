@@ -86,8 +86,12 @@ Styleguide route is `/styleguide` (not `/_styleguide` as the plan said): 404
 in production via `+page.server.js`.
 Checked in Chrome: desktop and a 390 px iframe. Gotcha: `resize_window` only
 resizes the outer window, so a narrow iframe was used for the phone view.
-Open for the user (I5, non-blocking): look at `/styleguide` (`npm run dev`)
-and give feedback on the look.
+**Design v2 (same day):** the user found the first look corporate, so the skin
+was redone as "Tropical Sunset" (see `docs/design.md`, `docs/history.md`): new
+tokens/fonts in `app.css` (Fraunces, Nunito, Caveat Brush via fontsource),
+restyled all components, added `Sun`, `Wave`, `Frond`, a sunset hero and
+palette swatches in `/styleguide`. `--bottomnav-h` is now 84px (floating nav).
+Still open (I5): the user's verdict on the new look at `/styleguide`.
 
 ### 1.1 — done (2026-10-08)
 

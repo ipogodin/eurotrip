@@ -26,11 +26,16 @@
 		border-radius: 50%;
 		color: #fff;
 		font-size: calc(var(--size) * 0.4);
-		font-weight: 650;
+		font-weight: 900;
 		letter-spacing: 0.02em;
 		flex: none;
+		box-shadow:
+			0 0 0 2px #fff,
+			0 2px 6px rgb(120 60 20 / 0.25);
 	}
 	.ring {
-		box-shadow: 0 0 0 2px var(--surface);
+		box-shadow:
+			0 0 0 3px #fff,
+			0 2px 6px rgb(120 60 20 / 0.25);
 	}
 </style>

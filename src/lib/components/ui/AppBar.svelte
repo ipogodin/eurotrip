@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import Avatar from './Avatar.svelte';
 	import Icon from '$lib/icons/Icon.svelte';
+	import Sun from './Sun.svelte';
 
 	/**
 	 * @type {{
@@ -22,7 +23,7 @@
 <header class="bar">
 	<div class="inner">
 		<a class="brand" href={resolve('/')}>
-			<span class="mark" aria-hidden="true"><Icon name="waves" size={16} /></span>
+			<span class="mark" aria-hidden="true"><Sun size={34} /></span>
 			<span class="name">{title}</span>
 		</a>
 
@@ -78,9 +79,9 @@
 		top: 0;
 		z-index: 50;
 		height: var(--appbar-h);
-		background: rgb(255 255 255 / 0.85);
-		backdrop-filter: blur(14px);
-		border-bottom: 1px solid var(--line);
+		background: rgb(255 247 232 / 0.82);
+		backdrop-filter: blur(16px) saturate(1.4);
+		border-bottom: 2px solid var(--line);
 	}
 	.inner {
 		width: min(var(--page-max), 100% - 32px);
@@ -95,17 +96,19 @@
 		align-items: center;
 		gap: var(--s2);
 		color: var(--ink);
-		font-weight: 700;
+		font-family: var(--font-display);
+		font-variation-settings:
+			'SOFT' 100,
+			'WONK' 1;
+		font-size: 22px;
+		font-weight: 800;
+		letter-spacing: -0.02em;
 		text-decoration: none;
 	}
 	.mark {
 		display: grid;
 		place-items: center;
-		width: 28px;
-		height: 28px;
-		border-radius: 9px;
-		background: var(--accent);
-		color: #fff;
+		animation: spin 40s linear infinite;
 	}
 	.top-nav {
 		display: none;
@@ -113,15 +116,19 @@
 		margin-left: var(--s4);
 	}
 	.top-nav a {
-		padding: 8px 12px;
-		border-radius: var(--r-sm);
+		padding: 9px 16px;
+		border-radius: var(--r-pill);
 		color: var(--ink-2);
-		font-weight: 600;
+		font-weight: 800;
 		text-decoration: none;
+		transition: background var(--t-ui) var(--ease);
+	}
+	.top-nav a:hover {
+		background: var(--surface-2);
 	}
 	.top-nav a[aria-current='page'] {
-		background: var(--accent-soft);
-		color: var(--accent-strong);
+		background: var(--sun-soft);
+		color: #7a3e00;
 	}
 	.end {
 		margin-left: auto;
@@ -135,8 +142,8 @@
 	.who {
 		display: grid;
 		place-items: center;
-		width: 44px;
-		height: 44px;
+		width: 48px;
+		height: 48px;
 		padding: 0;
 		border: 0;
 		background: transparent;
@@ -145,19 +152,19 @@
 	.pop {
 		position: absolute;
 		right: 0;
-		top: calc(100% + 4px);
-		min-width: 200px;
+		top: calc(100% + 6px);
+		min-width: 220px;
 		padding: var(--s2);
 		background: var(--surface);
-		border: 1px solid var(--line);
+		border: 2px solid var(--line);
 		border-radius: var(--r-md);
 		box-shadow: var(--e2);
 		display: grid;
 	}
 	.who-name {
 		padding: var(--s2) var(--s3);
-		font-weight: 600;
-		border-bottom: 1px solid var(--line);
+		font-weight: 800;
+		border-bottom: 2px solid var(--line);
 		margin-bottom: var(--s1);
 	}
 	.pop a,
@@ -166,18 +173,24 @@
 		align-items: center;
 		gap: var(--s2);
 		width: 100%;
-		min-height: 44px;
+		min-height: 46px;
 		padding: 0 var(--s3);
 		border: 0;
 		border-radius: var(--r-sm);
 		background: transparent;
 		color: var(--ink);
+		font-weight: 700;
 		text-align: left;
 		text-decoration: none;
 	}
 	.pop a:hover,
 	.pop button:hover {
 		background: var(--surface-2);
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 	@media (min-width: 768px) {
 		.top-nav {

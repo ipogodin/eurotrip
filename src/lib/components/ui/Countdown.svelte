@@ -28,24 +28,30 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		min-height: 28px;
-		padding: 0 10px;
+		min-height: 32px;
+		padding: 0 12px;
 		border-radius: var(--r-pill);
-		background: var(--surface-2);
-		color: var(--ink-2);
-		font-size: 13px;
-		font-weight: 600;
+		background: var(--sea-soft);
+		color: #055c61;
+		font-size: 14px;
+		font-weight: 800;
 	}
 	.urgent {
 		background: var(--sun-soft);
-		color: #7a5400;
+		color: #7a3e00;
 	}
 	.final {
 		background: var(--danger-soft);
-		color: #a82f2f;
+		color: #a32013;
+		animation: throb 1.2s ease-in-out infinite;
 	}
 	.closed {
 		background: var(--surface-2);
 		color: var(--ink-2);
+	}
+	@keyframes throb {
+		50% {
+			transform: scale(1.05);
+		}
 	}
 </style>

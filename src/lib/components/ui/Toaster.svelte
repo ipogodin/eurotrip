@@ -20,7 +20,7 @@
 		position: fixed;
 		z-index: 100;
 		left: 50%;
-		bottom: calc(var(--bottomnav-h) + var(--s4) + env(safe-area-inset-bottom));
+		bottom: calc(var(--bottomnav-h) + env(safe-area-inset-bottom));
 		transform: translateX(-50%);
 		display: grid;
 		gap: var(--s2);
@@ -32,17 +32,18 @@
 		display: flex;
 		align-items: center;
 		gap: var(--s2);
-		padding: 10px 16px;
+		padding: 12px 20px;
 		border-radius: var(--r-pill);
 		background: var(--ink);
+		border: 2px solid rgb(255 255 255 / 0.15);
 		color: #fff;
 		font-size: 14px;
-		font-weight: 500;
+		font-weight: 800;
 		box-shadow: var(--e2);
-		animation: pop var(--t-sheet) var(--ease);
+		animation: pop var(--t-sheet) var(--spring);
 	}
 	.success :global(svg) {
-		color: #6ee7a8;
+		color: #7be3a9;
 	}
 	.error {
 		background: #8f2424;

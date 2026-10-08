@@ -10,12 +10,12 @@
 <style>
 	.card {
 		background: var(--surface);
-		border: 1px solid var(--line);
+		border: 2px solid var(--line);
 		border-radius: var(--r-lg);
 		box-shadow: var(--e1);
 		overflow: hidden;
 	}
 	.padded {
-		padding: var(--s4);
+		padding: var(--s5);
 	}
 </style>

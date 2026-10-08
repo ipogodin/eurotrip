@@ -13,11 +13,26 @@
 	import SegmentedControl from '$lib/components/ui/SegmentedControl.svelte';
 	import Sheet from '$lib/components/ui/Sheet.svelte';
 	import Skeleton from '$lib/components/ui/Skeleton.svelte';
+	import Sun from '$lib/components/ui/Sun.svelte';
+	import Frond from '$lib/components/ui/Frond.svelte';
+	import Wave from '$lib/components/ui/Wave.svelte';
 	import { showToast } from '$lib/components/ui/toast.svelte.js';
 	import Icon from '$lib/icons/Icon.svelte';
 	import { ICONS } from '$lib/icons/paths.js';
 
 	const iconNames = /** @type {import('$lib/icons/paths.js').IconName[]} */ (Object.keys(ICONS));
+
+	const swatches = [
+		['hibiscus', '#d81b60'],
+		['papaya', '#d2301f'],
+		['mango', '#ffb020'],
+		['lagoon', '#0aa5a8'],
+		['lagoon-deep', '#067a80'],
+		['palm', '#1fa971'],
+		['ink', '#0c3b3e'],
+		['sand', '#ffefd0'],
+		['cream', '#fff7e8']
+	];
 
 	const members = [
 		{ id: 'illia', name: 'Illia Pogodin', short: 'Illia' },
@@ -53,6 +68,22 @@
 	<Countdown deadline={soon} />
 </AppBar>
 
+<section class="hero">
+	<div class="frond left"><Frond size={300} rotate={-10} /></div>
+	<div class="frond right"><Frond size={340} flip rotate={8} /></div>
+	<div class="sunwrap"><Sun size={150} /></div>
+	<div class="hero-inner">
+		<span class="t-script hero-script">¡Vamos, familia!</span>
+		<h1 class="t-display">Where are we <em>sleeping</em>?</h1>
+		<p class="hero-lede">Six points. Three max per villa. One sunny week in the Canaries.</p>
+		<div class="row" style="flex-wrap: wrap; justify-content: center">
+			<Button size="lg">Cast your votes</Button>
+			<Countdown deadline={soon} />
+		</div>
+	</div>
+	<div class="hero-wave"><Wave height={46} /></div>
+</section>
+
 <main class="page stack" style="gap: var(--s7)">
 	<header>
 		<p class="t-overline">Dev only</p>
@@ -61,8 +92,28 @@
 	</header>
 
 	<section class="stack">
+		<h2 class="t-title">Palette</h2>
+		<div class="swatches">
+			{#each swatches as [name, hex] (name)}
+				<div class="sw">
+					<span class="chipbox" style:background={hex}></span>
+					<span class="t-caption">{name}</span>
+					<span class="t-caption muted num">{hex}</span>
+				</div>
+			{/each}
+		</div>
+		<div class="grads">
+			<span style:background="var(--grad-cta)">cta</span>
+			<span style:background="var(--grad-sun)">sun</span>
+			<span style:background="var(--grad-sea)">sea</span>
+			<span style:background="var(--grad-sunset)">sunset</span>
+		</div>
+	</section>
+
+	<section class="stack">
 		<h2 class="t-title">Type</h2>
-		<p class="t-display">Display 32/40</p>
+		<p class="t-display">Display <span class="t-display-it">italic</span></p>
+		<p><span class="t-script">Script accent: pura vida</span></p>
 		<p class="t-title">Title 22</p>
 		<p class="t-headline">Headline 17</p>
 		<p>Body 15 — Casa Lajares, 14 pts, <span class="num">1,234.50 €</span></p>
@@ -209,6 +260,104 @@
 />
 
 <style>
+	.hero {
+		position: relative;
+		overflow: hidden;
+		background: var(--grad-sunset);
+		color: #fff;
+		text-align: center;
+		padding: var(--s9) 0 0;
+	}
+	.hero-inner {
+		position: relative;
+		z-index: 2;
+		display: grid;
+		justify-items: center;
+		gap: var(--s4);
+		max-width: 640px;
+		margin-inline: auto;
+		padding: 0 var(--s4) var(--s9);
+	}
+	.hero :global(.t-display) {
+		text-shadow: 0 2px 20px rgb(91 42 134 / 0.35);
+	}
+	.hero :global(.t-display em) {
+		font-style: italic;
+		color: #ffe08a;
+	}
+	.hero-script {
+		color: #fff;
+		background: rgb(255 255 255 / 0.18);
+		padding: 2px 16px 6px;
+		border-radius: var(--r-pill);
+		backdrop-filter: blur(6px);
+	}
+	.hero-lede {
+		font-size: 18px;
+		font-weight: 700;
+		opacity: 0.95;
+	}
+	.sunwrap {
+		position: absolute;
+		z-index: 1;
+		top: -30px;
+		right: 8%;
+		opacity: 0.9;
+		filter: drop-shadow(0 0 40px rgb(255 224 138 / 0.8));
+		animation: float 7s ease-in-out infinite;
+	}
+	.frond {
+		position: absolute;
+		z-index: 1;
+		color: rgb(8 90 70 / 0.34);
+		bottom: -30px;
+	}
+	.frond.left {
+		left: -90px;
+	}
+	.frond.right {
+		right: -100px;
+		bottom: 40px;
+	}
+	.hero-wave {
+		position: relative;
+		z-index: 2;
+		color: var(--bg);
+		margin-bottom: -2px;
+	}
+	@keyframes float {
+		50% {
+			transform: translateY(10px) rotate(6deg);
+		}
+	}
+	.swatches {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+		gap: var(--s3);
+	}
+	.sw {
+		display: grid;
+		gap: 2px;
+	}
+	.chipbox {
+		height: 56px;
+		border-radius: var(--r-md);
+		box-shadow: var(--e1);
+	}
+	.grads {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: var(--s2);
+	}
+	.grads span {
+		display: grid;
+		place-items: center;
+		height: 48px;
+		border-radius: var(--r-md);
+		color: #fff;
+		font-weight: 800;
+		text-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+	}
 	.icons {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
@@ -220,7 +369,7 @@
 		gap: 4px;
 		padding: var(--s3);
 		background: var(--surface);
-		border: 1px solid var(--line);
+		border: 2px solid var(--line);
 		border-radius: var(--r-md);
 	}
 </style>
