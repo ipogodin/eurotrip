@@ -34,7 +34,7 @@ The **single source of truth for where the work is.** Plan details are in
 
 | Step | Title                                   | Status | Started | Done | Commit |
 | ---- | --------------------------------------- | ------ | ------- | ---- | ------ |
-| 1.1  | Runtime, storage, test harness          | done   | 2026-10-08 | 2026-10-08 |      |        |
+| 1.1  | Runtime, storage, test harness          | done   | 2026-10-08 | 2026-10-08 | d6ea475 |
 | 1.2  | Design system + app shell               | todo   |         |      |        |
 | 1.3  | Auth core                               | todo   |         |      |        |
 | 1.4  | Login splash, gate, delete old report   | todo   |         |      |        |
