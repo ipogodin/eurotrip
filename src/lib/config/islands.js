@@ -1,4 +1,28 @@
 // Weighting: surf 45%, sandy beach 25%, hiking 18%, family attractions 12%.
+/**
+ * @typedef {'surf' | 'sand' | 'hike' | 'family'} ScoreKey
+ *
+ * @typedef {Record<ScoreKey, number> & {
+ *   id: string;
+ *   rank: number;
+ *   name: string;
+ *   short: string;
+ *   score: number;
+ *   villa: string;
+ *   best: string;
+ *   headline: string;
+ *   summary: string;
+ *   surfText: string;
+ *   sandText: string;
+ *   bottom: string;
+ *   tags: string[];
+ *   weather: string;
+ *   drive: string;
+ *   color: string;
+ * }} Island
+ */
+
+/** @type {Island[]} */
 export const islands = [
 	{
 		id: 'fue',
@@ -176,8 +200,7 @@ export const islands = [
 		summary:
 			'Glorious white sand and cycling, but almost no large-villa or surf-school infrastructure.',
 		surfText: 'No dependable coached surf plan for this group.',
-		sandText:
-			'Beautiful white and golden beaches; some north beaches have dangerous currents.',
+		sandText: 'Beautiful white and golden beaches; some north beaches have dangerous currents.',
 		bottom: 'Visit from Lanzarote rather than base here.',
 		tags: ['White sand', 'No paved roads', 'Cycling'],
 		weather: 'Dry and exposed',

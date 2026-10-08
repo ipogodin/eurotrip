@@ -22,3 +22,6 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Member roster with invite phrases (secret; synced to the MEMBERS env var)
+members.json

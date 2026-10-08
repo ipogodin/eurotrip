@@ -6,8 +6,8 @@
 				<h2>Make the choice in one conversation.</h2>
 			</div>
 			<p>
-				Ask everyone to choose which compromise they are happiest to live with—not which island
-				has the longest attraction list.
+				Ask everyone to choose which compromise they are happiest to live with—not which island has
+				the longest attraction list.
 			</p>
 		</div>
 		<div class="decision">
@@ -23,7 +23,9 @@
 			<div class="choose">
 				<h3>Choose Lanzarote if…</h3>
 				<ul>
-					<li>You want <strong>one iconic sandy surf beach</strong> as the trip's centre of gravity.</li>
+					<li>
+						You want <strong>one iconic sandy surf beach</strong> as the trip's centre of gravity.
+					</li>
 					<li>Volcanic walks and César Manrique sites are the decisive tie-breaker.</li>
 					<li>You can accept a rural villa 10–20 minutes from Famara.</li>
 					<li>You want La Graciosa as a standout family day.</li>
@@ -34,7 +36,9 @@
 				<ul>
 					<li>The surfers value a <strong>walkable urban beach break</strong> and coaching.</li>
 					<li>The group enjoys city restaurants, museums and an aquarium.</li>
-					<li>You can find a rare large house near Las Palmas—or accept a city-villa compromise.</li>
+					<li>
+						You can find a rare large house near Las Palmas—or accept a city-villa compromise.
+					</li>
 				</ul>
 			</div>
 			<div class="choose">
@@ -42,7 +46,9 @@
 				<ul>
 					<li>Family attractions and hiking move above sandy surf in priority.</li>
 					<li>The intermediate surfers are comfortable with reef and local guidance.</li>
-					<li>You want the deepest verified villa shortlist and the warmest-feeling south-coast base.</li>
+					<li>
+						You want the deepest verified villa shortlist and the warmest-feeling south-coast base.
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -59,31 +65,33 @@
 			<div class="budget-card">
 				<b>4 + 3</b>
 				<p>
-					Minimum target: four real couple bedrooms and three bathrooms. Do not count sofa beds
-					as a couple's room.
+					Minimum target: four real couple bedrooms and three bathrooms. Do not count sofa beds as a
+					couple's room.
 				</p>
 			</div>
 			<div class="budget-card">
 				<b>2 cars</b>
 				<p>
-					North Fuerteventura and rural Lanzarote work best with two cars; confirm parking and
-					board transport before booking.
+					North Fuerteventura and rural Lanzarote work best with two cars; confirm parking and board
+					transport before booking.
 				</p>
 			</div>
 		</div>
 		<div class="notice">
-			<strong>Villa search order:</strong> (1) Lajares, Corralejo edge, Villaverde and El Cotillo;
-			(2) Soo, Muñique, Tinajo and Famara; (3) Las Palmas west / Arucas; (4) Callao Salvaje / Playa
-			Paraíso. Require an all-in total, legal tourist-registration number, two cots and high
-			chairs, parking for two cars, and explicit pool-barrier information. A heated pool is
-			strongly preferable in February; ask whether heat is included or charged daily.
+			<strong>Villa search order:</strong> (1) Lajares, Corralejo edge, Villaverde and El Cotillo; (2)
+			Soo, Muñique, Tinajo and Famara; (3) Las Palmas west / Arucas; (4) Callao Salvaje / Playa Paraíso.
+			Require an all-in total, legal tourist-registration number, two cots and high chairs, parking for
+			two cars, and explicit pool-barrier information. A heated pool is strongly preferable in February;
+			ask whether heat is included or charged daily.
 		</div>
 	</div>
 </section>
 
 <style>
 	.budget-head {
-		font: 800 2rem / 1 Georgia, serif;
+		font:
+			800 2rem / 1 Georgia,
+			serif;
 		margin-top: 54px;
 	}
 	.decision {
@@ -98,7 +106,9 @@
 		border: 1px solid var(--line);
 	}
 	.choose h3 {
-		font: 800 1.45rem / 1.15 Georgia, serif;
+		font:
+			800 1.45rem / 1.15 Georgia,
+			serif;
 		margin: 0 0 14px;
 	}
 	.choose ul {
@@ -126,7 +136,9 @@
 	}
 	.budget-card b {
 		display: block;
-		font: 800 2rem / 1 Georgia, serif;
+		font:
+			800 2rem / 1 Georgia,
+			serif;
 		color: var(--sea);
 		margin-bottom: 8px;
 	}

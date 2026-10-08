@@ -1,14 +1,20 @@
 <script>
 	import { islands } from '$lib/config/islands.js';
 
+	/** @type {{ selectedId: string, onSelect: (id: string, scroll: boolean) => void }} */
 	let { selectedId, onSelect } = $props();
 
 	const selected = $derived(islands.find((i) => i.id === selectedId));
 
+	/** @param {string} id */
 	function activate(id) {
 		onSelect(id, false);
 	}
 
+	/**
+	 * @param {KeyboardEvent} event
+	 * @param {string} id
+	 */
 	function onKeydown(event, id) {
 		if (event.key === 'Enter' || event.key === ' ') {
 			event.preventDefault();
@@ -31,22 +37,19 @@
 			</p>
 		</div>
 		<div class="map-shell">
-			<div
-				id="map"
-				role="application"
-				aria-label="Interactive map of the Canary Islands. Select an island to update the comparison panel."
-			>
+			<div id="map">
 				<svg
 					class="archipelago-map"
 					viewBox="0 0 1000 560"
-					role="img"
-					aria-labelledby="mapTitle mapDesc"
+					role="group"
+					aria-labelledby="mapTitle"
+					aria-describedby="mapDesc"
 					preserveAspectRatio="xMidYMid meet"
 				>
 					<title id="mapTitle">Interactive Canary Islands map</title>
 					<desc id="mapDesc"
-						>Eight selectable island shapes arranged west to east, with recommended bases
-						marked on the four leading islands.</desc
+						>Eight selectable island shapes arranged west to east, with recommended bases marked on
+						the four leading islands.</desc
 					>
 					<path class="ocean-line" d="M-40 92 C170 8 345 122 535 59 S859 7 1040 92" />
 					<path class="ocean-line" d="M-45 450 C164 359 334 494 552 417 S853 366 1050 438" />
@@ -61,6 +64,7 @@
 						tabindex="0"
 						role="button"
 						aria-label="Select La Palma, ranked fifth"
+						aria-pressed={selectedId === 'spc'}
 						onclick={() => activate('spc')}
 						onkeydown={(e) => onKeydown(e, 'spc')}
 					>
@@ -81,6 +85,7 @@
 						tabindex="0"
 						role="button"
 						aria-label="Select El Hierro, ranked seventh"
+						aria-pressed={selectedId === 'vde'}
 						onclick={() => activate('vde')}
 						onkeydown={(e) => onKeydown(e, 'vde')}
 					>
@@ -101,6 +106,7 @@
 						tabindex="0"
 						role="button"
 						aria-label="Select La Gomera, ranked sixth"
+						aria-pressed={selectedId === 'gmz'}
 						onclick={() => activate('gmz')}
 						onkeydown={(e) => onKeydown(e, 'gmz')}
 					>
@@ -121,6 +127,7 @@
 						tabindex="0"
 						role="button"
 						aria-label="Select Tenerife, ranked fourth"
+						aria-pressed={selectedId === 'tfs'}
 						onclick={() => activate('tfs')}
 						onkeydown={(e) => onKeydown(e, 'tfs')}
 					>
@@ -146,6 +153,7 @@
 						tabindex="0"
 						role="button"
 						aria-label="Select Gran Canaria, ranked third"
+						aria-pressed={selectedId === 'lpa'}
 						onclick={() => activate('lpa')}
 						onkeydown={(e) => onKeydown(e, 'lpa')}
 					>
@@ -202,6 +210,7 @@
 						tabindex="0"
 						role="button"
 						aria-label="Select Lanzarote, ranked second"
+						aria-pressed={selectedId === 'ace'}
 						onclick={() => activate('ace')}
 						onkeydown={(e) => onKeydown(e, 'ace')}
 					>
@@ -227,6 +236,7 @@
 						tabindex="0"
 						role="button"
 						aria-label="Select La Graciosa, ranked eighth"
+						aria-pressed={selectedId === 'gra'}
 						onclick={() => activate('gra')}
 						onkeydown={(e) => onKeydown(e, 'gra')}
 					>
@@ -242,7 +252,9 @@
 					</g>
 				</svg>
 				<div class="map-key">
-					<span><i class="dot" style="background:#ffd166;border:1px solid #075965"></i>selected island</span>
+					<span
+						><i class="dot" style="background:#ffd166;border:1px solid #075965"></i>selected island</span
+					>
 					<span><i class="dot" style="background:#ef765f"></i>suggested base</span>
 				</div>
 			</div>
@@ -288,7 +300,9 @@
 		color: var(--aqua);
 	}
 	.map-side h3 {
-		font: 800 2.2rem / 1 Georgia, serif;
+		font:
+			800 2.2rem / 1 Georgia,
+			serif;
 		margin: 0 0 10px;
 	}
 	.map-side .summary {
@@ -362,7 +376,10 @@
 		fill: #fff8df;
 		stroke: #075965;
 		stroke-width: 4;
-		transition: transform 0.2s, fill 0.2s, stroke 0.2s;
+		transition:
+			transform 0.2s,
+			fill 0.2s,
+			stroke 0.2s;
 		transform-box: fill-box;
 		transform-origin: center;
 		filter: drop-shadow(0 8px 8px rgba(3, 61, 67, 0.2));

@@ -16,6 +16,7 @@
 		['family', 'Family']
 	];
 
+	/** @type {Record<string, string>} */
 	const chipLabels = { surf: 'Surf', sand: 'Sand', hike: 'Hike', family: 'Family' };
 </script>
 
@@ -27,9 +28,9 @@
 				<h2>The breaks and beaches that actually fit.</h2>
 			</div>
 			<p>
-				"Beginner-friendly" still means condition-dependent in February. North Atlantic swells
-				can be powerful; use a school that selects the beach daily, especially on Fuerteventura
-				and Lanzarote.
+				"Beginner-friendly" still means condition-dependent in February. North Atlantic swells can
+				be powerful; use a school that selects the beach daily, especially on Fuerteventura and
+				Lanzarote.
 			</p>
 		</div>
 		<div class="guide-tools" role="group" aria-label="Filter locations">
@@ -37,6 +38,7 @@
 				<button
 					class="filter-btn"
 					class:active={activeFilter === value}
+					aria-pressed={activeFilter === value}
 					onclick={() => (activeFilter = value)}
 				>
 					{label}
@@ -59,10 +61,9 @@
 		</div>
 
 		<div class="notice">
-			<strong>Surf safety:</strong> for independent intermediate sessions, ask the school for
-			tide, wind, entry/exit and local-etiquette advice that morning. Reefs around Las Américas,
-			La Santa, the Fuerteventura North Shore and El Confital are not learner substitutions when
-			beach breaks are too large.
+			<strong>Surf safety:</strong> for independent intermediate sessions, ask the school for tide, wind,
+			entry/exit and local-etiquette advice that morning. Reefs around Las Américas, La Santa, the Fuerteventura
+			North Shore and El Confital are not learner substitutions when beach breaks are too large.
 		</div>
 
 		<h3 class="anchors-head">School and rental anchors</h3>
@@ -81,7 +82,7 @@
 					{#each schools as school (school.name)}
 						<tr>
 							<td><strong>{school.base}</strong></td>
-							<td><a href={school.url}>{school.name}</a></td>
+							<td><a href={school.url} rel="external">{school.name}</a></td>
 							<td>{school.price}</td>
 							<td>{school.why}</td>
 							<td>{school.verify}</td>
@@ -91,15 +92,17 @@
 			</table>
 		</div>
 		<p class="fineprint">
-			Prices were visible on provider pages on 2 October 2026 and are planning estimates, not
-			quotes for February 2027.
+			Prices were visible on provider pages on 2 October 2026 and are planning estimates, not quotes
+			for February 2027.
 		</p>
 	</div>
 </section>
 
 <style>
 	.anchors-head {
-		font: 800 2rem / 1 Georgia, serif;
+		font:
+			800 2rem / 1 Georgia,
+			serif;
 		margin-top: 48px;
 	}
 	.guide-tools {
@@ -138,7 +141,9 @@
 	}
 	.spot-card h3 {
 		margin: 0 0 5px;
-		font: 800 1.2rem / 1.15 Georgia, serif;
+		font:
+			800 1.2rem / 1.15 Georgia,
+			serif;
 	}
 	.spot-card .place {
 		color: var(--sea);

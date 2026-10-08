@@ -1,0 +1,13 @@
+# Package managers
+package-lock.json
+
+# Generated / build output
+.svelte-kit/
+.vercel/
+build/
+
+# Static assets
+/static/
+
+# Hand-written docs (history.md is an append-only log — never reflow it)
+*.md

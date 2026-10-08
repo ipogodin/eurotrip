@@ -1,8 +1,10 @@
 <script>
 	import { islands } from '$lib/config/islands.js';
 
+	/** @type {{ selectedId: string, onSelect: (id: string, scroll: boolean) => void }} */
 	let { selectedId, onSelect } = $props();
 
+	/** @type {[string, import('$lib/config/islands.js').ScoreKey, number][]} */
 	const weights = [
 		['Surf', 'surf', 45],
 		['Sand', 'sand', 25],
@@ -21,9 +23,9 @@
 				<h2>A two-island final—with two strong backups.</h2>
 			</div>
 			<p>
-				Scores follow your priorities: surf 45%, sandy beaches 25%, hiking 18%, family
-				attractions 12%. Villa practicality is shown separately because the $8,000 ceiling is a
-				constraint, not a holiday goal.
+				Scores follow your priorities: surf 45%, sandy beaches 25%, hiking 18%, family attractions
+				12%. Villa practicality is shown separately because the $8,000 ceiling is a constraint, not
+				a holiday goal.
 			</p>
 		</div>
 		<div class="score-grid">
@@ -31,6 +33,7 @@
 				<button
 					class="score-card"
 					class:active={selectedId === island.id}
+					aria-pressed={selectedId === island.id}
 					onclick={() => onSelect(island.id, true)}
 				>
 					<div class="rank">
@@ -54,9 +57,9 @@
 			{/each}
 		</div>
 		<div class="notice">
-			<strong>Recommendation:</strong> choose north Fuerteventura unless your group would gladly
-			trade a little beach-and-villa convenience for more spectacular volcanic hiking. In that
-			case, choose north Lanzarote near Famara.
+			<strong>Recommendation:</strong> choose north Fuerteventura unless your group would gladly trade
+			a little beach-and-villa convenience for more spectacular volcanic hiking. In that case, choose
+			north Lanzarote near Famara.
 		</div>
 	</div>
 </section>
@@ -98,12 +101,16 @@
 		letter-spacing: 0.09em;
 	}
 	.rank b {
-		font: 800 1.8rem / 1 Georgia, serif;
+		font:
+			800 1.8rem / 1 Georgia,
+			serif;
 		color: var(--sea);
 	}
 	.score-card h3 {
 		margin: 16px 0 6px;
-		font: 800 1.35rem / 1.1 Georgia, serif;
+		font:
+			800 1.35rem / 1.1 Georgia,
+			serif;
 	}
 	.score-card p {
 		margin: 0;

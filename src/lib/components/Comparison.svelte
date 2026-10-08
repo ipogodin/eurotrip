@@ -1,6 +1,7 @@
 <script>
 	import { islands } from '$lib/config/islands.js';
 
+	/** @param {string} villa */
 	function fitClass(villa) {
 		if (villa === 'High') return 'high';
 		if (villa === 'Low' || villa === 'Very low') return 'low';
@@ -16,8 +17,8 @@
 				<h2>Nothing hidden in the average.</h2>
 			</div>
 			<p>
-				A strong hiking score cannot rescue weak learner surf, and famous waves do not help if
-				the group needs reef expertise. The notes below emphasize the actual February fit.
+				A strong hiking score cannot rescue weak learner surf, and famous waves do not help if the
+				group needs reef expertise. The notes below emphasize the actual February fit.
 			</p>
 		</div>
 		<div class="comparison-wrap">

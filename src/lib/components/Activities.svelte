@@ -10,9 +10,9 @@
 				<h2>Hikes and family attractions worth choosing an island for.</h2>
 			</div>
 			<p>
-				February is ideal for lower-elevation walking, but high routes can be cold, windy,
-				snowy or closed. With toddlers, treat the harder hikes as adult rotations rather than
-				whole-group days.
+				February is ideal for lower-elevation walking, but high routes can be cold, windy, snowy or
+				closed. With toddlers, treat the harder hikes as adult rotations rather than whole-group
+				days.
 			</p>
 		</div>
 		<div class="activity-grid">

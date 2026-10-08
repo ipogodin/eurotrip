@@ -14,11 +14,14 @@
 
 	let selectedIslandId = $state('fue');
 
+	/**
+	 * @param {string} id
+	 * @param {boolean} scroll
+	 */
 	function selectIsland(id, scroll) {
 		selectedIslandId = id;
-		if (scroll && typeof document !== 'undefined') {
-			document.getElementById('map-section')?.scrollIntoView({ behavior: 'smooth' });
-		}
+		// Only called from click handlers, so this always runs in the browser.
+		if (scroll) document.getElementById('map-section')?.scrollIntoView({ behavior: 'smooth' });
 	}
 </script>
 

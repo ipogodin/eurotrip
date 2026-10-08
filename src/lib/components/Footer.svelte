@@ -1,6 +1,7 @@
 <footer class="footer">
 	<div class="wrap">
-		<span>Prepared for the February 2027 friends-and-family trip · 8 adults + 2 young children</span>
+		<span>Prepared for the February 2027 friends-and-family trip · 8 adults + 2 young children</span
+		>
 		<a class="backtop" href="#top">Back to top</a>
 	</div>
 </footer>

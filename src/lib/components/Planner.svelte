@@ -1,8 +1,11 @@
 <script>
 	import { plans } from '$lib/config/plans.js';
 
-	let activePlan = $state('fue');
+	/** @typedef {keyof typeof plans} PlanId */
 
+	let activePlan = $state(/** @type {PlanId} */ ('fue'));
+
+	/** @type {[PlanId, string][]} */
 	const tabs = [
 		['fue', 'Fuerteventura'],
 		['ace', 'Lanzarote']
@@ -19,16 +22,16 @@
 				<h2>Nine days without turning it into a surf camp.</h2>
 			</div>
 			<p>
-				The schedule protects three flexible surf windows, two meaningful island days and
-				enough open time for ten people and two small children. Swap surf days according to
-				the forecast.
+				The schedule protects three flexible surf windows, two meaningful island days and enough
+				open time for ten people and two small children. Swap surf days according to the forecast.
 			</p>
 		</div>
-		<div class="tabs">
+		<div class="tabs" role="group" aria-label="Choose an island plan">
 			{#each tabs as [value, label] (value)}
 				<button
 					class="tab"
 					class:active={activePlan === value}
+					aria-pressed={activePlan === value}
 					onclick={() => (activePlan = value)}
 				>
 					{label}

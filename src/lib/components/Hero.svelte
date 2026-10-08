@@ -4,9 +4,9 @@
 			<p class="eyebrow" style="color:#7fe0d3">Island decision report · February 2027</p>
 			<h1>Find the island where the whole group wins.</h1>
 			<p class="lead">
-				A surf-first comparison for 8 adults and 2 young children, with sandy beaches, hiking
-				and family days ranked in that order—plus the villa bases that keep ten people close to
-				the water.
+				A surf-first comparison for 8 adults and 2 young children, with sandy beaches, hiking and
+				family days ranked in that order—plus the villa bases that keep ten people close to the
+				water.
 			</p>
 			<div class="hero-meta">
 				<span class="pill">9-day target</span>
@@ -40,7 +40,7 @@
 		background:
 			linear-gradient(115deg, rgba(3, 35, 42, 0.93), rgba(3, 77, 86, 0.78)),
 			url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Arena_y_viento%2C_Dunas_de_Corralejo%2C_Fuerteventura%2C_Espa%C3%B1a%2C_2015.jpg/1280px-Arena_y_viento%2C_Dunas_de_Corralejo%2C_Fuerteventura%2C_Espa%C3%B1a%2C_2015.jpg')
-			center 58% / cover;
+				center 58% / cover;
 		color: white;
 		padding: 76px 0 58px;
 		min-height: 560px;
@@ -54,7 +54,9 @@
 		align-items: end;
 	}
 	.hero h1 {
-		font: 800 clamp(2.7rem, 7vw, 6rem) / 0.94 Georgia, serif;
+		font:
+			800 clamp(2.7rem, 7vw, 6rem) / 0.94 Georgia,
+			serif;
 		letter-spacing: -0.05em;
 		margin: 0 0 24px;
 		max-width: 890px;
@@ -90,11 +92,15 @@
 		box-shadow: var(--shadow);
 	}
 	.verdict .number {
-		font: 800 4rem / 1 Georgia, serif;
+		font:
+			800 4rem / 1 Georgia,
+			serif;
 		color: var(--sea);
 	}
 	.verdict h2 {
-		font: 800 1.5rem / 1.15 Georgia, serif;
+		font:
+			800 1.5rem / 1.15 Georgia,
+			serif;
 		margin: 8px 0;
 	}
 	.verdict p {
