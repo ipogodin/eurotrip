@@ -28,7 +28,7 @@ The **single source of truth for where the work is.** Plan details are in
 
 **Step:** 1.1 — Runtime, storage, test harness
 **State:** not started (planning finished 2026-10-08)
-**Next action:** the user upgrades the Vercel CLI and runs `vercel link`; then the agent provisions Upstash.
+**Next action:** waiting for the user's OK on Upstash (I2); then provision it and start 1.1.
 
 ## Step board
 
@@ -56,7 +56,7 @@ The **single source of truth for where the work is.** Plan details are in
 
 | #  | Needed by | Input                                                                                   | Status  |
 | -- | --------- | --------------------------------------------------------------------------------------- | ------- |
-| I1 | 1.1       | Upgrade the Vercel CLI (`npm i -g vercel@latest`) and run `vercel link` (interactive) | waiting |
+| I1 | 1.1       | Upgrade the Vercel CLI (`npm i -g vercel@latest`) and run `vercel link` (interactive) | done 2026-10-08: CLI 63.1.0, linked `ipogodins-projects/eurotrip` |
 | I2 | 1.1       | OK to add the Upstash Redis integration to the Vercel account (free tier)              | waiting |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | waiting |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
@@ -73,3 +73,4 @@ _(WIP and final notes per step go here, newest first.)_
 | Date       | Summary                                                                                                    |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
 | 2026-10-08 | Planning: raw plan captured, decisions made, tech-spec + design + detailed plan + this tracker written. No code. |
+| 2026-10-08 | The user upgraded the Vercel CLI to 63.1.0 and linked the repo to the existing project `ipogodins-projects/eurotrip` (`.vercel/` and `.env.local` are gitignored). |
