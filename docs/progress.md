@@ -28,7 +28,7 @@ The **single source of truth for where the work is.** Plan details are in
 
 **Step:** 1.6 — Vote page: list layout + autosave
 **State:** not started
-**Next action:** step 1.6 (vote page). It can be built against the placeholder villas; real villas (I3) just replace `src/lib/config/villas.js`. Step 1.4 still needs the user's visual OK (I8).
+**Next action:** step 1.6 (vote page). It can be built against the placeholder villas; real villas (I3) just replace `src/lib/config/villas.js`. I8 answered 2026-10-08 (wanted a moving background with the sea); done as an early step 3.1 — awaiting the user's look at the result.
 
 ## Step board
 
@@ -48,7 +48,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 2.3  | Nearby tab                              | todo   |         |      |        |
 | 2.4  | Flights tab                             | todo   |         |      |        |
 | 2.5  | Ship R2                                 | todo   |         |      |        |
-| 3.1  | Canary video background                 | todo   |         |      |        |
+| 3.1  | Canary video background                 | done (early) | 2026-10-08 | 2026-10-08 | see log |
 | 3.2  | Quality pass                            | todo   |         |      |        |
 | 3.3  | SvelteKit 3 upgrade                     | todo   |         |      |        |
 
@@ -60,14 +60,44 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | waiting |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
-| I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | **waiting** |
+| I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | answered 2026-10-08: wanted motion + sea → sea video (3.1); re-check pending |
 | I5 | 1.2       | Sign-off on the style-guide screenshots (non-blocking)                                 | later   |
 | I6 | 2.x       | Booked dates, address, check-in/out times, preferred arrival airport(s)                | later   |
-| I7 | 3.1       | The Canary video clip (optional; a photo is used until then)                           | later   |
+| I7 | 3.1       | The Canary video clip (optional; a photo is used until then)                           | optional: a CC Commons clip is used now; the user's own clip can replace it |
 
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### 3.1 — done early (2026-10-08), from the user's I8 feedback
+
+The user's verdict on the login page: make the background dynamic, and it
+showed only desert, no sea. Replaced the Corralejo dunes photo with a looping
+beach video: Wikimedia Commons "Pájara - Morro Jable - Playa del Matorral (0)
+06.ogv" by Frank Vincentz, CC BY-SA 3.0 (sand + sea + waves, fixed camera,
+no people; credited on the page). ffmpeg: cropped a 6 px black strip at the
+bottom, first 30 s with the last 2 s crossfaded into the start (seamless 28 s
+loop), no audio, H.264 `+faststart`: `static/splash/sea-1280.mp4` (3.2 MB) and
+`sea-854.mp4` (1.4 MB, `<source media="(max-width: 900px)">`), webp posters
+(23/13 KB). New `src/lib/components/SeaBackground.svelte`: the poster is SSR'd
+(instant), the video is added only in the browser and never under
+`prefers-reduced-motion` or Save-Data, fades in on `playing`; it mutes and calls
+`play()` itself through `{@attach}` because Svelte sets `muted` only as a
+property and iOS Safari may not autoplay otherwise. The splash tint was
+lightened (it used to multiply the photo at 55% under a strong pink/purple
+gradient, which hid most colour): warm sky glow, clear middle, dusk at the
+bottom for the credit. Phones (portrait, <768 px): frame shifted up 24% so
+the sea sits above the card, sun shrunk into the top-right corner, credit
+shortened to one line. Dunes webps deleted.
+Deviations from the plan: MP4 only, no WebM (VP9 came out *larger* than
+H.264 at the same quality); a Commons clip instead of the user's own (I7 can
+still replace it). Verified: check/lint/83 tests/build; Chrome at desktop and
+a 390 px iframe (card/credit don't overlap). Could not see actual playback in
+Chrome: the automation window counts as hidden, and Chrome doesn't load media
+in hidden tabs (`readyState` 0); the files were checked with ffprobe and the
+loop seam frame-by-frame. Gotcha: when the user's Chrome is signed in on
+`localhost`, `/` redirects to `/vote`; use a second dev server on
+`127.0.0.1` (cookies are per host) to see the splash without logging out.
 
 ### 1.5 — done (2026-10-08), with placeholder villas
 
@@ -200,6 +230,7 @@ it (it would override the `!.env.example` exception).
 
 | Date       | Summary                                                                                                    |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
+| 2026-10-08 | Login splash: looping sea video (step 3.1 pulled forward after the user's I8 feedback). |
 | 2026-10-08 | Planning: raw plan captured, decisions made, tech-spec + design + detailed plan + this tracker written. No code. |
 | 2026-10-08 | Step 1.5 done (placeholders): voting rules + tests, villa config, photo script. |
 | 2026-10-08 | Step 1.4 done: auth gate, login splash, logout, old report deleted; dev store -> memory. |

@@ -76,7 +76,7 @@ Sheet (native dialog, grabber, bouncy) · Toast · Skeleton · decorative **Sun*
 
 ## Key screens
 
-**Login splash (`/`).** Full-bleed Canary photo (video later) under a warm
+**Login splash (`/`).** Full-bleed looping beach video (sand + sea, poster still first) under a warm
 sunset-tinted scrim; frosted card with the sun mark, Fraunces headline, a
 script tag line, the phrase field and a big hibiscus button; fronds framing
 the corners; wave edge into the cream if the card scrolls. Phrase input uses
@@ -99,7 +99,8 @@ origin pills and ticket-style cards.
 
 - Villa photos: webp, ≤1600 px (+480 px thumbs), `width`/`height` always set,
   rounded 20 px, slight warm color grade only if needed.
-- Login background: Corralejo dunes (CC BY-SA, credit as a small caption),
-  later the user's own video.
+- Login background: looping Playa del Matorral video (Frank Vincentz,
+  CC BY-SA 3.0, credit as a small caption); the sea must stay visible above
+  the card on phones. Can later be replaced by the user's own clip.
 - Icons: inline SVG, 1.75 px stroke, in `src/lib/icons/`.
 - Decoration (sun, fronds, waves) is `aria-hidden` and never carries info.

@@ -128,6 +128,7 @@ src/
     vote/+page.svelte      # placeholder until step 1.6
     styleguide/            # dev-only component gallery (404 in production)
   lib/
+    components/SeaBackground.svelte  # login splash video loop (poster SSR, video client-only)
     components/ui/         # AppBar, BottomNav, Button, Card, Chip, Avatar(+Stack),
                            #   PointDots, PointsMeter, Stepper, Countdown, SegmentedControl,
                            #   Sheet, Toast(+Toaster), Skeleton, Sun, Wave, Frond
@@ -147,7 +148,7 @@ scripts/
   wordlist-eff-large.txt   # EFF word list for phrase generation
 static/
   favicon.svg
-  splash/                  # login background (Corralejo dunes, CC BY-SA, credited on page)
+  splash/                  # login background: sea loop mp4 (1280/854) + webp posters (CC BY-SA, credited on page)
 members.example.json       # fake roster shape (committed)
 members.json               # REAL roster with phrases (gitignored, local only)
 docs/                      # plan, specs, design, progress, history (see Work tracking)

@@ -331,3 +331,15 @@ remaining proposal (SvelteKit 3 / adapter-vercel 7), the user chose to keep
 it as step 3.3 instead of upgrading now, because voting closes 2026-10-10 and
 step 1.6 (vote page) comes first. The low `cookie` advisory is still accepted
 as not exploitable (constant cookie name/path, no domain); see step 1.1 notes.
+
+---
+
+## 2026-10-08 — Login background: sea video instead of desert photo
+
+Feedback on the login page (I8): "looks good", but the user wanted the
+background to be dynamic and noted there was no sea, only desert. Pulled step
+3.1 forward: a seamless 28 s loop of Playa del Matorral, Fuerteventura (sand
+in front, waves rolling in) from Wikimedia Commons (CC BY-SA 3.0), with a
+lighter tint so the sea's blue actually shows, and a phone-specific framing
+so the sea isn't hidden behind the card. Reduced-motion and Save-Data visitors
+get the still poster only. Details in `docs/progress.md` (step 3.1).

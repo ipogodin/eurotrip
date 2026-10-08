@@ -1,5 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
+	import SeaBackground from '$lib/components/SeaBackground.svelte';
 	import Frond from '$lib/components/ui/Frond.svelte';
 	import Sun from '$lib/components/ui/Sun.svelte';
 
@@ -41,17 +42,7 @@
 </svelte:head>
 
 <div class="scene">
-	<div class="photo" aria-hidden="true">
-		<img
-			src="/splash/dunes-960.webp"
-			srcset="/splash/dunes-960.webp 960w, /splash/dunes-1920.webp 1920w"
-			sizes="100vw"
-			alt=""
-			width="1920"
-			height="1440"
-			fetchpriority="high"
-		/>
-	</div>
+	<SeaBackground />
 	<div class="tint" aria-hidden="true"></div>
 	<div class="sun" aria-hidden="true"><Sun size={220} /></div>
 	<div class="frond left" aria-hidden="true"><Frond size={420} rotate={-6} /></div>
@@ -123,11 +114,11 @@
 	</main>
 
 	<p class="credit">
-		Photo: Corralejo dunes, Fuerteventura ·
+		Video: Frank Vincentz ·
 		<a
-			href="https://commons.wikimedia.org/wiki/File:Arena_y_viento,_Dunas_de_Corralejo,_Fuerteventura,_Espa%C3%B1a,_2015.jpg"
-			rel="external noopener">Wikimedia Commons</a
-		>, CC BY-SA
+			href="https://commons.wikimedia.org/wiki/File:P%C3%A1jara_-_Morro_Jable_-_Playa_del_Matorral_(0)_06.ogv"
+			rel="external noopener">Playa del Matorral</a
+		>, CC BY-SA 3.0
 	</p>
 </div>
 
@@ -140,29 +131,21 @@
 		background: var(--grad-sunset);
 		isolation: isolate;
 	}
-	.photo,
+	/* Sunset glow in the sky, clear sea in the middle, deeper dusk at the
+	   bottom so the card edge and the white credit stay readable over sand. */
 	.tint {
 		position: absolute;
 		inset: 0;
-		z-index: -4;
-	}
-	.photo img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		object-position: 50% 40%;
-		mix-blend-mode: multiply;
-		opacity: 0.55;
-	}
-	.tint {
 		z-index: -3;
 		background:
-			radial-gradient(70% 55% at 50% 78%, rgb(255 214 120 / 0.85), transparent 70%),
+			radial-gradient(60% 45% at 50% 0%, rgb(255 190 90 / 0.55), transparent 70%),
 			linear-gradient(
 				180deg,
-				rgb(255 176 32 / 0.2),
-				rgb(216 27 96 / 0.35) 55%,
-				rgb(91 42 134 / 0.7)
+				rgb(255 150 60 / 0.3) 0%,
+				rgb(216 27 96 / 0.12) 32%,
+				transparent 48%,
+				rgb(216 27 96 / 0.18) 70%,
+				rgb(91 42 134 / 0.62) 100%
 			);
 	}
 	.sun {
@@ -273,6 +256,17 @@
 	@keyframes sway {
 		to {
 			transform: rotate(3deg);
+		}
+	}
+	@media (max-width: 767px) {
+		/* Keep the small-screen sky clear so the sea shows above the card. */
+		.sun {
+			left: auto;
+			right: -28px;
+			top: -28px;
+			translate: none;
+			scale: 0.55;
+			transform-origin: top right;
 		}
 	}
 	@media (min-width: 768px) {
