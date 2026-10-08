@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { findVilla, villas } from './villas.js';
 
 describe('villas config', () => {
-	it('has 6-10 candidates', () => {
+	it('has 6-15 candidates', () => {
 		expect(villas.length).toBeGreaterThanOrEqual(6);
-		expect(villas.length).toBeLessThanOrEqual(10);
+		expect(villas.length).toBeLessThanOrEqual(15);
 	});
 
 	it('has unique, URL-safe ids', () => {

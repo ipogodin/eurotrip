@@ -191,8 +191,11 @@ export const MAX_PER_VILLA = 3;
  *   coords: [number, number];            // lat, lng
  *   url: string; source: 'airbnb'|'booking'|'vrbo'|'other';
  *   price: { total: number; currency: 'EUR'|'USD'|'GBP'; nights: number };
- *   bedrooms: number; bathrooms: number; sleeps: number;
- *   photos: string[];                    // '/villas/{id}/1.webp' …, first = cover
+ *   dates?: { start: string; end: string }; // the dates `price` was saved for
+ *   rating?: number;                     // Airbnb stars, e.g. 4.86
+ *   bedrooms: number; bathrooms: number;
+ *   sleeps: number;                      // Airbnb guest max (kids 2–12 count, babies don't)
+ *   photos: { src: string; thumb: string; width: number; height: number }[]; // first = cover
  *   highlights: string[];                // 3–5 short chips: "Pool", "5 min to Flag Beach"
  *   blurb: string;                       // 1–2 sentences
  * }} Villa

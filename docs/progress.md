@@ -28,7 +28,7 @@ The **single source of truth for where the work is.** Plan details are in
 
 **Step:** 1.6 — Vote page: list layout + autosave
 **State:** not started
-**Next action:** step 1.6 (vote page). It can be built against the placeholder villas; real villas (I3) just replace `src/lib/config/villas.js`. Login page approved by the user 2026-10-08 (I8 done, sea video in).
+**Next action:** step 1.6 (vote page), now with the 13 real villas. Login page approved by the user 2026-10-08 (I8 done, sea video in).
 
 ## Step board
 
@@ -58,8 +58,9 @@ The **single source of truth for where the work is.** Plan details are in
 | -- | --------- | --------------------------------------------------------------------------------------- | ------- |
 | I1 | 1.1       | Upgrade the Vercel CLI (`npm i -g vercel@latest`) and run `vercel link` (interactive) | done 2026-10-08: CLI 63.1.0, linked `ipogodins-projects/eurotrip` |
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
-| I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | waiting |
+| I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
+| I9 | 1.6       | Ages of the 2 kids in Feb 2027: under 2 or 2+? 6 villas allow max 8 guests (Airbnb counts kids 2–12) | **waiting** |
 | I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | done 2026-10-08: sea video approved ("looks good") |
 | I5 | 1.2       | Sign-off on the style-guide screenshots (non-blocking)                                 | later   |
 | I6 | 2.x       | Booked dates, address, check-in/out times, preferred arrival airport(s)                | later   |
@@ -98,6 +99,30 @@ in hidden tabs (`readyState` 0); the files were checked with ffprobe and the
 loop seam frame-by-frame. Gotcha: when the user's Chrome is signed in on
 `localhost`, `/` redirects to `/vote`; use a second dev server on
 `127.0.0.1` (cookies are per host) to see the splash without logging out.
+
+### 1.5 addendum — real villas (2026-10-08)
+
+The user gave the Airbnb wishlist "Tenerife, Spain 2027" (13 listings), so the
+island is **Tenerife**, not Fuerteventura (the placeholders were a guess from
+the old report). Pulled with Claude in Chrome (wishlist cards: name, saved
+dates, 9-night price in USD) plus `curl` of each public listing page (its
+`data-deferred-state-0` JSON: coords, guest max, og:title rooms/baths/rating,
+photo URLs, amenities, description). Kept: names cleaned up, highlights from
+the real amenity lists, 1–2 sentence blurbs written from the descriptions
+(Duke and "Close to the Beach" have almost no text). 6 photos each via
+`npm run villas:photos` (13 MB in `static/villas/`). Typedef gained optional
+`dates` and `rating`; tech-spec updated (it still showed `photos: string[]`).
+Config test now allows 6–15 villas.
+Gotchas: (1) the wishlist shows each listing's **own** saved dates (Feb 13 →
+Mar 6 range, differs per villa); the trip dates are unknown, so prices are
+estimates. Asking a listing for Feb 13–22 with 10 guests can say "not
+available". (2) **6 villas have an 8-guest max** (Evita, Sunset, Red Princess,
+Punta del Sol, Rocavista, Coastal Dream); they only fit the group (8 adults +
+2 kids) if both kids are under 2: asked the user (I9). (3) Airbnb locations
+are approximate until booking. (4) One listing is labelled only "Santa Cruz de
+Tenerife" (the province); its description puts it near Arico / El Porís.
+(5) The Chrome tool truncates JS results at ~1 KB; fetching the public pages
+with curl from the shell was much faster for bulk data.
 
 ### 1.5 — done (2026-10-08), with placeholder villas
 

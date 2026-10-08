@@ -343,3 +343,17 @@ in front, waves rolling in) from Wikimedia Commons (CC BY-SA 3.0), with a
 lighter tint so the sea's blue actually shows, and a phone-specific framing
 so the sea isn't hidden behind the card. Reduced-motion and Save-Data visitors
 get the still poster only. Details in `docs/progress.md` (step 3.1).
+
+---
+
+## 2026-10-08 — Real villas: 13 Tenerife listings from the Airbnb wishlist
+
+The user shared their Airbnb wishlist "Tenerife, Spain 2027" and said it holds
+all 13 listings to vote on. Consequences: the trip island is **Tenerife**
+(earlier docs never stated the island; the placeholder villas guessed
+Fuerteventura from the old report), and the plan's "6–10 villas" became 13
+(config test now allows up to 15). Prices are the wishlist's saved 9-night
+prices in USD, each for that listing's own saved dates, so they are
+estimates, not quotes. Open question to the user (I9): 6 villas cap at 8
+guests, which only fits 8 adults + 2 kids if both kids are under 2. Details
+in `docs/progress.md` (1.5 addendum).
