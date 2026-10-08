@@ -41,7 +41,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 1.5  | Villa data + vote logic                 | done   | 2026-10-08 | 2026-10-08 | 72fb769 |
 | 1.6  | Vote page: list + autosave              | done   | 2026-10-08 | 2026-10-08 | 8656cd1 |
 | 1.7  | Map layout + villa detail (can slip)    | done (illustrated map) | 2026-10-08 | 2026-10-08 | see below |
-| 1.8  | Admin                                   | done   | 2026-10-08 | 2026-10-08 | see log |
+| 1.8  | Admin                                   | done   | 2026-10-08 | 2026-10-08 | 20bba06 |
 | 1.9  | Ship R1                                 | todo   |         |      |        |
 | 2.1  | Phase switch + trip state               | todo   |         |      |        |
 | 2.2  | Trip overview tab                       | todo   |         |      |        |
