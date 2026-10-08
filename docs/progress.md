@@ -26,9 +26,9 @@ The **single source of truth for where the work is.** Plan details are in
 
 ## Current position
 
-**Step:** 1.4 — Login splash, gate, delete old report
+**Step:** 1.5 — Villa data + vote logic
 **State:** not started
-**Next action:** start 1.4 (hooks.server.js gate, ratelimit.js, splash page, logout, delete the old report). Needs `members.json` locally (already created with 2 example members; the user may edit names).
+**Next action:** step 1.5 needs the villa listing URLs (I3). Without them: build `voting.js` logic + tests first, and placeholder villas clearly marked `[placeholder]`.
 
 ## Step board
 
@@ -37,7 +37,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 1.1  | Runtime, storage, test harness          | done   | 2026-10-08 | 2026-10-08 | d6ea475 |
 | 1.2  | Design system + app shell               | done   | 2026-10-08 | 2026-10-08 | 1a00a49 |
 | 1.3  | Auth core                               | done   | 2026-10-08 | 2026-10-08 | 6c2303d |
-| 1.4  | Login splash, gate, delete old report   | todo   |         |      |        |
+| 1.4  | Login splash, gate, delete old report   | done   | 2026-10-08 | 2026-10-08 | COMMIT |
 | 1.5  | Villa data + vote logic                 | todo   |         |      |        |
 | 1.6  | Vote page: list + autosave              | todo   |         |      |        |
 | 1.7  | Map layout + villa detail (can slip)    | todo   |         |      |        |
@@ -67,6 +67,42 @@ The **single source of truth for where the work is.** Plan details are in
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### 1.4 — done (2026-10-08)
+
+`hooks.server.js`: reads the session cookie -> `locals.member` (public fields
+only), clears forged/expired/removed-member cookies, gate: anonymous may only
+see `/` (GET elsewhere -> `303 /?next=<path>`, non-GET -> `/`), dev-only
+exception for `/styleguide`; security headers (`X-Frame-Options` DENY — dev
+SAMEORIGIN, `nosniff`, referrer, permissions) and `Cache-Control: private,
+no-store`. `ratelimit.js` implements the spec (5 fails/15 min -> lock that
+doubles to a 24 h cap, 20/day per IP, 60/h global pause), 8 tests. `/`
+(`+page.server.js`): honeypot, rate check before the phrase check, constant
+>=600 ms response, one generic message, `retryAfter` only when locked,
+`safeNext` allows only same-site relative paths (tested). `/logout` is a
+`+server.js` POST. Splash `+page.svelte`: dunes photo (webp 960/1920) under a
+sunset tint, floating sun, swaying fronds, glass card, cooldown countdown from
+`retryAfter`, disabled while pending/locked. Placeholder `/vote`. Old report
+(12 components, 5 config files, legacy CSS) deleted. AGENTS.md rewritten for
+the new architecture. 55 tests total.
+Verified: curl (gate redirects, wrong phrase 400 w/ 600 ms, honeypot rejected,
+correct phrase in odd case/spacing logs in, open-redirect attempt ignored,
+tampered cookie ignored, logout, lockout after 5 wrong tries even for the
+right phrase); **production-mode preview** (cross-site/origin-less POST ->
+403, cookie Secure+HttpOnly, /styleguide 404 for members); Chrome: splash at
+desktop + 390px, error state, lockout UI (disabled button + live countdown),
+login with `?next=/vote`, avatar menu shows Admin, logout.
+Gotchas found: (1) SvelteKit's CSRF origin check is skipped in dev — only
+test it against a production build. (2) `.env.local` holds the PRODUCTION
+Redis credentials and dev used it: a curl lockout test wrote lock keys to the
+real database. Fixed: dev now uses the in-memory store unless
+`USE_REDIS_IN_DEV=1`; the stray `rl:*`/`stats:*` keys were deleted (database
+had nothing else). (3) A test iframe that auto-submitted on load looped and
+locked the IP. (4) The Chrome extension's `type` action sometimes delivers no
+key events; use JS (see AGENTS.md).
+Deviation: the sun is placed in the sky (top) rather than behind the card.
+Decided: the login photo stays the Corralejo dunes (tinted) until the user
+supplies their own photo/video (step 3.1).
 
 ### 1.3 — done (2026-10-08)
 
@@ -145,6 +181,7 @@ it (it would override the `!.env.example` exception).
 | Date       | Summary                                                                                                    |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
 | 2026-10-08 | Planning: raw plan captured, decisions made, tech-spec + design + detailed plan + this tracker written. No code. |
+| 2026-10-08 | Step 1.4 done: auth gate, login splash, logout, old report deleted; dev store -> memory. |
 | 2026-10-08 | Step 1.3 done: roster/phrase/session modules, members CLI, 31 tests. |
 | 2026-10-08 | Step 1.2 done: design tokens, icons, 15 ui components, /styleguide. |
 | 2026-10-08 | Step 1.1 done: SSR + Upstash Redis store + vitest. |

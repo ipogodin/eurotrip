@@ -56,25 +56,19 @@ in files, never only in conversation context.
 
 ## What this project is
 
-Started as a single self-contained HTML file (`surf_and_stay_report_1.html`,
-originally dropped in `~/dev/tenerife/`): an interactive "Canary Islands
-decision report" comparing all 8 Canary Islands for a February 2027
-friends-and-family trip (8 adults + 2 toddlers), scored on surf / sand / hike
-/ family-attraction weighting, with an interactive SVG archipelago map,
-filterable surf-spot guide, villa-base write-ups, a 9-day itinerary planner,
-and a sources/decision section.
+**Eurotrip** is a private trip-planning app for a group of 8 friends/family
+(8 adults + 2 toddlers) going to the Canary Islands in February 2027.
 
-The user asked to port it into a SvelteKit app (matching the `~/dev/wenachee`
-project's stack and conventions) and deploy it to Vercel under the name
-**Eurotrip**, with the explicit intent to keep adding trip-planning
-functionality over time (this project is not just the Canary Islands report —
-"Eurotrip" is the umbrella name for broader future trip content).
+- **History:** it started (2026-10-03) as a port of a single static HTML
+  "Canary Islands decision report" comparing the 8 islands. The island was
+  chosen (the report was deleted in step 1.4, see git history before commit
+  "step 1.4").
+- **Now:** a login-gated app. Members enter a personal two-word invite phrase,
+  vote on candidate villas (phase 1), the admin picks the winner, then a trip
+  hub shows the villa, dates, nearby places and flights (phase 2).
+- "Eurotrip" is the umbrella name for the long-lived trip site.
 
-**Important naming note:** the repo/site is called "Eurotrip" per the user's
-instruction, but the actual current content is a Canary Islands (Spain, not
-mainland Europe-trip in the usual sense) report. Don't let the mismatch cause
-confusion — it's intentional; the name is for the project as a long-lived
-trip-planning site, not a description of today's content.
+Plan and status: `docs/implementation-plan.md` and `docs/progress.md`.
 
 ---
 
@@ -84,7 +78,9 @@ trip-planning site, not a description of today's content.
 |---|---|
 | Framework | SvelteKit 2 + Svelte 5 (runes, forced on for all project files) |
 | Language | JavaScript + JSDoc types, type-checked by `svelte-check` (`checkJs` + `strict`) |
-| Adapter | `@sveltejs/adapter-vercel`; whole site is **prerendered** (`src/routes/+layout.js`) |
+| Adapter | `@sveltejs/adapter-vercel`; **server-rendered** (gated pages cannot be static); cookie sessions |
+| Data | Upstash Redis (Vercel Marketplace store `eurotrip-redis`), via `src/lib/server/store/` |
+| Tests | Vitest (`npm test`), pure logic only; UI is checked manually in Chrome |
 | Styling | Scoped `<style>` per component + shared tokens/utility classes in `src/app.css`, no CSS framework |
 | Lint / format | ESLint 10 flat config (`eslint-plugin-svelte` + `eslint-config-prettier`) + Prettier with `prettier-plugin-svelte` |
 | Runtime | Node `>=22.12` (`engines` + `.npmrc` `engine-strict=true`); Vercel builds on Node 24 |
@@ -96,7 +92,7 @@ config (adapter, compilerOptions) directly in `sveltekit({...})` inside
 `vite.config.js`. Put any new Kit/Svelte config there.
 
 Started as a copy of `~/dev/wenachee`'s config; since 2026-10-03 this project
-additionally has lint/format/prerender/types set up, so it's now ahead of
+additionally has lint/format/types/tests set up, so it's now ahead of
 wenachee — don't copy configs back from it blindly.
 
 ---
@@ -108,7 +104,7 @@ npm run check    # svelte-check: must report 0 errors, 0 warnings
 npm run lint     # prettier --check + eslint: must pass
 npm test         # vitest unit tests: must pass
 npm run format   # auto-fix formatting
-npm run build    # must succeed; output lands in .vercel/output/static/
+npm run build    # must succeed; output lands in .vercel/output/
 ```
 
 Markdown files are excluded from Prettier on purpose (`.prettierignore`) —
@@ -120,44 +116,47 @@ Prettier reflows lists and once corrupted a line in `docs/history.md`.
 
 ```
 src/
-  app.html               # HTML shell (lang, favicon, viewport)
-  app.css                # Global design tokens (CSS vars) + shared utility classes
+  app.html                 # HTML shell
+  app.css                  # Design tokens (Tropical Sunset), type scale, .btn/.field/.page helpers
+  app.d.ts                 # App.Locals typing (declaration only)
+  hooks.server.js          # Session -> locals.member, login gate, security headers
   routes/
-    +layout.js           # `export const prerender = true` — every page is static HTML
-    +layout.svelte       # imports global src/app.css
-    +page.svelte          # Wires all section components together + island-selection state
+    +layout.svelte         # imports app.css, mounts <Toaster/>
+    +layout.server.js      # passes the signed-in member to every page
+    +page.svelte/.server.js  # `/` = login splash + login action (anonymous only)
+    logout/+server.js      # POST clears the cookie
+    vote/+page.svelte      # placeholder until step 1.6
+    styleguide/            # dev-only component gallery (404 in production)
   lib/
-    components/
-      Topbar.svelte        # Sticky nav
-      Hero.svelte          # Hero banner + verdict card
-      Ranking.svelte       # Top-4 score cards (click to select an island)
-      IslandMap.svelte     # Interactive SVG archipelago map + side info panel
-      Comparison.svelte    # Full 8-island comparison table
-      Finalists.svelte     # 4 island "story" write-ups (villa towns, callouts)
-      SurfGuide.svelte     # Filterable spot grid + surf school price table
-      Activities.svelte    # Hike/attraction cards grid
-      Planner.svelte       # 9-day itinerary, tabbed per island (fue/ace)
-      Decision.svelte      # "Choose X if..." decision rules + budget guardrails
-      Sources.svelte       # Collapsible source link lists
-      Footer.svelte
-    config/
-      islands.js           # All 8 islands' scoring data + text; also defines the
-                           #   `Island` / `ScoreKey` JSDoc typedefs
-      spots.js              # Surf/sand/hike/family spot list (used by SurfGuide filter)
-      plans.js               # 9-day itinerary data, keyed by island id (fue/ace)
-      schools.js             # Surf school price/contact table rows
-      activities.js          # Hike & attraction card data
+    components/ui/         # AppBar, BottomNav, Button, Card, Chip, Avatar(+Stack),
+                           #   PointDots, PointsMeter, Stepper, Countdown, SegmentedControl,
+                           #   Sheet, Toast(+Toaster), Skeleton, Sun, Wave, Frond
+    icons/                 # Icon.svelte + paths.js (inline SVG icons)
+    members-ui.js          # avatar color + initials (client-safe)
+    time.js                # countdown formatting
+    server/                # server-only (Kit blocks client imports)
+      members.js           # roster validation, constant-time phrase match, toPublic
+      phrase.js            # phrase normalization/format
+      session.js           # signed cookie tokens, secret check, cookie options
+      roster.js            # loads MEMBERS env / dev members.json (only file with $env)
+      ratelimit.js         # login lockout rules (Redis-backed)
+      next.js              # safe post-login redirect target
+      store/               # Store interface; upstash.js (prod) + memory.js (dev/tests)
+scripts/
+  members.js               # roster CLI: init|check|gen|push (npm run members:*)
+  wordlist-eff-large.txt   # EFF word list for phrase generation
 static/
   favicon.svg
-docs/
-  history.md              # Full chronological log of requests, decisions, and rationale
+  splash/                  # login background (Corralejo dunes, CC BY-SA, credited on page)
+members.example.json       # fake roster shape (committed)
+members.json               # REAL roster with phrases (gitignored, local only)
+docs/                      # plan, specs, design, progress, history (see Work tracking)
 ```
 
-**Island selection state** lives in `+page.svelte` as a single `$state`
-(`selectedIslandId`), passed down to both `Ranking` and `IslandMap` via props
-+ an `onSelect(id, scroll)` callback — this replaces the original vanilla-JS
-`selectIsland()` function that mutated the DOM directly across both the score
-cards and the SVG map nodes.
+**Dev uses the in-memory store**, not Redis, even though `.env.local` holds the
+production Redis credentials (so development can't touch real votes). Set
+`USE_REDIS_IN_DEV=1` to deliberately use the real database. Dev also reads the
+roster from `members.json`; production reads the `MEMBERS` env var.
 
 ---
 
@@ -180,9 +179,9 @@ cards and the SVG map nodes.
   dynamic values only (e.g. bar widths).
 - Browser-only APIs (`document`, `window`, `localStorage`) only in event
   handlers or `$effect` — never at the top level of `<script>`, since pages
-  are prerendered on the server at build time.
+  are rendered on the server first.
 
-**Types (JSDoc, no TypeScript files):**
+**Types (JSDoc, no TypeScript files; `src/app.d.ts` is the one declaration-only exception):**
 
 - Type every component's props:
   `/** @type {{ selectedId: string, onSelect: (id: string, scroll: boolean) => void }} */ let { ... } = $props();`
@@ -193,12 +192,10 @@ cards and the SVG map nodes.
 **Accessibility:**
 
 - Clickable things are `<button>` (or `<a>` for navigation). If a non-button
-  element must be interactive (the SVG island `<g>` nodes), give it
-  `role="button"`, `tabindex="0"`, an `aria-label`, and an Enter/Space
-  `onkeydown` handler.
-- Toggle/selected-state buttons (filters, tabs, score cards, map islands)
-  carry `aria-pressed={isSelected}`; group them with `role="group"` +
-  `aria-label`.
+  element must be interactive, give it `role="button"`, `tabindex="0"`, an
+  `aria-label`, and an Enter/Space `onkeydown` handler.
+- Toggle/selected-state buttons (filters, tabs) carry
+  `aria-pressed={isSelected}`; group them with `role="group"` + `aria-label`.
 - Never put `role="img"` on an SVG that contains interactive children (it
   hides them from screen readers) and don't use `role="application"`.
 
@@ -217,15 +214,18 @@ vercel --prod      # deploy from local
 git push           # once GitHub → Vercel auto-deploy is connected in the dashboard
 ```
 
-Because everything is prerendered, the build emits only static files
-(`.vercel/output/static/`), with no serverless functions. If a future feature
-needs server code (`+page.server.js`, `+server.js`), set
-`export const prerender = false` on just that route.
+The site is **server-rendered** on Vercel (a serverless function), because every
+page except the login splash needs the session cookie. Required environment
+variables (Production + Preview): `MEMBERS` (roster JSON, set with
+`npm run members:push`), `SESSION_SECRET` (32+ random chars), and the Upstash
+`KV_REST_API_URL` / `KV_REST_API_TOKEN` (set by the Marketplace integration).
+Env changes only apply to **new deployments**. Vercel project:
+`ipogodins-projects/eurotrip`.
 
 **Known pending upgrade:** SvelteKit 3.0 / adapter-vercel 7.0 shipped
-2026-10-01. The project is pinned to Kit 2.x until that upgrade is done
-deliberately. `npm audit` shows a low-severity `cookie` advisory that is only
-fixed in Kit 3; it doesn't affect this site (no cookies, fully static).
+2026-10-01; the project stays on Kit 2.x until step 3.3. `npm audit` shows a
+low-severity `cookie` advisory (bad characters in cookie name/path/domain);
+not exploitable here since we only set one constant name/path and no domain.
 
 See `docs/history.md` for the Vercel project name/ID once the first deploy has
 happened, and update this section then.
@@ -234,20 +234,20 @@ happened, and update this section then.
 
 ## What's next
 
-**As of 2026-10-08 the site is being rebuilt** into a private villa-voting +
-trip-hub app (login with invite phrase → vote on villas → admin picks the
-winner → trip hub with villa, nearby places and flights). The Canary Islands
-report described above is **deleted in step 1.4**, and this file's
-Stack/Structure/Deploy sections will change (SSR instead of prerender, Redis,
-env vars). Update them as each step lands.
-
-Follow `docs/implementation-plan.md`; track status in `docs/progress.md`
-(see "Work tracking" above). Key facts for a fresh agent:
+The site is being built into a private villa-voting + trip-hub app (login with
+invite phrase → vote on villas → admin picks the winner → trip hub with villa,
+nearby places and flights). Follow `docs/implementation-plan.md`; track status
+in `docs/progress.md` (see "Work tracking" above). Key facts for a fresh agent:
 
 - Admin = **Illia Pogodin** (the repo owner), `admin: true` in the roster.
-- Storage = Upstash Redis (Vercel Marketplace). Villa/trip facts are in
-  `src/lib/config/`; only mutable state (ballots, deadline override, winner,
-  trip dates/notes, rate limits) is in Redis.
-- Design direction = "Modern app UI", mobile-first (`docs/design.md`).
+- Storage = Upstash Redis (Vercel Marketplace). Villa/trip facts live in
+  `src/lib/config/` (created in step 1.5); only mutable state (ballots,
+  deadline override, winner, trip dates/notes, rate limits) is in Redis.
+- Design direction = **"Tropical Sunset"**, mobile-first (`docs/design.md`,
+  live gallery at `/styleguide` in dev).
 - The voting deadline defaults to Sat 2026-10-10 09:30 PDT; the admin can
-  extend or close it.
+  extend or close it (step 1.8).
+- Browser testing tip: `resize_window` doesn't change the viewport, so use a
+  narrow same-origin iframe (dev allows `SAMEORIGIN` framing); the extension's
+  `type` action can fail to deliver key events, so drive inputs via
+  `javascript_tool` (set value + `requestSubmit()`).

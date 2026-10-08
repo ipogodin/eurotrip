@@ -302,3 +302,13 @@ roster CLI (`members:init|check|gen|push`) and the EFF word list; 45 tests
 total. `push` verified against Vercel with a throwaway variable (stored as
 Secret for Production + Preview, replace semantics confirmed, then removed).
 No UI yet; step 1.4 wires it in. Details in `docs/progress.md`.
+
+---
+
+## 2026-10-08 — Step 1.4 done (gate + login splash)
+
+Login-gated app is live locally: tropical splash with invite phrase, lockout
+UI, session cookie, logout, old Canary report deleted. Two safety lessons:
+SvelteKit skips its CSRF origin check in dev (verified in a production-mode
+preview instead), and dev was silently using the production Redis, so dev now
+defaults to an in-memory store. Details in `docs/progress.md`.

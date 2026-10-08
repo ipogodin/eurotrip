@@ -7,8 +7,10 @@ import { createUpstashStore } from './upstash.js';
 let store;
 
 /**
- * Returns the app-wide store: Upstash when its env vars exist, otherwise an
- * in-memory store in dev. Production without Redis is a hard error.
+ * Returns the app-wide store. Production: Upstash (a hard error without it).
+ * Dev: in-memory by default, because `.env.local` holds the PRODUCTION Redis
+ * credentials and dev actions must not touch real votes. Set
+ * `USE_REDIS_IN_DEV=1` to knowingly use the real database.
  * @returns {import('./types.js').Store}
  */
 export function getStore() {
@@ -17,10 +19,12 @@ export function getStore() {
 	// setups use UPSTASH_REDIS_REST_*.
 	const url = env.KV_REST_API_URL ?? env.UPSTASH_REDIS_REST_URL;
 	const token = env.KV_REST_API_TOKEN ?? env.UPSTASH_REDIS_REST_TOKEN;
-	if (url && token) {
+	if (url && token && (!dev || env.USE_REDIS_IN_DEV === '1')) {
 		store = createUpstashStore({ url, token });
 	} else if (dev) {
-		console.warn('[store] No Redis env vars: using a volatile in-memory store (dev only).');
+		console.warn(
+			'[store] Dev: using a volatile in-memory store (set USE_REDIS_IN_DEV=1 for real Redis).'
+		);
 		store = createMemoryStore();
 	} else {
 		throw new Error('Redis is not configured (missing KV_REST_API_URL / KV_REST_API_TOKEN).');
