@@ -39,7 +39,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 1.3  | Auth core                               | done   | 2026-10-08 | 2026-10-08 | 6c2303d |
 | 1.4  | Login splash, gate, delete old report   | done   | 2026-10-08 | 2026-10-08 | b061ded |
 | 1.5  | Villa data + vote logic                 | done   | 2026-10-08 | 2026-10-08 | 72fb769 |
-| 1.6  | Vote page: list + autosave              | done   | 2026-10-08 | 2026-10-08 | see log |
+| 1.6  | Vote page: list + autosave              | done   | 2026-10-08 | 2026-10-08 | 8656cd1 |
 | 1.7  | Map layout + villa detail (can slip)    | todo   |         |      |        |
 | 1.8  | Admin                                   | todo   |         |      |        |
 | 1.9  | Ship R1                                 | todo   |         |      |        |
