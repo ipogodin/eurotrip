@@ -111,8 +111,8 @@ the list and give its points back to the voters.
 - **Member notices** (`useAdminNotices`): after a refresh, members see "The
   admin reset everyone's votes. You have all N points again." or "<Villa> was
   removed from the list. Your N points are back." No notice on first load.
-- Verified in Chrome as the admin: remove a villa with votes (points back
-  3 → 6 left… confirm text lists who), the old link shows the removed notice,
+- Verified in Chrome as the admin: remove a villa that had 3 points (the
+  confirm text says who gets them back; my counter went 0 → 3 left), the old link shows the removed notice,
   the server refuses a ballot with the removed villa (400) and accepts the
   freed points elsewhere; reset everyone (+ notice); close (saves → 409) and
   reopen with a Pacific time that reads back identically; pick winner (banner
