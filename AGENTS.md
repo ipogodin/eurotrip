@@ -106,6 +106,7 @@ wenachee — don't copy configs back from it blindly.
 ```bash
 npm run check    # svelte-check: must report 0 errors, 0 warnings
 npm run lint     # prettier --check + eslint: must pass
+npm test         # vitest unit tests: must pass
 npm run format   # auto-fix formatting
 npm run build    # must succeed; output lands in .vercel/output/static/
 ```

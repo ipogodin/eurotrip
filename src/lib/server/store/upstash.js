@@ -1,0 +1,83 @@
+import { Redis } from '@upstash/redis';
+import { emptyTrip, TRIP_FIELDS } from './types.js';
+
+/**
+ * Redis-backed store (Upstash REST). Auto-deserialization is off so every
+ * value stays the string we wrote (a note like "123" must not become a number).
+ * @param {{ url: string; token: string }} cfg
+ * @returns {import('./types.js').Store}
+ */
+export function createUpstashStore({ url, token }) {
+	const redis = new Redis({ url, token, automaticDeserialization: false });
+
+	return {
+		async getBallots(memberIds) {
+			/** @type {Record<string, import('./types.js').Ballot>} */
+			const out = {};
+			if (memberIds.length === 0) return out;
+			const pipe = redis.pipeline();
+			for (const id of memberIds) pipe.hgetall(`ballot:${id}`);
+			const results = /** @type {(Record<string, string> | null)[]} */ (await pipe.exec());
+			memberIds.forEach((id, i) => {
+				/** @type {import('./types.js').Ballot} */
+				const ballot = {};
+				for (const [villa, pts] of Object.entries(results[i] ?? {})) {
+					ballot[villa] = /** @type {1 | 2 | 3} */ (Number(pts));
+				}
+				out[id] = ballot;
+			});
+			return out;
+		},
+		async setBallot(memberId, ballot) {
+			const key = `ballot:${memberId}`;
+			const tx = redis.multi();
+			tx.del(key);
+			if (Object.keys(ballot).length > 0) tx.hset(key, ballot);
+			await tx.exec();
+		},
+		async getVoting() {
+			const h = /** @type {Record<string, string> | null} */ (await redis.hgetall('voting'));
+			return { deadline: h?.deadline ?? null };
+		},
+		async setVoting(patch) {
+			if (patch.deadline === null) await redis.hdel('voting', 'deadline');
+			else if (patch.deadline !== undefined)
+				await redis.hset('voting', { deadline: patch.deadline });
+		},
+		async getTrip() {
+			const h = /** @type {Record<string, string>} */ ((await redis.hgetall('trip')) ?? {});
+			const out = emptyTrip();
+			for (const f of TRIP_FIELDS) out[f] = h[f] ?? null;
+			return out;
+		},
+		async setTrip(patch) {
+			/** @type {Record<string, string>} */
+			const set = {};
+			/** @type {string[]} */
+			const unset = [];
+			for (const [k, v] of Object.entries(patch)) {
+				if (v === null || v === undefined) unset.push(k);
+				else set[k] = v;
+			}
+			if (Object.keys(set).length) await redis.hset('trip', set);
+			if (unset.length) await redis.hdel('trip', ...unset);
+		},
+		async hit(key, ttlSec) {
+			const count = Number(await redis.incr(key));
+			if (count === 1) await redis.expire(key, ttlSec);
+			return count;
+		},
+		async getValue(key) {
+			return (await redis.get(key)) ?? null;
+		},
+		async setValue(key, value, ttlSec) {
+			await redis.set(key, value, { ex: ttlSec });
+		},
+		async ttl(key) {
+			return Math.max(0, Number(await redis.ttl(key)));
+		},
+		async del(key) {
+			await redis.del(key);
+		}
+	};
+}

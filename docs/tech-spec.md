@@ -122,18 +122,21 @@ header).
 
 `src/lib/server/store.js` exports one interface, with two implementations:
 Upstash (when the integration env vars exist) and in-memory (local dev
-without Redis + unit tests). Exact env var names are confirmed in step 1.1
-and recorded here.
+without Redis + unit tests). Env vars read: `KV_REST_API_URL` / `KV_REST_API_TOKEN` (Vercel Marketplace
+Upstash integration; fallback `UPSTASH_REDIS_REST_URL` / `_TOKEN`) — confirm
+the real names after provisioning. Upstash runs with
+`automaticDeserialization: false` (all values are strings). Code lives in
+`src/lib/server/store/{index,memory,upstash,types}.js`.
 
 ```
-getBallots(): Promise<Record<memberId, Ballot>>      // Ballot = Record<villaId, 1|2|3>
+getBallots(memberIds): Promise<Record<memberId, Ballot>>  // Ballot = Record<villaId, 1|2|3>
 setBallot(memberId, ballot): Promise<void>            // replaces whole ballot (MULTI DEL+HSET)
 getVoting(): Promise<{ deadline: string|null }>       // admin override, ISO UTC
 setVoting({ deadline }): Promise<void>
 getTrip(): Promise<TripState>
 setTrip(partial: Partial<TripState>): Promise<void>
-hit(key, ttlSec): Promise<number>                     // INCR + EXPIRE NX
-get/del helpers for lock keys
+hit(key, ttlSec): Promise<number>                     // INCR; TTL set on first hit
+getValue(key) / setValue(key, value, ttlSec) / ttl(key) / del(key)   // lock keys
 ```
 
 Keys:
