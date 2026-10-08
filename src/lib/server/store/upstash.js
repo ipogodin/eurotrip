@@ -2,6 +2,22 @@ import { Redis } from '@upstash/redis';
 import { emptyTrip, TRIP_FIELDS } from './types.js';
 
 /**
+ * With auto-deserialization off, HGETALL comes back as a flat
+ * [field, value, field, value, ...] array instead of an object.
+ * @param {unknown} raw
+ * @returns {Record<string, string>}
+ */
+export function toHash(raw) {
+	if (Array.isArray(raw)) {
+		/** @type {Record<string, string>} */
+		const out = {};
+		for (let i = 0; i + 1 < raw.length; i += 2) out[String(raw[i])] = String(raw[i + 1]);
+		return out;
+	}
+	return raw && typeof raw === 'object' ? /** @type {Record<string, string>} */ (raw) : {};
+}
+
+/**
  * Redis-backed store (Upstash REST). Auto-deserialization is off so every
  * value stays the string we wrote (a note like "123" must not become a number).
  * @param {{ url: string; token: string }} cfg
@@ -17,11 +33,11 @@ export function createUpstashStore({ url, token }) {
 			if (memberIds.length === 0) return out;
 			const pipe = redis.pipeline();
 			for (const id of memberIds) pipe.hgetall(`ballot:${id}`);
-			const results = /** @type {(Record<string, string> | null)[]} */ (await pipe.exec());
+			const results = await pipe.exec();
 			memberIds.forEach((id, i) => {
 				/** @type {import('./types.js').Ballot} */
 				const ballot = {};
-				for (const [villa, pts] of Object.entries(results[i] ?? {})) {
+				for (const [villa, pts] of Object.entries(toHash(results[i]))) {
 					ballot[villa] = /** @type {1 | 2 | 3} */ (Number(pts));
 				}
 				out[id] = ballot;
@@ -36,8 +52,8 @@ export function createUpstashStore({ url, token }) {
 			await tx.exec();
 		},
 		async getVoting() {
-			const h = /** @type {Record<string, string> | null} */ (await redis.hgetall('voting'));
-			return { deadline: h?.deadline ?? null };
+			const h = toHash(await redis.hgetall('voting'));
+			return { deadline: h.deadline ?? null };
 		},
 		async setVoting(patch) {
 			if (patch.deadline === null) await redis.hdel('voting', 'deadline');
@@ -45,7 +61,7 @@ export function createUpstashStore({ url, token }) {
 				await redis.hset('voting', { deadline: patch.deadline });
 		},
 		async getTrip() {
-			const h = /** @type {Record<string, string>} */ ((await redis.hgetall('trip')) ?? {});
+			const h = toHash(await redis.hgetall('trip'));
 			const out = emptyTrip();
 			for (const f of TRIP_FIELDS) out[f] = h[f] ?? null;
 			return out;

@@ -258,3 +258,12 @@ the tracking rules in AGENTS.md, and a commit, with **no implementation yet**.
 - Committed together with the still-uncommitted 2026-10-03 standards pass
   (lint/format tooling, a11y fixes, prerender), which was verified first:
   `npm run check` 0 errors, lint clean.
+
+---
+
+## 2026-10-08 — Step 1.1 done (Redis + SSR)
+
+Upstash Redis (`eurotrip-redis`) provisioned and connected to all
+environments; app now SSR. A real-Redis test exposed an `HGETALL` shape
+quirk (flat array when auto-deserialization is off) that the in-memory tests
+could not catch, so it is handled and tested. Details in `docs/progress.md`.

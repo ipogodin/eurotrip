@@ -25,3 +25,8 @@ vite.config.ts.timestamp-*
 
 # Member roster with invite phrases (secret; synced to the MEMBERS env var)
 members.json
+
+# Third-party agent skills installed by Vercel Marketplace integrations
+.agents/
+.claude/skills/
+skills-lock.json
