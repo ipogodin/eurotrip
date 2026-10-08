@@ -1,4 +1,6 @@
 <script>
+	// legacy report styles: deleted with the report in step 1.4
+	import '$lib/legacy-report.css';
 	import Topbar from '$lib/components/Topbar.svelte';
 	import Hero from '$lib/components/Hero.svelte';
 	import Ranking from '$lib/components/Ranking.svelte';

@@ -267,3 +267,12 @@ Upstash Redis (`eurotrip-redis`) provisioned and connected to all
 environments; app now SSR. A real-Redis test exposed an `HGETALL` shape
 quirk (flat array when auto-deserialization is off) that the in-memory tests
 could not catch, so it is handled and tested. Details in `docs/progress.md`.
+
+---
+
+## 2026-10-08 — Step 1.2 done (design system)
+
+Tokens, Inter, inline icon set and 15 UI components per `docs/design.md`; a
+dev-only `/styleguide` shows them. Old report CSS isolated in
+`src/lib/legacy-report.css` until step 1.4 deletes the report. Details in
+`docs/progress.md`.

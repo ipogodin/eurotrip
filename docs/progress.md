@@ -26,16 +26,16 @@ The **single source of truth for where the work is.** Plan details are in
 
 ## Current position
 
-**Step:** 1.2 — Design system + app shell
+**Step:** 1.3 — Auth core (no UI)
 **State:** not started
-**Next action:** start 1.2 (see plan: tokens, Inter, icons, ui components, dev-only styleguide).
+**Next action:** start 1.3 (members loader, phrase normalize, session cookie, roster scripts, tests).
 
 ## Step board
 
 | Step | Title                                   | Status | Started | Done | Commit |
 | ---- | --------------------------------------- | ------ | ------- | ---- | ------ |
 | 1.1  | Runtime, storage, test harness          | done   | 2026-10-08 | 2026-10-08 | d6ea475 |
-| 1.2  | Design system + app shell               | todo   |         |      |        |
+| 1.2  | Design system + app shell               | done   | 2026-10-08 | 2026-10-08 | COMMIT |
 | 1.3  | Auth core                               | todo   |         |      |        |
 | 1.4  | Login splash, gate, delete old report   | todo   |         |      |        |
 | 1.5  | Villa data + vote logic                 | todo   |         |      |        |
@@ -68,6 +68,27 @@ The **single source of truth for where the work is.** Plan details are in
 
 _(WIP and final notes per step go here, newest first.)_
 
+### 1.2 — done (2026-10-08)
+
+New tokens/base styles in `src/app.css` (Inter Variable via
+`@fontsource-variable/inter`, 8 member hues, space/radius/elevation/motion,
+`.btn*`, `.field`, `.page`, `.stack`, `.row`, `.sr-only`, reduced-motion).
+The old report CSS moved to `src/lib/legacy-report.css`, imported only by the
+report's `+page.svelte` (delete both in step 1.4). Icons: single
+`src/lib/icons/Icon.svelte` + `paths.js` (31 Lucide-style paths) instead of one
+file per icon. Components in `src/lib/components/ui/`: AppBar, BottomNav,
+Button, Card, Chip, Avatar, AvatarStack, PointDots, Stepper, PointsMeter,
+Countdown (browser-only clock to avoid hydration mismatch), SegmentedControl,
+Sheet (native `<dialog>`: focus trap + Esc for free), Toast
+(`toast.svelte.js` + `Toaster`, mounted in the layout), Skeleton. Helpers:
+`members-ui.js` (hue/initials), `time.js` (`formatRemaining`), 14 unit tests.
+Styleguide route is `/styleguide` (not `/_styleguide` as the plan said): 404
+in production via `+page.server.js`.
+Checked in Chrome: desktop and a 390 px iframe. Gotcha: `resize_window` only
+resizes the outer window, so a narrow iframe was used for the phone view.
+Open for the user (I5, non-blocking): look at `/styleguide` (`npm run dev`)
+and give feedback on the look.
+
 ### 1.1 — done (2026-10-08)
 
 SSR runtime (removed `src/routes/+layout.js`; build emits `index.func`).
@@ -93,5 +114,6 @@ it (it would override the `!.env.example` exception).
 | Date       | Summary                                                                                                    |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
 | 2026-10-08 | Planning: raw plan captured, decisions made, tech-spec + design + detailed plan + this tracker written. No code. |
+| 2026-10-08 | Step 1.2 done: design tokens, icons, 15 ui components, /styleguide. |
 | 2026-10-08 | Step 1.1 done: SSR + Upstash Redis store + vitest. |
 | 2026-10-08 | The user upgraded the Vercel CLI to 63.1.0 and linked the repo to the existing project `ipogodins-projects/eurotrip` (`.vercel/` and `.env.local` are gitignored). |
