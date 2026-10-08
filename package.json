@@ -19,6 +19,7 @@
 		"members:check": "node scripts/members.js check",
 		"members:gen": "node scripts/members.js gen",
 		"members:push": "node scripts/members.js push",
+		"villas:photos": "node scripts/photos.js",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint ."
 	},

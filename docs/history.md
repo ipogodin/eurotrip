@@ -312,3 +312,11 @@ UI, session cookie, logout, old Canary report deleted. Two safety lessons:
 SvelteKit skips its CSRF origin check in dev (verified in a production-mode
 preview instead), and dev was silently using the production Redis, so dev now
 defaults to an in-memory store. Details in `docs/progress.md`.
+
+---
+
+## 2026-10-08 — Step 1.5 done (vote rules + villa config, placeholders)
+
+Pure vote rules and tally with 19 tests; villa typedef/config with six
+placeholders and a validating test; photo-processing script. Real listings are
+still needed (I3). Details in `docs/progress.md`.

@@ -26,9 +26,9 @@ The **single source of truth for where the work is.** Plan details are in
 
 ## Current position
 
-**Step:** 1.5 — Villa data + vote logic
+**Step:** 1.6 — Vote page: list layout + autosave
 **State:** not started
-**Next action:** step 1.5 needs the villa listing URLs (I3). Without them: build `voting.js` logic + tests first, and placeholder villas clearly marked `[placeholder]`.
+**Next action:** step 1.6 (vote page). It can be built against the placeholder villas; real villas (I3) just replace `src/lib/config/villas.js`. Step 1.4 still needs the user's visual OK (I8).
 
 ## Step board
 
@@ -38,7 +38,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 1.2  | Design system + app shell               | done   | 2026-10-08 | 2026-10-08 | 1a00a49 |
 | 1.3  | Auth core                               | done   | 2026-10-08 | 2026-10-08 | 6c2303d |
 | 1.4  | Login splash, gate, delete old report   | done   | 2026-10-08 | 2026-10-08 | b061ded |
-| 1.5  | Villa data + vote logic                 | todo   |         |      |        |
+| 1.5  | Villa data + vote logic                 | done   | 2026-10-08 | 2026-10-08 | COMMIT |
 | 1.6  | Vote page: list + autosave              | todo   |         |      |        |
 | 1.7  | Map layout + villa detail (can slip)    | todo   |         |      |        |
 | 1.8  | Admin                                   | todo   |         |      |        |
@@ -60,6 +60,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | waiting |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
+| I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | **waiting** |
 | I5 | 1.2       | Sign-off on the style-guide screenshots (non-blocking)                                 | later   |
 | I6 | 2.x       | Booked dates, address, check-in/out times, preferred arrival airport(s)                | later   |
 | I7 | 3.1       | The Canary video clip (optional; a photo is used until then)                           | later   |
@@ -67,6 +68,25 @@ The **single source of truth for where the work is.** Plan details are in
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### 1.5 — done (2026-10-08), with placeholder villas
+
+`src/lib/config/voting.js` (deadline `2026-10-10T16:30:00Z` = Sat 09:30 PDT,
+budget 6, max 3 per villa), `src/lib/voting.js` (pure, shared client/server:
+`votingState`, `effectiveDeadline`, `validateBallot`, `spent`, `canIncrement`,
+`withPoints`, `tally` — ties share a rank 1,2,2,4; villas with 0 votes are
+unranked; unknown villas/members ignored), 19 tests incl. prototype-key,
+non-integer, over-budget, closed/decided cases. `src/lib/config/villas.js`
+holds the `Villa` typedef (photos are `{src, thumb, width, height}` objects,
+changed from plain strings so layout can reserve space) plus **6 clearly
+marked placeholders** (`[placeholder]`, `placeholder: true`) around
+Lajares/Corralejo/El Cotillo/La Oliva/Famara/Costa Teguise, and a config test
+that will catch bad real data (6-10 villas, unique ids, Canary-box coords,
+photo path shape). `scripts/photos.js` (`npm run villas:photos -- <id> <photos…>`)
+makes 1600px + 480px webp with EXIF rotation and prints the `photos` snippet
+(tested). 74 tests total.
+Deviation: the plan's "photos render in a styleguide VillaCard" moves to 1.6,
+where `VillaCard` is built. Real villa data is **not done** — waiting on I3.
 
 ### 1.4 — done (2026-10-08)
 
@@ -181,6 +201,7 @@ it (it would override the `!.env.example` exception).
 | Date       | Summary                                                                                                    |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
 | 2026-10-08 | Planning: raw plan captured, decisions made, tech-spec + design + detailed plan + this tracker written. No code. |
+| 2026-10-08 | Step 1.5 done (placeholders): voting rules + tests, villa config, photo script. |
 | 2026-10-08 | Step 1.4 done: auth gate, login splash, logout, old report deleted; dev store -> memory. |
 | 2026-10-08 | Step 1.3 done: roster/phrase/session modules, members CLI, 31 tests. |
 | 2026-10-08 | Step 1.2 done: design tokens, icons, 15 ui components, /styleguide. |
