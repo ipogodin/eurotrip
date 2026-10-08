@@ -145,9 +145,9 @@ export const villas = [
 				height: 900
 			}
 		],
-		highlights: ['Heated private pool', 'Playa del Duque', 'Sleeps 12', 'Crib + high chair'],
+		highlights: ['Heated private pool', 'Lift', 'Playa del Duque', 'Crib + high chair'],
 		blurb:
-			'In the Habitats del Duque complex at Playa del Duque, with a heated private pool. The biggest villa on the list (6 bedrooms). The listing text is short, so check the photos.'
+			'The biggest villa on the list (6 bedrooms, sleeps 12) at Playa del Duque, with a heated pool, terrace and a lift. Reviews from groups of 9 praise the space and the walk to beach, shops and restaurants; the way back up is a steep hill.'
 	},
 	{
 		id: 'sunset-adeje',
@@ -427,7 +427,7 @@ export const villas = [
 		],
 		highlights: ['Pool', 'Beach access', 'Fire pit + BBQ', 'Crib'],
 		blurb:
-			'Costa Adeje villa with beach access, a pool, fire pit and barbecue, and a private garage. The listing text is short, so check the photos.'
+			'Spacious, well-furnished villa in an upscale part of Costa Adeje, close to the beaches. Reviewers say the pool stayed warm in winter; one mentioned small fixes the host handled quickly. Only 6 reviews so far.'
 	},
 	{
 		id: 'red-princess-san-miguel',

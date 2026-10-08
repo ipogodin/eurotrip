@@ -60,7 +60,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
-| I9 | 1.6       | Ages of the 2 kids in Feb 2027: under 2 or 2+? 6 villas allow max 8 guests (Airbnb counts kids 2–12) | **waiting** |
+| I9 | 1.6       | Ages of the 2 kids in Feb 2027: under 2 or 2+? 6 villas allow max 8 guests (Airbnb counts kids 2–12) | done 2026-10-08: both under 2, so all 13 villas fit (no warning needed) |
 | I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | done 2026-10-08: sea video approved ("looks good") |
 | I5 | 1.2       | Sign-off on the style-guide screenshots (non-blocking)                                 | later   |
 | I6 | 2.x       | Booked dates, address, check-in/out times, preferred arrival airport(s)                | later   |
@@ -118,7 +118,8 @@ Mar 6 range, differs per villa); the trip dates are unknown, so prices are
 estimates. Asking a listing for Feb 13–22 with 10 guests can say "not
 available". (2) **6 villas have an 8-guest max** (Evita, Sunset, Red Princess,
 Punta del Sol, Rocavista, Coastal Dream); they only fit the group (8 adults +
-2 kids) if both kids are under 2: asked the user (I9). (3) Airbnb locations
+2 kids) if both kids are under 2: the user confirmed both are under 2 (I9), so all 13 fit.
+The Duke and "Close to the Beach" blurbs were rewritten from guest reviews (the user said to use reviews when descriptions are thin). (3) Airbnb locations
 are approximate until booking. (4) One listing is labelled only "Santa Cruz de
 Tenerife" (the province); its description puts it near Arico / El Porís.
 (5) The Chrome tool truncates JS results at ~1 KB; fetching the public pages
