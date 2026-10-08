@@ -320,3 +320,14 @@ defaults to an in-memory store. Details in `docs/progress.md`.
 Pure vote rules and tally with 19 tests; villa typedef/config with six
 placeholders and a validating test; photo-processing script. Real listings are
 still needed (I3). Details in `docs/progress.md`.
+
+---
+
+## 2026-10-08 — SvelteKit 3 upgrade stays at step 3.3
+
+The user approved all proposals from the 2026-10-03 standards audit. By then
+the commit and the Vercel CLI upgrade/link were already done. For the
+remaining proposal (SvelteKit 3 / adapter-vercel 7), the user chose to keep
+it as step 3.3 instead of upgrading now, because voting closes 2026-10-10 and
+step 1.6 (vote page) comes first. The low `cookie` advisory is still accepted
+as not exploitable (constant cookie name/path, no domain); see step 1.1 notes.
