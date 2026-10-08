@@ -75,6 +75,20 @@ The **single source of truth for where the work is.** Plan details are in
 
 _(WIP and final notes per step go here, newest first.)_
 
+### "Start over" in the top bar (2026-10-08, the user's follow-up)
+
+The user asked how a member can easily reset and start over: the first
+version was only a button at the bottom of My votes, too hidden. Now a
+**Start over** button (↺ icon, plus the label from 640 px) sits in the top bar
+next to the points counter on the map, on every villa page and in the list
+view, and also in My votes; it appears only while voting is open and the
+member has votes, and always opens the same confirmation. One shared component,
+`vote/ResetVotes.svelte` (`bar` = top-bar pill). Top bar made to fit 320–430 px
+(tighter gaps, sun dropped from the counter, wordmark smaller / hidden under
+350 px; the logo link keeps `aria-label`). New `rotate-ccw` icon.
+Verified in Chrome: from the map, tap ↺ → confirm → 6 of 6 left, the pink
+badge leaves the map, the button hides; no overflow at 320/340/360/390/430 px.
+
 ### Reset my votes (2026-10-08, the user's request)
 
 "Reset votes": each member can take all their points back and vote again.

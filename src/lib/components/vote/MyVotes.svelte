@@ -1,8 +1,7 @@
 <script>
-	import Button from '$lib/components/ui/Button.svelte';
 	import PointsMeter from '$lib/components/ui/PointsMeter.svelte';
-	import Sheet from '$lib/components/ui/Sheet.svelte';
 	import Stepper from '$lib/components/ui/Stepper.svelte';
+	import ResetVotes from './ResetVotes.svelte';
 
 	/**
 	 * @type {{
@@ -16,8 +15,6 @@
 	 * }}
 	 */
 	let { rows, spent, budget, open, onchange, onreset, villasHref } = $props();
-
-	let confirming = $state(false);
 </script>
 
 <div class="stack">
@@ -78,30 +75,9 @@
 			<PointsMeter {spent} {budget} />
 		</div>
 		{#if rows.length}
-			<div class="reset">
-				<Button variant="ghost" onclick={() => (confirming = true)}>Reset my votes</Button>
-			</div>
+			<div class="reset"><ResetVotes {budget} {onreset} /></div>
 		{/if}
 	{/if}
-
-	<Sheet open={confirming} title="Reset all your votes?" onclose={() => (confirming = false)}>
-		<div class="confirm">
-			<p>
-				You'll get all {budget} points back and can vote again. Everyone can see your votes, so they will
-				see yours disappear until you vote again.
-			</p>
-			<div class="actions">
-				<Button variant="secondary" onclick={() => (confirming = false)}>Keep my votes</Button>
-				<Button
-					variant="danger"
-					onclick={() => {
-						confirming = false;
-						onreset();
-					}}>Reset my votes</Button
-				>
-			</div>
-		</div>
-	</Sheet>
 </div>
 
 <style>
@@ -163,19 +139,6 @@
 	.reset {
 		display: flex;
 		justify-content: center;
-	}
-	.confirm {
-		display: grid;
-		gap: var(--s4);
-	}
-	.confirm p {
-		margin: 0;
-	}
-	.actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--s3);
-		justify-content: flex-end;
 	}
 	.sticky {
 		position: sticky;

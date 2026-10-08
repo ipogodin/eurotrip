@@ -9,6 +9,7 @@
 	import MyVotes from '$lib/components/vote/MyVotes.svelte';
 	import PeopleList from '$lib/components/vote/PeopleList.svelte';
 	import PointsLeft from '$lib/components/vote/PointsLeft.svelte';
+	import ResetVotes from '$lib/components/vote/ResetVotes.svelte';
 	import VillaGrid from '$lib/components/vote/VillaGrid.svelte';
 	import VillaMap from '$lib/components/vote/VillaMap.svelte';
 	import VoteHeader from '$lib/components/vote/VoteHeader.svelte';
@@ -134,7 +135,10 @@
 <svelte:head><title>Vote for the villa · Eurotrip</title></svelte:head>
 
 <AppBar member={data.member} nav={[{ href: '/vote', label: 'Villas' }]} current="/vote">
-	{#if open}<PointsLeft spent={mySpent} budget={vv.myBudget} />{/if}
+	{#if open}
+		<PointsLeft spent={mySpent} budget={vv.myBudget} />
+		{#if mySpent > 0}<ResetVotes bar budget={vv.myBudget} onreset={() => client.reset()} />{/if}
+	{/if}
 </AppBar>
 
 <VoteHeader

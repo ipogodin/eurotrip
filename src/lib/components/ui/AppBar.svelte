@@ -32,7 +32,7 @@
 
 <header class="bar">
 	<div class="inner">
-		<a class="brand" href={resolve('/')}>
+		<a class="brand" href={resolve('/')} aria-label={title}>
 			<span class="mark" aria-hidden="true"><Sun size={34} /></span>
 			<span class="name">{title}</span>
 		</a>
@@ -146,6 +146,20 @@
 		display: flex;
 		align-items: center;
 		gap: var(--s3);
+	}
+	/* Phones: the bar also holds the points counter and the start-over button. */
+	@media (max-width: 400px) {
+		.end {
+			gap: 6px;
+		}
+		.name {
+			font-size: 20px;
+		}
+	}
+	@media (max-width: 349px) {
+		.name {
+			display: none;
+		}
 	}
 	.menu {
 		position: relative;

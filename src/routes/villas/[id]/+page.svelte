@@ -4,6 +4,7 @@
 	import AppBar from '$lib/components/ui/AppBar.svelte';
 	import Chip from '$lib/components/ui/Chip.svelte';
 	import PointsLeft from '$lib/components/vote/PointsLeft.svelte';
+	import ResetVotes from '$lib/components/vote/ResetVotes.svelte';
 	import VoteBar from '$lib/components/vote/VoteBar.svelte';
 	import { villas } from '$lib/config/villas.js';
 	import Icon from '$lib/icons/Icon.svelte';
@@ -59,7 +60,12 @@
 <svelte:head><title>{villa.name} · Eurotrip</title></svelte:head>
 
 <AppBar member={data.member} nav={[{ href: '/vote', label: 'Villas' }]} current="/vote">
-	{#if open}<PointsLeft spent={spent(myBallot)} budget={view.myBudget} />{/if}
+	{#if open}
+		<PointsLeft spent={spent(myBallot)} budget={view.myBudget} />
+		{#if spent(myBallot) > 0}
+			<ResetVotes bar budget={view.myBudget} onreset={() => client.reset()} />
+		{/if}
+	{/if}
 </AppBar>
 
 <main class="page stack">

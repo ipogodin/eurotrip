@@ -13,7 +13,7 @@
 </script>
 
 <span class="left num" class:out={left === 0} title="{left} of {budget} points left">
-	<Sun size={18} rays={false} />
+	<span class="sun"><Sun size={18} rays={false} /></span>
 	<span><b>{left}</b> <span class="of">of {budget}</span> left</span>
 </span>
 
@@ -41,6 +41,14 @@
 	}
 	@media (max-width: 380px) {
 		.of {
+			display: none;
+		}
+	}
+	@media (max-width: 400px) {
+		.left {
+			padding-left: 12px;
+		}
+		.sun {
 			display: none;
 		}
 	}
