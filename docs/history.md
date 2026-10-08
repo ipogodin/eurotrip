@@ -411,3 +411,15 @@ The user asked for a reset option where all votes go back to the customer so
 they can vote again. Built as each member resetting their own votes (My votes
 view, with a confirmation). Whether the admin should also be able to reset
 everyone's votes at once was left as a question for step 1.8.
+
+---
+
+## 2026-10-08 — Invite phrases: chosen by hand, not random
+
+The user picked their own admin phrase and asked for help making the other
+members' phrases from context they'll give (inside jokes, nicknames) instead
+of random EFF words. Still `word-word`, still only in `members.json` / the
+`MEMBERS` env var, never in the repo. Trade-off noted: a phrase built from
+shared context is easier for the other members to guess than a random one,
+so each phrase should lean on something only that person (and the admin)
+would think of.

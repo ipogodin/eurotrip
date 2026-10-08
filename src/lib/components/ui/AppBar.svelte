@@ -147,13 +147,22 @@
 		align-items: center;
 		gap: var(--s3);
 	}
-	/* Phones: the bar also holds the points counter and the start-over button. */
-	@media (max-width: 400px) {
+	/* Phones: the bar also holds the points counter and the reset button. */
+	@media (max-width: 440px) {
 		.end {
-			gap: 6px;
+			gap: 4px;
+		}
+		.who {
+			width: 44px;
+			height: 44px;
 		}
 		.name {
 			font-size: 20px;
+		}
+	}
+	@media (max-width: 400px) {
+		.name {
+			font-size: 18px;
 		}
 	}
 	@media (max-width: 349px) {

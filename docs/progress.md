@@ -75,7 +75,18 @@ The **single source of truth for where the work is.** Plan details are in
 
 _(WIP and final notes per step go here, newest first.)_
 
-### "Start over" in the top bar (2026-10-08, the user's follow-up)
+### Reset button wording (2026-10-08, the user's feedback)
+
+The first top-bar version used a ↺ icon ("Start over"). The user said it looks
+like "refresh the page". Replaced with plain words: an outlined pill reading
+**Reset** on phones and **Reset my votes** from 641 px, aria-label "Reset all
+my votes"; the My votes button and the confirmation use the same words. The
+`rotate-ccw` icon was removed. Without the icon the top bar was ~11 px too wide
+at 360-430 px, so the wordmark shrinks (20 px, 18 px under 400) and gaps
+tighten; verified 0 px overflow at 320/340/360/375/390/430/440/700 px. Lesson:
+avoid icons with a strong other meaning (refresh/undo) on destructive actions.
+
+### Earlier version: "Start over" in the top bar (2026-10-08, the user's follow-up)
 
 The user asked how a member can easily reset and start over: the first
 version was only a button at the bottom of My votes, too hidden. Now a

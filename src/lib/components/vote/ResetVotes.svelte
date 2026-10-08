@@ -1,12 +1,12 @@
 <script>
 	import Button from '$lib/components/ui/Button.svelte';
 	import Sheet from '$lib/components/ui/Sheet.svelte';
-	import Icon from '$lib/icons/Icon.svelte';
 
 	/**
-	 * "Start over": take all my points back, after a confirmation. One component
-	 * for every screen, so the way to start over is always in the same place.
-	 * `bar` = compact pill for the top bar; otherwise a normal text button.
+	 * "Reset my votes": take all my points back, after a confirmation. One
+	 * component for every screen, so it's always worded and placed the same.
+	 * Plain words on purpose (no refresh-style icon, which reads as "reload").
+	 * `bar` = compact outlined pill for the top bar; otherwise a normal button.
 	 * @type {{ budget: number, onreset: () => void, bar?: boolean }}
 	 */
 	let { budget, onreset, bar = false } = $props();
@@ -17,18 +17,14 @@
 {#if bar}
 	<button
 		type="button"
-		class="start-over"
-		aria-label="Start over: reset all my votes"
-		title="Start over"
+		class="reset-btn"
+		aria-label="Reset all my votes"
 		onclick={() => (confirming = true)}
 	>
-		<Icon name="rotate-ccw" size={18} />
-		<span class="label">Start over</span>
+		<span class="short">Reset</span><span class="long">Reset my votes</span>
 	</button>
 {:else}
-	<Button variant="ghost" onclick={() => (confirming = true)}>
-		<Icon name="rotate-ccw" size={16} /> Start over
-	</Button>
+	<Button variant="ghost" onclick={() => (confirming = true)}>Reset my votes</Button>
 {/if}
 
 <Sheet open={confirming} title="Reset all your votes?" onclose={() => (confirming = false)}>
@@ -51,30 +47,37 @@
 </Sheet>
 
 <style>
-	.start-over {
+	.reset-btn {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		gap: 6px;
-		min-width: 44px;
 		min-height: 44px;
 		padding: 0 10px;
-		border: 0;
+		border: 2px solid var(--line);
 		border-radius: var(--r-pill);
-		background: transparent;
-		color: var(--ink-2);
+		background: var(--surface);
+		color: var(--ink);
 		font-weight: 800;
 		font-size: 14px;
 		cursor: pointer;
+		transition:
+			border-color var(--t-ui) ease,
+			color var(--t-ui) ease;
 	}
-	.start-over:hover {
-		background: var(--surface-2);
+	.reset-btn:hover {
+		border-color: var(--hibiscus);
 		color: var(--hibiscus);
 	}
-	/* The label only where there's room; the icon is enough on phones. */
-	@media (max-width: 640px) {
-		.label {
+	/* "Reset" on phones; the full words where there's room. */
+	.long {
+		display: none;
+	}
+	@media (min-width: 641px) {
+		.short {
 			display: none;
+		}
+		.long {
+			display: inline;
 		}
 	}
 	.confirm {
