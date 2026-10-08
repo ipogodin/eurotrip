@@ -140,7 +140,7 @@ export function tally(ballots, villas, members, { budget = VOTE_BUDGET } = {}) {
 	unsorted.sort((a, b) => b.total - a.total || a.villa.name.localeCompare(b.villa.name));
 
 	/** Equal totals share a rank (1, 2, 2, 4); villas with no votes are unranked. */
-	const byVilla = unsorted.map((row, i) => {
+	const byVilla = unsorted.map((row) => {
 		const firstWithTotal = unsorted.findIndex((r) => r.total === row.total);
 		return {
 			villaId: row.villa.id,
