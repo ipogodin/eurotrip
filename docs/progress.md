@@ -28,7 +28,7 @@ The **single source of truth for where the work is.** Plan details are in
 
 **Step:** 1.6 — Vote page: list layout + autosave
 **State:** not started
-**Next action:** step 1.6 (vote page). It can be built against the placeholder villas; real villas (I3) just replace `src/lib/config/villas.js`. I8 answered 2026-10-08 (wanted a moving background with the sea); done as an early step 3.1 — awaiting the user's look at the result.
+**Next action:** step 1.6 (vote page). It can be built against the placeholder villas; real villas (I3) just replace `src/lib/config/villas.js`. Login page approved by the user 2026-10-08 (I8 done, sea video in).
 
 ## Step board
 
@@ -48,7 +48,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 2.3  | Nearby tab                              | todo   |         |      |        |
 | 2.4  | Flights tab                             | todo   |         |      |        |
 | 2.5  | Ship R2                                 | todo   |         |      |        |
-| 3.1  | Canary video background                 | done (early) | 2026-10-08 | 2026-10-08 | see log |
+| 3.1  | Canary video background                 | done (early) | 2026-10-08 | 2026-10-08 | 4366b5b |
 | 3.2  | Quality pass                            | todo   |         |      |        |
 | 3.3  | SvelteKit 3 upgrade                     | todo   |         |      |        |
 
@@ -60,7 +60,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | waiting |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
-| I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | answered 2026-10-08: wanted motion + sea → sea video (3.1); re-check pending |
+| I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | done 2026-10-08: sea video approved ("looks good") |
 | I5 | 1.2       | Sign-off on the style-guide screenshots (non-blocking)                                 | later   |
 | I6 | 2.x       | Booked dates, address, check-in/out times, preferred arrival airport(s)                | later   |
 | I7 | 3.1       | The Canary video clip (optional; a photo is used until then)                           | optional: a CC Commons clip is used now; the user's own clip can replace it |
