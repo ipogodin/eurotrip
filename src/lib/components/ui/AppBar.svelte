@@ -95,6 +95,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: var(--s2);
+		min-height: 44px;
 		color: var(--ink);
 		font-family: var(--font-display);
 		font-variation-settings:

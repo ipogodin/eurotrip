@@ -357,3 +357,18 @@ prices in USD, each for that listing's own saved dates, so they are
 estimates, not quotes. Open question to the user (I9): 6 villas cap at 8
 guests, which only fits 8 adults + 2 kids if both kids are under 2. Details
 in `docs/progress.md` (1.5 addendum).
+
+---
+
+## 2026-10-08 — Step 1.6: the vote page
+
+The user confirmed both babies are under 2, so all 13 villas fit the group
+(Airbnb doesn't count under-2s), and said to read guest reviews when a
+listing's description is thin (done for Duke and "Close to the Beach").
+Then the vote page was built: villas / people / my votes views, tap-to-vote
+with autosave, everyone's votes refreshing every 15 s, and read-only
+closed/decided states. Decision: the browser computes the tally itself with
+the shared `tally()`, so a tap shows instantly and polling only moves
+ballots. The agent could not run the two-person check itself (signing in as
+a second member with a test phrase was blocked by a permission rule), so the
+user does that one (I10). Details in `docs/progress.md` (1.6).

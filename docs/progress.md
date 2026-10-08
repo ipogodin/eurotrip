@@ -26,9 +26,9 @@ The **single source of truth for where the work is.** Plan details are in
 
 ## Current position
 
-**Step:** 1.6 — Vote page: list layout + autosave
+**Step:** 1.8 — Admin (1.7 map/detail can slip, per plan)
 **State:** not started
-**Next action:** step 1.6 (vote page), now with the 13 real villas. Login page approved by the user 2026-10-08 (I8 done, sea video in).
+**Next action:** step 1.8 (admin). Open: the user's two-browser check of 1.6 (I10). Login page approved by the user 2026-10-08 (I8 done, sea video in).
 
 ## Step board
 
@@ -39,7 +39,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 1.3  | Auth core                               | done   | 2026-10-08 | 2026-10-08 | 6c2303d |
 | 1.4  | Login splash, gate, delete old report   | done   | 2026-10-08 | 2026-10-08 | b061ded |
 | 1.5  | Villa data + vote logic                 | done   | 2026-10-08 | 2026-10-08 | 72fb769 |
-| 1.6  | Vote page: list + autosave              | todo   |         |      |        |
+| 1.6  | Vote page: list + autosave              | done   | 2026-10-08 | 2026-10-08 | see log |
 | 1.7  | Map layout + villa detail (can slip)    | todo   |         |      |        |
 | 1.8  | Admin                                   | todo   |         |      |        |
 | 1.9  | Ship R1                                 | todo   |         |      |        |
@@ -60,6 +60,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
+| I10 | 1.6      | Two-browser check: sign in as the 2nd dev member on `127.0.0.1:<port>` (phrase in your `members.json`), vote, and confirm the other window sees it within 15 s. The agent may not enter phrases itself | **waiting** |
 | I9 | 1.6       | Ages of the 2 kids in Feb 2027: under 2 or 2+? 6 villas allow max 8 guests (Airbnb counts kids 2–12) | done 2026-10-08: both under 2, so all 13 villas fit (no warning needed) |
 | I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | done 2026-10-08: sea video approved ("looks good") |
 | I5 | 1.2       | Sign-off on the style-guide screenshots (non-blocking)                                 | later   |
@@ -69,6 +70,49 @@ The **single source of truth for where the work is.** Plan details are in
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### 1.6 — done (2026-10-08)
+
+`src/routes/vote/+page.server.js`: `load` (`depends('app:votes')`) returns
+`me`, members (id/name/short only), all ballots, effective deadline, state,
+winnerId; `actions.save` parses the JSON ballot, re-validates with server
+time, `setBallot`, `fail(409)` when closed/decided, `fail(400)` otherwise.
+`src/lib/ballot-client.svelte.js` (`BallotClient`): optimistic `draft`,
+600 ms debounce, one request in flight (taps during it are sent next),
+revert + error toast on rejection/network error, "Saved" toast, follows a
+redirect when the session is gone; built now (plan said 1.7) so 1.7 reuses it.
+Components in `src/lib/components/vote/`: `VoteHeader` (sunset hero,
+countdown, deadline in PDT/PST via `formatDeadline`, points meter + hint,
+closed/decided states), `VillaGrid`, `VillaCard` (scroll-snap photo strip with
+arrow buttons on hover devices, rank sticker, facts, price + per night +
+"Airbnb price for <saved dates>", highlights, blurb, Airbnb link, voter
+avatars with points, Stepper or "You gave N" when closed), `PeopleList`,
+`PersonRow`, `NotVotedNudge`, `MyVotes` (sticky meter, empty state), and
+`types.js` (JSDoc shapes). Page: `?view=villas|people|mine` (segmented
+control on ≥768 px, BottomNav on phones), 15 s polling + on tab focus
+(skipped while my save is pending), a timer that refreshes right at the
+deadline, card order = ranking but frozen for 5 s after a tap so cards don't
+jump. New helpers in `time.js`: `formatDeadline`, `formatDateRange`,
+`formatMoney` (+5 tests, 95 total). `BottomNav` now accepts hrefs with a
+query (`resolve()` throws on `?view=…`). AppBar logo link raised to 44 px.
+Deviations: the tally is computed in the browser with the shared pure
+`tally()` (the load returns ballots, not a tally) so my unsaved taps show
+instantly and polling stays small; villa facts come from the client-side
+config import, not page data. Two justified lint exceptions for same-page
+`?view=` navigation (`svelte/no-navigation-without-resolve` only accepts a
+direct `resolve()` call, which can't carry a query).
+Verified (Chrome, member A on `localhost:5193`): 3+2+1 → 0 left, all `+`
+disabled with the hint, saved and survives reload; People/Mine views; crafted
+POSTs rejected (4 on one villa, 7 total, unknown villa, bad JSON, 1.5 points);
+deadline moved into the past (temporary edit, reverted) → no steppers, "You
+gave N", header "Closed …", save → 409; 390 px: no horizontal scroll, all
+targets ≥44 px, bottom nav switches views. NOT verified by the agent: the
+two-browser cross-visibility check, because signing in as the second member
+was blocked by a permission check (credential entry). That's I10.
+Gotchas: the Chrome automation window counts as hidden, so `requestAnimationFrame`
+never fires there: smooth `scrollBy` doesn't move and large images may not
+paint until a scroll. Test with instant scrolling / re-screenshots; real
+browsers are fine.
 
 ### 3.1 — done early (2026-10-08), from the user's I8 feedback
 
@@ -256,6 +300,7 @@ it (it would override the `!.env.example` exception).
 
 | Date       | Summary                                                                                                    |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
+| 2026-10-08 | Step 1.6 done: vote page (3 views, autosave, polling, closed/decided states); two-browser check left to the user (I10). |
 | 2026-10-08 | Login splash: looping sea video (step 3.1 pulled forward after the user's I8 feedback). |
 | 2026-10-08 | Planning: raw plan captured, decisions made, tech-spec + design + detailed plan + this tracker written. No code. |
 | 2026-10-08 | Step 1.5 done (placeholders): voting rules + tests, villa config, photo script. |

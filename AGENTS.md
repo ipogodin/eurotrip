@@ -125,10 +125,13 @@ src/
     +layout.server.js      # passes the signed-in member to every page
     +page.svelte/.server.js  # `/` = login splash + login action (anonymous only)
     logout/+server.js      # POST clears the cookie
-    vote/+page.svelte      # placeholder until step 1.6
+    vote/+page.svelte/.server.js  # vote page: 3 views (?view=), autosave, polling; save action
     styleguide/            # dev-only component gallery (404 in production)
   lib/
     components/SeaBackground.svelte  # login splash video loop (poster SSR, video client-only)
+    components/vote/       # VoteHeader, VillaGrid/VillaCard, PeopleList/PersonRow, NotVotedNudge, MyVotes, types.js
+    ballot-client.svelte.js  # BallotClient: optimistic debounced autosave of my ballot
+    voting.js              # pure vote rules + tally (shared by server and browser)
     components/ui/         # AppBar, BottomNav, Button, Card, Chip, Avatar(+Stack),
                            #   PointDots, PointsMeter, Stepper, Countdown, SegmentedControl,
                            #   Sheet, Toast(+Toaster), Skeleton, Sun, Wave, Frond

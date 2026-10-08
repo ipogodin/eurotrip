@@ -9,14 +9,23 @@
 	 * }}
 	 */
 	let { items, current } = $props();
+
+	/**
+	 * `resolve()` only takes a pathname, so resolve the path and keep any
+	 * `?query` / `#hash` (e.g. `/vote?view=people`) as given.
+	 * @param {string} href
+	 */
+	function withBase(href) {
+		const i = href.search(/[?#]/);
+		const path = i < 0 ? href : href.slice(0, i);
+		return resolve(/** @type {any} */ (path)) + (i < 0 ? '' : href.slice(i));
+	}
 </script>
 
 <nav class="bottom" aria-label="Primary">
 	{#each items as item (item.href)}
-		<a
-			href={resolve(/** @type {any} */ (item.href))}
-			aria-current={current === item.href ? 'page' : undefined}
-		>
+		<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolved in withBase() -->
+		<a href={withBase(item.href)} aria-current={current === item.href ? 'page' : undefined}>
 			<Icon name={item.icon} size={22} />
 			<span>{item.label}</span>
 		</a>
