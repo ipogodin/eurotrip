@@ -125,12 +125,18 @@ src/
     +layout.server.js      # passes the signed-in member to every page
     +page.svelte/.server.js  # `/` = login splash + login action (anonymous only)
     logout/+server.js      # POST clears the cookie
-    vote/+page.svelte/.server.js  # vote page: 3 views (?view=), autosave, polling; save action
+    vote/+page.svelte/.server.js  # vote page: Map|People|My votes (?view=), autosave, polling; save action
+    villas/[id]/           # one villa: gallery, vote bar under it, details; votes via /vote?/save
     styleguide/            # dev-only component gallery (404 in production)
   lib/
     components/SeaBackground.svelte  # login splash video loop (poster SSR, video client-only)
-    components/vote/       # VoteHeader, VillaGrid/VillaCard, PeopleList/PersonRow, NotVotedNudge, MyVotes, types.js
+    components/vote/       # VillaMap (default Villas view), VoteBar, VoteHeader, PointsLeft, VillaGrid/VillaCard
+                           #   (old list view, VOTE_LAYOUT='list'), PeopleList/PersonRow, NotVotedNudge, MyVotes, types.js
     ballot-client.svelte.js  # BallotClient: optimistic debounced autosave of my ballot
+    vote-view.js           # buildVoteView: tally + one render row per villa (map, list, villa page)
+    vote-polling.svelte.js # 15 s refresh + refresh at the deadline
+    map-layout.js          # spreadPins (keeps photos from hiding each other), smoothClosedPath
+    config/tenerife.js     # approximate Tenerife coastline + projection for the map
     voting.js              # pure vote rules + tally (shared by server and browser)
     components/ui/         # AppBar, BottomNav, Button, Card, Chip, Avatar(+Stack),
                            #   PointDots, PointsMeter, Stepper, Countdown, SegmentedControl,

@@ -18,7 +18,7 @@ contract. If implementation deviates, update this file in the same commit.
 | ----------------- | ---------- | ------------------------------------------------------------------------------- |
 | `/`               | anyone     | Anonymous: login splash. Signed in: redirect → `/vote` (phase 1) / `/trip` (2) |
 | `/vote`           | member     | `?view=villas\|people\|mine` · `?layout=list\|map`. Read-only once closed       |
-| `/villas/[id]`    | member     | Villa detail: gallery, facts, link, voters, stepper (while open)               |
+| `/villas/[id]`    | member     | Villa page: gallery, vote bar right under it, facts, link, voters. Posts votes to `/vote?/save` |
 | `/trip`           | member     | Phase 2 overview (redirects to `/vote` while no winner)                         |
 | `/trip/nearby`    | member     | Beaches / attractions / cafés + map                                             |
 | `/trip/flights`   | member     | LON / WAW / FRA ↔ island                                                        |
@@ -235,8 +235,10 @@ lookups at authoring time) and stored. Nothing calls an API at runtime.
   rejection, revert to the server ballot and show the error toast.
 - **Polling:** `$effect` with `setInterval(15 s)` + `visibilitychange`,
   calling `invalidate('app:votes')`. Skipped while a save is pending.
-- **Map:** Leaflet 1.9.x, imported dynamically inside `$effect` (browser
-  only). Tiles: CARTO Voyager raster + attribution. Custom `divIcon` pins.
+- **Map (decided 2026-10-08):** no map library or tiles. An illustrated SVG
+  Tenerife with HTML photo pins (`VillaMap`); villa coordinates are projected
+  and spread apart so every photo stays visible (`map-layout.js`).
+  `VOTE_LAYOUT` (`'map'`|`'list'`) in `config/voting.js` picks the Villas view.
 - **Time:** all timestamps are UTC ISO. Display uses `Intl.DateTimeFormat`
   in the viewer's zone, plus the fixed PDT label for the deadline.
 

@@ -1,46 +1,23 @@
 import { error, fail } from '@sveltejs/kit';
-import { DEFAULT_DEADLINE } from '$lib/config/voting.js';
 import { villas } from '$lib/config/villas.js';
-import { effectiveDeadline, spent, validateBallot, votingState } from '$lib/voting.js';
-import { findMemberById, getMembers } from '$lib/server/roster.js';
+import { spent, validateBallot } from '$lib/voting.js';
+import { findMemberById } from '$lib/server/roster.js';
 import { getStore } from '$lib/server/store/index.js';
+import { loadVoteData, votingStatus } from '$lib/server/vote-data.js';
 
 const villaIds = villas.map((v) => v.id);
-
-/** Everyone's public identity + point budget, in roster order. Never phrases. */
-function publicMembers() {
-	return getMembers().map(({ id, name, short, votes }) => ({ id, name, short, votes }));
-}
-
-/** Current deadline, state and winner, always computed with server time. */
-async function votingStatus() {
-	const store = getStore();
-	const [voting, trip] = await Promise.all([store.getVoting(), store.getTrip()]);
-	const deadline = effectiveDeadline(voting.deadline, DEFAULT_DEADLINE);
-	return {
-		deadline,
-		winnerId: trip.winnerId,
-		state: votingState(Date.now(), deadline, trip.winnerId)
-	};
-}
 
 // Villa facts and the tally aren't sent: the client imports the villa config
 // and runs the same pure `tally()` on these ballots, so polling stays small.
 export async function load({ locals, depends }) {
 	depends('app:votes');
 	if (!locals.member) error(401, 'Sign in first.');
-
-	const members = publicMembers();
-	const [ballots, status] = await Promise.all([
-		getStore().getBallots(members.map((m) => m.id)),
-		votingStatus()
-	]);
-	return { me: locals.member.id, members, ballots, ...status };
+	return loadVoteData(locals.member);
 }
 
 export const actions = {
 	// The whole ballot is replaced on every save. The server re-validates
-	// everything; UI limits are only a convenience.
+	// everything; UI limits are only a convenience. The villa pages post here too.
 	save: async ({ locals, request }) => {
 		if (!locals.member) error(401, 'Sign in first.');
 

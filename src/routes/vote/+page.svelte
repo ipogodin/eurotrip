@@ -1,6 +1,6 @@
 <script>
 	import { untrack } from 'svelte';
-	import { goto, invalidate } from '$app/navigation';
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { BallotClient } from '$lib/ballot-client.svelte.js';
 	import AppBar from '$lib/components/ui/AppBar.svelte';
@@ -8,26 +8,32 @@
 	import SegmentedControl from '$lib/components/ui/SegmentedControl.svelte';
 	import MyVotes from '$lib/components/vote/MyVotes.svelte';
 	import PeopleList from '$lib/components/vote/PeopleList.svelte';
+	import PointsLeft from '$lib/components/vote/PointsLeft.svelte';
 	import VillaGrid from '$lib/components/vote/VillaGrid.svelte';
+	import VillaMap from '$lib/components/vote/VillaMap.svelte';
 	import VoteHeader from '$lib/components/vote/VoteHeader.svelte';
 	import { villas } from '$lib/config/villas.js';
-	import { MAX_PER_VILLA, VOTE_BUDGET } from '$lib/config/voting.js';
-	import PointsLeft from '$lib/components/vote/PointsLeft.svelte';
-	import { canIncrement, spent, tally } from '$lib/voting.js';
+	import { VOTE_LAYOUT } from '$lib/config/voting.js';
+	import { useVotePolling } from '$lib/vote-polling.svelte.js';
+	import { buildVoteView } from '$lib/vote-view.js';
+	import { spent } from '$lib/voting.js';
 
-	/** @typedef {import('$lib/components/vote/types.js').VillaRow} VillaRow */
 	/** @typedef {'villas' | 'people' | 'mine'} View */
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
 
-	const POLL_MS = 15_000;
 	/** Don't re-sort cards under someone's finger: wait this long after a tap. */
 	const RESORT_IDLE_MS = 5_000;
 
+	/** The Villas view is the Tenerife map, or (VOTE_LAYOUT = 'list') the old card grid. */
+	const MAP = VOTE_LAYOUT === 'map';
+
 	/** @type {{ value: View, label: string, icon: import('$lib/icons/paths.js').IconName }[]} */
 	const VIEWS = [
-		{ value: 'villas', label: 'Villas', icon: 'home' },
+		MAP
+			? { value: 'villas', label: 'Map', icon: 'map' }
+			: { value: 'villas', label: 'Villas', icon: 'home' },
 		{ value: 'people', label: 'People', icon: 'users' },
 		{ value: 'mine', label: 'My votes', icon: 'check' }
 	];
@@ -42,50 +48,20 @@
 	$effect(() => () => client.destroy());
 
 	const villaById = new Map(villas.map((v) => [v.id, v]));
-	const memberById = $derived(new Map(data.members.map((m) => [m.id, m])));
-
 	const open = $derived(data.state === 'open');
 	const myBallot = $derived(client.ballot);
 	const mySpent = $derived(spent(myBallot));
-	/** My own point budget (the roster can give someone a custom number). */
-	const myBudget = $derived(memberById.get(data.me)?.votes ?? VOTE_BUDGET);
-	// My unsaved taps count immediately, everyone else's come from the server.
-	const results = $derived(tally({ ...data.ballots, [data.me]: myBallot }, villas, data.members));
-
-	/** @type {Map<string, VillaRow>} */
-	const rowById = $derived(
-		new Map(
-			results.byVilla.flatMap((r) => {
-				const villa = villaById.get(r.villaId);
-				if (!villa) return [];
-				const myPoints = myBallot[r.villaId] ?? 0;
-				/** @type {VillaRow} */
-				const row = {
-					villa,
-					rank: r.rank,
-					total: r.total,
-					voters: r.voters.flatMap((v) => {
-						const member = memberById.get(v.memberId);
-						return member ? [{ member, points: v.points }] : [];
-					}),
-					myPoints,
-					canAdd: canIncrement(myBallot, r.villaId, { budget: myBudget }),
-					addHint:
-						myPoints >= MAX_PER_VILLA
-							? `${MAX_PER_VILLA} points is the most one villa can get from you.`
-							: `All ${myBudget} points are used. Take one back from another villa first.`
-				};
-				return [[r.villaId, row]];
-			})
-		)
+	// My unsaved taps count immediately; everyone else's come from the server.
+	const vv = $derived(
+		buildVoteView({ villas, members: data.members, ballots: data.ballots, me: data.me, myBallot })
 	);
 
-	// Card order: ranking, but frozen while someone is tapping.
+	// Card order (list layout): ranking, but frozen while someone is tapping.
 	/** @type {string[]} */
 	let order = $state([]);
 	let lastTap = 0;
 	$effect(() => {
-		const ranked = results.byVilla.map((r) => r.villaId);
+		const ranked = vv.results.byVilla.map((r) => r.villaId);
 		const busy = client.busy;
 		untrack(() => {
 			if (order.length === 0 || (!busy && Date.now() - lastTap > RESORT_IDLE_MS)) order = ranked;
@@ -93,8 +69,8 @@
 	});
 
 	const villaRows = $derived.by(() => {
-		const ids = order.length ? order : results.byVilla.map((r) => r.villaId);
-		const rows = ids.flatMap((id) => rowById.get(id) ?? []);
+		const ids = order.length ? order : vv.results.byVilla.map((r) => r.villaId);
+		const rows = ids.flatMap((id) => vv.rowById.get(id) ?? []);
 		// Once decided, the winner leads.
 		const w = rows.findIndex((r) => r.villa.id === data.winnerId);
 		if (w > 0) rows.unshift(...rows.splice(w, 1));
@@ -106,8 +82,8 @@
 	);
 
 	const people = $derived(
-		results.byPerson.flatMap((p) => {
-			const member = memberById.get(p.memberId);
+		vv.results.byPerson.flatMap((p) => {
+			const member = vv.memberById.get(p.memberId);
 			if (!member) return [];
 			const picks = p.picks.flatMap((x) => {
 				const villa = villaById.get(x.villaId);
@@ -116,7 +92,7 @@
 			return [{ member, spent: p.spent, left: p.left, picks }];
 		})
 	);
-	const notVoted = $derived(results.notVotedYet.flatMap((id) => memberById.get(id) ?? []));
+	const notVoted = $derived(vv.results.notVotedYet.flatMap((id) => vv.memberById.get(id) ?? []));
 
 	const winnerName = $derived(
 		data.winnerId ? (villaById.get(data.winnerId)?.name ?? 'the winning villa') : null
@@ -148,34 +124,17 @@
 		});
 	}
 
-	// Everyone else's votes: refresh every 15 s and when the tab comes back,
-	// but never while my own save is pending (it would flash old data).
-	$effect(() => {
-		const refresh = () => {
-			if (document.visibilityState === 'visible' && !client.busy) invalidate('app:votes');
-		};
-		const id = setInterval(refresh, POLL_MS);
-		document.addEventListener('visibilitychange', refresh);
-		return () => {
-			clearInterval(id);
-			document.removeEventListener('visibilitychange', refresh);
-		};
-	});
-
-	// Flip to "closed" right at the deadline instead of waiting for a poll.
-	$effect(() => {
-		if (data.state !== 'open') return;
-		const ms = Date.parse(data.deadline) - Date.now();
-		if (ms > 2 ** 31 - 1) return; // beyond setTimeout's range; polling covers it
-		const id = setTimeout(() => invalidate('app:votes'), Math.max(0, ms) + 1000);
-		return () => clearTimeout(id);
+	useVotePolling({
+		busy: () => client.busy,
+		deadline: () => data.deadline,
+		open: () => open
 	});
 </script>
 
 <svelte:head><title>Vote for the villa · Eurotrip</title></svelte:head>
 
 <AppBar member={data.member} nav={[{ href: '/vote', label: 'Villas' }]} current="/vote">
-	{#if open}<PointsLeft spent={mySpent} budget={myBudget} />{/if}
+	{#if open}<PointsLeft spent={mySpent} budget={vv.myBudget} />{/if}
 </AppBar>
 
 <VoteHeader
@@ -184,7 +143,8 @@
 	state={data.state}
 	{winnerName}
 	{mySpent}
-	budget={myBudget}
+	budget={vv.myBudget}
+	compact={MAP}
 />
 
 <main class="page stack">
@@ -200,14 +160,19 @@
 		<MyVotes
 			rows={myRows}
 			spent={mySpent}
-			budget={myBudget}
+			budget={vv.myBudget}
 			{open}
 			onchange={vote}
 			villasHref={viewHref('villas')}
 		/>
 	{:else}
-		<h2 class="sr-only">Villas, most votes first</h2>
-		<VillaGrid rows={villaRows} {open} winnerId={data.winnerId} onchange={vote} />
+		{#if MAP}
+			<h2 class="sr-only">Map of the villas</h2>
+			<VillaMap rows={villaRows} winnerId={data.winnerId} />
+		{:else}
+			<h2 class="sr-only">Villas, most votes first</h2>
+			<VillaGrid rows={villaRows} {open} winnerId={data.winnerId} onchange={vote} />
+		{/if}
 	{/if}
 </main>
 

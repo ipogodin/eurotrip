@@ -14,17 +14,20 @@
 	 *   state: import('$lib/voting.js').VotingState,
 	 *   winnerName: string | null,
 	 *   mySpent: number,
-	 *   budget: number
+	 *   budget: number,
+	 *   compact?: boolean
 	 * }}
 	 */
-	let { name, deadline, state, winnerName, mySpent, budget } = $props();
+	let { name, deadline, state, winnerName, mySpent, budget, compact = false } = $props();
 
 	const left = $derived(Math.max(0, budget - mySpent));
 </script>
 
-<section class="hero">
-	<div class="frond left" aria-hidden="true"><Frond size={260} rotate={-10} /></div>
-	<div class="frond right" aria-hidden="true"><Frond size={300} flip rotate={8} /></div>
+<section class="hero" class:compact>
+	{#if !compact}
+		<div class="frond left" aria-hidden="true"><Frond size={260} rotate={-10} /></div>
+		<div class="frond right" aria-hidden="true"><Frond size={300} flip rotate={8} /></div>
+	{/if}
 	<div class="sunwrap" aria-hidden="true"><Sun size={130} /></div>
 
 	<div class="inner">
@@ -33,9 +36,9 @@
 			<h1 class="t-display">We're staying at <em>{winnerName}</em></h1>
 			<p class="lede">Voting is over. The results stay below for the record.</p>
 		{:else}
-			<span class="t-script tag">¡Hola, {name}!</span>
-			<h1 class="t-display">Where are we <em>sleeping</em>?</h1>
-			{#if state === 'open'}
+			{#if !compact}<span class="t-script tag">¡Hola, {name}!</span>{/if}
+			<h1 class="t-display" class:small={compact}>Where are we <em>sleeping</em>?</h1>
+			{#if state === 'open' && !compact}
 				<p class="lede">
 					{budget} points to spend, up to {MAX_PER_VILLA} per villa. Votes save as you tap, and everyone
 					can see them.
@@ -48,7 +51,7 @@
 					{formatDeadline(deadline)}
 				</span>
 			</div>
-			{#if state === 'open'}
+			{#if state === 'open' && !compact}
 				<div class="meter">
 					<PointsMeter spent={mySpent} {budget} />
 					<p class="left" aria-live="polite">
@@ -61,7 +64,7 @@
 						{/if}
 					</p>
 				</div>
-			{:else}
+			{:else if state !== 'open'}
 				<p class="closed">Voting has closed. The admin will pick the villa soon.</p>
 			{/if}
 		{/if}
@@ -170,6 +173,31 @@
 		z-index: 2;
 		color: var(--bg);
 		margin-bottom: -2px;
+	}
+	/* Compact: a slim strip, so the map gets the screen. */
+	.compact {
+		padding-top: var(--s3);
+		border-radius: 0 0 var(--r-lg) var(--r-lg);
+	}
+	.compact .inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: var(--s2) var(--s4);
+		padding-bottom: var(--s3);
+	}
+	.compact .wave {
+		display: none;
+	}
+	h1.small {
+		font-size: 26px;
+		line-height: 32px;
+	}
+	.compact .sunwrap {
+		scale: 0.5;
+		transform-origin: top right;
+		top: -10px;
 	}
 	@media (max-width: 600px) {
 		.sunwrap {

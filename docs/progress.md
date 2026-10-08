@@ -26,9 +26,9 @@ The **single source of truth for where the work is.** Plan details are in
 
 ## Current position
 
-**Step:** 1.8 — Admin (1.7 map/detail can slip, per plan)
+**Step:** 1.8 — Admin
 **State:** not started
-**Next action:** step 1.8 (admin). Open: the user's two-browser check of 1.6 (I10). Login page approved by the user 2026-10-08 (I8 done, sea video in).
+**Next action:** step 1.8 (admin), then 1.9 (ship). The user should look at the new map vote page (I12). Open: the two-browser check of 1.6 (I10; Anna's votes already show up in the dev data, so it may have been done). Login page approved by the user 2026-10-08 (I8 done, sea video in).
 
 ## Step board
 
@@ -40,7 +40,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 1.4  | Login splash, gate, delete old report   | done   | 2026-10-08 | 2026-10-08 | b061ded |
 | 1.5  | Villa data + vote logic                 | done   | 2026-10-08 | 2026-10-08 | 72fb769 |
 | 1.6  | Vote page: list + autosave              | done   | 2026-10-08 | 2026-10-08 | 8656cd1 |
-| 1.7  | Map layout + villa detail (can slip)    | todo   |         |      |        |
+| 1.7  | Map layout + villa detail (can slip)    | done (illustrated map) | 2026-10-08 | 2026-10-08 | see below |
 | 1.8  | Admin                                   | todo   |         |      |        |
 | 1.9  | Ship R1                                 | todo   |         |      |        |
 | 2.1  | Phase switch + trip state               | todo   |         |      |        |
@@ -62,6 +62,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
 | I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4) | waiting |
+| I12 | 1.7      | Look at the map vote page (`npm run dev` → `/vote`) on a phone and a computer: photo size, the spread-out positions in Costa Adeje, the compact header. Say what to change. `VOTE_LAYOUT = 'list'` in `src/lib/config/voting.js` brings back the old card list | **waiting** |
 | I10 | 1.6      | Two-browser check: sign in as the 2nd dev member on `127.0.0.1:<port>` (phrase in your `members.json`), vote, and confirm the other window sees it within 15 s. The agent may not enter phrases itself | **waiting** |
 | I9 | 1.6       | Ages of the 2 kids in Feb 2027: under 2 or 2+? 6 villas allow max 8 guests (Airbnb counts kids 2–12) | done 2026-10-08: both under 2, so all 13 villas fit (no warning needed) |
 | I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | done 2026-10-08: sea video approved ("looks good") |
@@ -72,6 +73,54 @@ The **single source of truth for where the work is.** Plan details are in
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### 1.7 — done (2026-10-08): map voting, villa pages (user's redesign)
+
+The user wanted: vote buttons right under the villa photo; the vote page to
+open on a map of Tenerife with each villa as a photo; tapping a photo opens
+that villa's page where you vote and then go back; most of the screen
+should be villa images; "approximately, not accurately". Answers to my
+questions: illustrated island (not a real map), pins spread out near their
+real spots, keep both views behind one switch, map before Admin/launch.
+Backup of the old version: git tag **`vote-list-v1`** (commit 2d38a73).
+
+- **Switch:** `VOTE_LAYOUT` in `src/lib/config/voting.js` (`'map'` | `'list'`);
+  flip + redeploy to go back. The list code (`VillaGrid`/`VillaCard`) is
+  untouched apart from the vote bar moving under the photo. In list mode the
+  labels/icons and the full-size header come back too.
+- `VoteBar` (new): voters + stepper, placed directly under the photo in the
+  card, and under the gallery on the villa page.
+- `VillaMap`: SVG island (hand-drawn coastline in `config/tenerife.js`,
+  Catmull-Rom smoothing, Teide, a few area names, wave lines) with HTML `<a>`
+  photo pins over it (real links: keyboard, screen readers, long-press
+  menu on phones). Pin = 12.5% of the map width (44 px min on a phone),
+  rank sticker (#1 gold), my points in a pink badge + pink ring, winner gets a
+  gold glow; name label on big screens or on hover/focus; thin dashed
+  lines + a dot point from each photo back to the real spot.
+- `map-layout.js`: `spreadPins` pushes overlapping pins apart (5 villas sit
+  within a few km in Adeje), deterministic, computed once in config order so
+  pins never jump when the ranking changes; `smoothClosedPath`. 9 tests incl.
+  "no photo hides another", "every villa lands on the island".
+- `/villas/[id]`: big gallery (swipe / arrows, "n / 6"), the vote bar right
+  under it, then facts, price (+ the saved dates), highlights, blurb, Airbnb
+  link, "Back to the map". Same autosave (`BallotClient`), same polling.
+  404 for unknown ids. Gallery height is capped so the vote buttons are always
+  on screen.
+- Refactors to share code: `server/vote-data.js` (members, ballots, status),
+  `vote-view.js` (`buildVoteView`: tally + per-villa rows), `vote-polling.svelte.js`
+  (15 s poll + deadline refresh), `VoteHeader` `compact` (one slim row).
+- Verified (Chrome, 1230 px and 390 px): map renders, 13 distinct photos,
+  tap → villa page, −/+ there updates the top-bar counter, back on the map
+  shows the new badge, the vote persists after reload, `/villas/nope` → 404,
+  `VOTE_LAYOUT = 'list'` shows the cards with the vote bar under each photo,
+  no sideways scroll, all targets ≥ 44 px.
+- Not done (optional in the request): press-and-hold / swipe-up to vote from
+  the map on a phone. A plain link would trigger the phone's link menu on
+  long-press, so it needs its own gesture handling (~1 hour). Say if wanted.
+- Known limits: on a phone the island is about 360 px wide and the screen
+  below the map is empty (the island's shape is wider than tall); a real
+  (tile) map or a rotated island would use that space but cost accuracy or
+  familiarity. No designed error page yet (a bare "404 …"), planned in 3.2.
 
 ### 1.6 follow-ups (2026-10-08, the user's feedback)
 

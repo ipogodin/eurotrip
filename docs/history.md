@@ -387,3 +387,18 @@ is better", visible to everyone. Decided while planning 3.4: photos never go
 into `static/` or the public repo (both readable without login); they live
 in a private Blob store behind a member-only route, and the "uploaded" file
 never leaves the browser.
+
+---
+
+## 2026-10-08 — Redesign: vote on a map of Tenerife
+
+The user wanted the vote buttons right under the villa photo (not at the
+bottom of the description), and the vote page to open on a map of Tenerife
+with every villa as a photo: tap a photo to open the villa's page, vote
+there, go back. Most of the screen should be photos so people connect the
+picture to the place; positions only approximate. Decisions (answered in
+chat): an illustrated island rather than a real map; villas spread out near
+their real spot instead of clustered into bubbles; both layouts kept behind
+`VOTE_LAYOUT` with the old one also tagged `vote-list-v1`; map work before
+Admin and launch. The optional press-and-hold / swipe-up voting on the map
+was not built (see `docs/progress.md`, 1.7).

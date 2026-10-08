@@ -7,3 +7,11 @@ export const DEADLINE_LABEL = 'Sat 10 Oct, 9:30 am PDT';
 export const VOTE_BUDGET = 6;
 /** Most points one person can give a single villa. */
 export const MAX_PER_VILLA = 3;
+
+/**
+ * How the "Villas" view of /vote is drawn. One line to flip, then redeploy:
+ *  - 'map'  photos of the villas on an illustrated Tenerife; tap one for its page
+ *  - 'list' the original card grid (also tagged in git as `vote-list-v1`)
+ * @type {'map' | 'list'}
+ */
+export const VOTE_LAYOUT = 'map';
