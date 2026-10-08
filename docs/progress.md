@@ -62,6 +62,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
 | I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4) | waiting |
+| I13 | 1.8      | Should the admin also get a "reset everyone's votes" button (everyone's points back, nobody's old votes kept)? Needs a confirm + a clear message to the group | waiting |
 | I12 | 1.7      | Look at the map vote page (`npm run dev` → `/vote`) on a phone and a computer: photo size, the spread-out positions in Costa Adeje, the compact header. Say what to change. `VOTE_LAYOUT = 'list'` in `src/lib/config/voting.js` brings back the old card list | **waiting** |
 | I10 | 1.6      | Two-browser check: sign in as the 2nd dev member on `127.0.0.1:<port>` (phrase in your `members.json`), vote, and confirm the other window sees it within 15 s. The agent may not enter phrases itself | **waiting** |
 | I9 | 1.6       | Ages of the 2 kids in Feb 2027: under 2 or 2+? 6 villas allow max 8 guests (Airbnb counts kids 2–12) | done 2026-10-08: both under 2, so all 13 villas fit (no warning needed) |
@@ -73,6 +74,20 @@ The **single source of truth for where the work is.** Plan details are in
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### Reset my votes (2026-10-08, the user's request)
+
+"Reset votes": each member can take all their points back and vote again.
+Built as a per-person action (the user's wording was "all votes return to
+customer"); a reset for EVERYONE is not built, it belongs to Admin (1.8) if
+wanted (decision for the user, I13). `BallotClient.reset()` saves an empty
+ballot at once (no debounce) with its own toast; "Reset my votes" button at the
+bottom of the My votes view (only while voting is open and there are votes),
+behind a confirmation Sheet ("You'll get all N points back… everyone can see
+your votes disappear"). No server change: an empty ballot was already valid.
+Verified in Chrome: Keep leaves everything unchanged; Reset → 6 of 6 left
+instantly, toast, empty state, survives reload, People shows "Not voted yet"
+and Anna's votes untouched; re-voting afterwards saves normally.
 
 ### 1.7 — done (2026-10-08): map voting, villa pages (user's redesign)
 

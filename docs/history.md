@@ -402,3 +402,12 @@ their real spot instead of clustered into bubbles; both layouts kept behind
 `VOTE_LAYOUT` with the old one also tagged `vote-list-v1`; map work before
 Admin and launch. The optional press-and-hold / swipe-up voting on the map
 was not built (see `docs/progress.md`, 1.7).
+
+---
+
+## 2026-10-08 — "Reset votes"
+
+The user asked for a reset option where all votes go back to the customer so
+they can vote again. Built as each member resetting their own votes (My votes
+view, with a confirmation). Whether the admin should also be able to reset
+everyone's votes at once was left as a question for step 1.8.

@@ -163,6 +163,7 @@
 			budget={vv.myBudget}
 			{open}
 			onchange={vote}
+			onreset={() => client.reset()}
 			villasHref={viewHref('villas')}
 		/>
 	{:else}

@@ -30,6 +30,8 @@ export class BallotClient {
 	/** @type {ReturnType<typeof setTimeout> | undefined} */
 	#timer;
 	#again = false;
+	/** Toast shown when the next save succeeds. */
+	#doneMessage = 'Saved';
 
 	/**
 	 * @param {() => Ballot} serverBallot  reads my ballot from the latest page data
@@ -64,6 +66,18 @@ export class BallotClient {
 		}, DEBOUNCE_MS);
 	}
 
+	/**
+	 * Take all my points back: an empty ballot, saved right away (no debounce).
+	 * @param {string} [message]  toast on success
+	 */
+	reset(message = 'All your votes were reset') {
+		clearTimeout(this.#timer);
+		this.pending = false;
+		this.draft = {};
+		this.#doneMessage = message;
+		this.#flush();
+	}
+
 	/** Cancel a scheduled save (e.g. when leaving the page). */
 	destroy() {
 		clearTimeout(this.#timer);
@@ -96,7 +110,8 @@ export class BallotClient {
 				await invalidate('app:votes');
 				// Keep newer taps made during the request; they're sent next.
 				if (this.draft === sent) this.draft = null;
-				showToast('Saved', 'success', 1400);
+				showToast(this.#doneMessage, 'success', this.#doneMessage === 'Saved' ? 1400 : 3000);
+				this.#doneMessage = 'Saved';
 			} else {
 				const message =
 					result.type === 'failure' && typeof result.data?.message === 'string'
@@ -120,6 +135,7 @@ export class BallotClient {
 		clearTimeout(this.#timer);
 		this.pending = false;
 		this.#again = false;
+		this.#doneMessage = 'Saved';
 		this.draft = null;
 		showToast(message, 'error', 4500);
 		await invalidate('app:votes');
