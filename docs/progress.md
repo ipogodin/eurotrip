@@ -36,7 +36,7 @@ The **single source of truth for where the work is.** Plan details are in
 | ---- | --------------------------------------- | ------ | ------- | ---- | ------ |
 | 1.1  | Runtime, storage, test harness          | done   | 2026-10-08 | 2026-10-08 | d6ea475 |
 | 1.2  | Design system + app shell               | done   | 2026-10-08 | 2026-10-08 | 1a00a49 |
-| 1.3  | Auth core                               | done   | 2026-10-08 | 2026-10-08 | COMMIT |
+| 1.3  | Auth core                               | done   | 2026-10-08 | 2026-10-08 | 6c2303d |
 | 1.4  | Login splash, gate, delete old report   | todo   |         |      |        |
 | 1.5  | Villa data + vote logic                 | todo   |         |      |        |
 | 1.6  | Vote page: list + autosave              | todo   |         |      |        |
