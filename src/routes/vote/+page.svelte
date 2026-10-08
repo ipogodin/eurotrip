@@ -12,6 +12,7 @@
 	import VoteHeader from '$lib/components/vote/VoteHeader.svelte';
 	import { villas } from '$lib/config/villas.js';
 	import { MAX_PER_VILLA, VOTE_BUDGET } from '$lib/config/voting.js';
+	import PointsLeft from '$lib/components/vote/PointsLeft.svelte';
 	import { canIncrement, spent, tally } from '$lib/voting.js';
 
 	/** @typedef {import('$lib/components/vote/types.js').VillaRow} VillaRow */
@@ -46,6 +47,8 @@
 	const open = $derived(data.state === 'open');
 	const myBallot = $derived(client.ballot);
 	const mySpent = $derived(spent(myBallot));
+	/** My own point budget (the roster can give someone a custom number). */
+	const myBudget = $derived(memberById.get(data.me)?.votes ?? VOTE_BUDGET);
 	// My unsaved taps count immediately, everyone else's come from the server.
 	const results = $derived(tally({ ...data.ballots, [data.me]: myBallot }, villas, data.members));
 
@@ -66,11 +69,11 @@
 						return member ? [{ member, points: v.points }] : [];
 					}),
 					myPoints,
-					canAdd: canIncrement(myBallot, r.villaId),
+					canAdd: canIncrement(myBallot, r.villaId, { budget: myBudget }),
 					addHint:
 						myPoints >= MAX_PER_VILLA
 							? `${MAX_PER_VILLA} points is the most one villa can get from you.`
-							: `All ${VOTE_BUDGET} points are used. Take one back from another villa first.`
+							: `All ${myBudget} points are used. Take one back from another villa first.`
 				};
 				return [[r.villaId, row]];
 			})
@@ -171,7 +174,9 @@
 
 <svelte:head><title>Vote for the villa · Eurotrip</title></svelte:head>
 
-<AppBar member={data.member} nav={[{ href: '/vote', label: 'Villas' }]} current="/vote" />
+<AppBar member={data.member} nav={[{ href: '/vote', label: 'Villas' }]} current="/vote">
+	{#if open}<PointsLeft spent={mySpent} budget={myBudget} />{/if}
+</AppBar>
 
 <VoteHeader
 	name={data.member?.short ?? ''}
@@ -179,6 +184,7 @@
 	state={data.state}
 	{winnerName}
 	{mySpent}
+	budget={myBudget}
 />
 
 <main class="page stack">
@@ -191,7 +197,14 @@
 		<PeopleList {people} {notVoted} me={data.me} />
 	{:else if view === 'mine'}
 		<h2 class="sr-only">My votes</h2>
-		<MyVotes rows={myRows} spent={mySpent} {open} onchange={vote} villasHref={viewHref('villas')} />
+		<MyVotes
+			rows={myRows}
+			spent={mySpent}
+			budget={myBudget}
+			{open}
+			onchange={vote}
+			villasHref={viewHref('villas')}
+		/>
 	{:else}
 		<h2 class="sr-only">Villas, most votes first</h2>
 		<VillaGrid rows={villaRows} {open} winnerId={data.winnerId} onchange={vote} />

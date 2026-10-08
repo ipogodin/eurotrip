@@ -1,18 +1,18 @@
 <script>
 	import PointsMeter from '$lib/components/ui/PointsMeter.svelte';
 	import Stepper from '$lib/components/ui/Stepper.svelte';
-	import { VOTE_BUDGET } from '$lib/config/voting.js';
 
 	/**
 	 * @type {{
 	 *   rows: import('./types.js').VillaRow[],
 	 *   spent: number,
+	 *   budget: number,
 	 *   open: boolean,
 	 *   onchange: (villaId: string, points: number) => void,
 	 *   villasHref: string
 	 * }}
 	 */
-	let { rows, spent, open, onchange, villasHref } = $props();
+	let { rows, spent, budget, open, onchange, villasHref } = $props();
 </script>
 
 <div class="stack">
@@ -21,7 +21,7 @@
 			<p class="t-headline">No votes yet</p>
 			<p>
 				{#if open}
-					Browse the villas and tap <b>+</b> on the ones you like. You have {VOTE_BUDGET} points.
+					Browse the villas and tap <b>+</b> on the ones you like. You have {budget} points.
 				{:else}
 					You didn't vote before voting closed.
 				{/if}
@@ -70,7 +70,7 @@
 
 	{#if open}
 		<div class="sticky">
-			<PointsMeter {spent} />
+			<PointsMeter {spent} {budget} />
 		</div>
 	{/if}
 </div>

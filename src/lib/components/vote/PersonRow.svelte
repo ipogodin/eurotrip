@@ -19,7 +19,7 @@
 				{#if person.spent === 0}
 					Not voted yet
 				{:else}
-					{person.spent} of {VOTE_BUDGET} points
+					{person.spent} of {person.member.votes ?? VOTE_BUDGET} points
 				{/if}
 			</p>
 		</div>

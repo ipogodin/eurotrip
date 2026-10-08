@@ -16,9 +16,19 @@
 	let { title = 'Eurotrip', member, nav = [], current = '', children } = $props();
 
 	let menuOpen = $state(false);
+	/** @type {HTMLDivElement | undefined} */
+	let menuEl = $state();
+
+	/** Close the account menu on any press outside it. @param {PointerEvent} e */
+	function onWindowPointerDown(e) {
+		if (menuOpen && menuEl && !menuEl.contains(/** @type {Node} */ (e.target))) menuOpen = false;
+	}
 </script>
 
-<svelte:window onkeydown={(e) => e.key === 'Escape' && (menuOpen = false)} />
+<svelte:window
+	onkeydown={(e) => e.key === 'Escape' && (menuOpen = false)}
+	onpointerdown={onWindowPointerDown}
+/>
 
 <header class="bar">
 	<div class="inner">
@@ -41,7 +51,7 @@
 		<div class="end">
 			{@render children?.()}
 			{#if member}
-				<div class="menu">
+				<div class="menu" bind:this={menuEl}>
 					<button
 						type="button"
 						class="who"

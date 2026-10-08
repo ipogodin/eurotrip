@@ -56,6 +56,9 @@ The old island report is **deleted** in step 1.4 (git history keeps it).
 | 2026-10-08 | Phrase storage | Plain text in the env var (hashing ~26-bit phrases adds little)                                            |
 | 2026-10-08 | Roster editing | Manual, pre-deploy: edit `members.json` → `npm run members:push` → redeploy. No in-app editing           |
 | 2026-10-08 | Kit version    | Stay on SvelteKit 2 for R1/R2; Kit 3 upgrade is step 3.3                                                   |
+| 2026-10-08 | Villas         | 13 Tenerife listings from the user's Airbnb wishlist (was "6–10")                                         |
+| 2026-10-08 | Vote budget    | Default 6; optional per-member `votes` in the roster (1–30) overrides it                                  |
+| 2026-10-08 | Member photos  | User supplies photos; "change photo" is a prank swap (step 3.4); photos never in `static/` or the repo     |
 
 ## 3. Timeline
 
@@ -414,6 +417,57 @@ Deploy, smoke test the phase switch + all tabs at 390/1280, update docs.
   OG image, optional dark mode.
 - **3.3 SvelteKit 3 / adapter-vercel 7 upgrade:** separate commit, full
   re-test.
+
+### Step 3.4 — Member photos + the "neh, this one is better" swap
+
+Requested 2026-10-08. Can be pulled forward (even before 1.9) as soon as the
+photos arrive; it doesn't touch voting logic. ~Half a day.
+
+**What it does.** Every avatar (app bar, voter stacks, People view, trip hub)
+shows the member's photo instead of initials. The account menu gets a
+**Change photo** item. When someone uses it, the app plays along ("Uploading
+your photo…"), then says it's updated, but the new avatar is a different
+photo from a pool the user supplied, shown with the caption **"neh, I think
+this one is better"**. Everyone else sees the swapped photo too (on their
+next 15 s refresh), so the joke is shared.
+
+**Inputs from the user (I11):**
+- One photo per member (face, roughly square; any size, we crop).
+- The prank pool: the replacement photos, and the exact caption text.
+- Rules to confirm: one fixed replacement per member, or the next one from a
+  shared pool each time they try? Can they ever get their real photo back
+  (e.g. the admin resets it)?
+
+**Privacy (decided):** the repo is public and `static/` files are served to
+anyone with the URL, without login. So member photos and the prank pool go
+into a **private Vercel Blob store**, uploaded once by the agent with the CLI,
+never committed. They're served through a gated route
+`/avatars/[member]/+server.js` (member session required, `Cache-Control:
+private`), resized to 96 / 256 px webp at upload time.
+
+**Tasks:**
+1. Provision a private Blob store (load the `vercel:vercel-storage` skill),
+   `scripts/avatars.js` to crop/resize and upload `members/<id>.webp` and
+   `pool/<n>.webp`; record the blob keys, never the files, in config.
+2. Redis `avatar:{memberId}` = `{ src: 'own' | 'pool:<n>', changedAt }`;
+   the vote/trip `load` returns each member's current avatar version so
+   polling picks up swaps.
+3. `Avatar.svelte`: photo when available (`<img>` from `/avatars/<id>?v=…`,
+   initials fallback while loading / on error).
+4. Account menu → **Change photo** → native file picker (`accept="image/*"`).
+   The chosen file is **never uploaded or stored**: the client only shows a
+   preview + fake progress (~1.5 s), then posts a form action
+   `?/swapPhoto` (no file) that assigns the next pool photo per the rules.
+   Then a Sheet reveals the new avatar with the caption.
+5. Optional: a short toast for everyone else on their next refresh, e.g.
+   "Anna has a new photo". Confirm with the user.
+6. Admin: "Reset photo" per member (back to `own`).
+
+**Acceptance:** photos never reachable without a session (curl the URL
+logged out → 303); the swap persists across reloads and shows for a second
+member within 15 s; the uploaded file never leaves the browser (check the
+request payload); keyboard and screen-reader friendly (the caption is
+announced).
 
 ## 8. Risks
 

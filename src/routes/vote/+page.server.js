@@ -1,15 +1,15 @@
 import { error, fail } from '@sveltejs/kit';
 import { DEFAULT_DEADLINE } from '$lib/config/voting.js';
 import { villas } from '$lib/config/villas.js';
-import { effectiveDeadline, validateBallot, votingState } from '$lib/voting.js';
-import { getMembers } from '$lib/server/roster.js';
+import { effectiveDeadline, spent, validateBallot, votingState } from '$lib/voting.js';
+import { findMemberById, getMembers } from '$lib/server/roster.js';
 import { getStore } from '$lib/server/store/index.js';
 
 const villaIds = villas.map((v) => v.id);
 
-/** Everyone's public identity, in roster order. Never includes phrases. */
+/** Everyone's public identity + point budget, in roster order. Never phrases. */
 function publicMembers() {
-	return getMembers().map(({ id, name, short }) => ({ id, name, short }));
+	return getMembers().map(({ id, name, short, votes }) => ({ id, name, short, votes }));
 }
 
 /** Current deadline, state and winner, always computed with server time. */
@@ -53,15 +53,21 @@ export const actions = {
 			return fail(400, { message: 'Invalid ballot.' });
 		}
 
-		const { state } = await votingStatus();
-		const result = validateBallot(input, { villaIds, state });
+		const me = locals.member.id;
+		const [{ state }, saved] = await Promise.all([votingStatus(), getStore().getBallots([me])]);
+		const result = validateBallot(input, {
+			villaIds,
+			state,
+			budget: findMemberById(me)?.votes,
+			previousSpent: spent(saved[me] ?? {})
+		});
 		if (!result.ok) {
 			const status = result.code === 'closed' || result.code === 'decided' ? 409 : 400;
 			return fail(status, { message: result.error });
 		}
 
 		await getStore().setBallot(
-			locals.member.id,
+			me,
 			/** @type {import('$lib/server/store/types.js').Ballot} */ (result.ballot)
 		);
 		return { ballot: result.ballot };

@@ -51,6 +51,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 3.1  | Canary video background                 | done (early) | 2026-10-08 | 2026-10-08 | 4366b5b |
 | 3.2  | Quality pass                            | todo   |         |      |        |
 | 3.3  | SvelteKit 3 upgrade                     | todo   |         |      |        |
+| 3.4  | Member photos + "neh" photo swap        | todo (needs I11) |   |      |        |
 
 ## Blockers / inputs from the user
 
@@ -60,6 +61,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
+| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4) | waiting |
 | I10 | 1.6      | Two-browser check: sign in as the 2nd dev member on `127.0.0.1:<port>` (phrase in your `members.json`), vote, and confirm the other window sees it within 15 s. The agent may not enter phrases itself | **waiting** |
 | I9 | 1.6       | Ages of the 2 kids in Feb 2027: under 2 or 2+? 6 villas allow max 8 guests (Airbnb counts kids 2–12) | done 2026-10-08: both under 2, so all 13 villas fit (no warning needed) |
 | I8 | 1.4       | Look at the login page (`npm run dev`, open `/`; dev phrase is in your local `members.json`) and tell me if you want changes | done 2026-10-08: sea video approved ("looks good") |
@@ -70,6 +72,24 @@ The **single source of truth for where the work is.** Plan details are in
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### 1.6 follow-ups (2026-10-08, the user's feedback)
+
+- "N left" pill (`components/vote/PointsLeft.svelte`) in the sticky app bar,
+  visible while scrolling; hides "of N" under 380 px.
+- Account menu closes on any pointer press outside it (window
+  `pointerdown`), still on Escape and on the avatar toggle.
+- Per-member budget: optional roster `votes` (1–30, validated in
+  `parseMembers`, also used by the CLI), carried in `PublicMember.votes`;
+  `validateBallot` gets the member's `budget` + `previousSpent` (an
+  over-budget ballot is accepted only if it spends less than before, for
+  budgets lowered after voting); `tally` uses each member's own budget for
+  `left`; header, meter, My votes and People rows show the member's number.
+  +5 tests (100 total). Not tried in the browser with a custom number: that
+  needs editing the local `members.json` (holds phrases) and a dev restart.
+- Gotcha: Svelte 5 trims whitespace at the start/end of an element, so
+  `<span> of 6</span>` renders "0of 6"; put spaces outside tags.
+- Member photos + prank swap: planned as step 3.4 (needs I11).
 
 ### 1.6 — done (2026-10-08)
 

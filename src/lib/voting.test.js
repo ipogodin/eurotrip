@@ -43,6 +43,16 @@ describe('validateBallot', () => {
 		expect(validateBallot({ a: 3, b: 3 }, open).ok).toBe(true);
 		expect(validateBallot({ a: 3, b: 3, c: 1 }, open)).toMatchObject({ ok: false, code: 'budget' });
 	});
+	it('uses a custom per-member budget', () => {
+		expect(validateBallot({ a: 3, b: 3, c: 3 }, { ...open, budget: 9 }).ok).toBe(true);
+		expect(validateBallot({ a: 3, b: 1 }, { ...open, budget: 3 }).ok).toBe(false);
+	});
+	it('lets someone over a lowered budget step down, but not stay or go up', () => {
+		const lowered = { ...open, budget: 3, previousSpent: 6 };
+		expect(validateBallot({ a: 3, b: 2 }, lowered).ok).toBe(true); // 5 < 6
+		expect(validateBallot({ a: 3, b: 3 }, lowered).ok).toBe(false); // still 6
+		expect(validateBallot({ a: 3, b: 3, c: 1 }, lowered).ok).toBe(false); // 7
+	});
 	it('rejects more than 3 on one villa', () => {
 		expect(validateBallot({ a: 4 }, open)).toMatchObject({ ok: false, code: 'points' });
 	});
@@ -98,6 +108,15 @@ describe('ballot helpers', () => {
 });
 
 describe('tally', () => {
+	it("computes points left from each member's own budget", () => {
+		const t = tally(
+			{ ilia: { a: 3 }, anna: { a: 3 } },
+			[{ id: 'a', name: 'A' }],
+			[{ id: 'ilia' }, { id: 'anna', votes: 10 }]
+		);
+		expect(t.byPerson.map((p) => p.left)).toEqual([3, 7]);
+	});
+
 	const villas = [
 		{ id: 'a', name: 'Casa Alba' },
 		{ id: 'b', name: 'Villa Brisa' },

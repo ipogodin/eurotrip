@@ -1,13 +1,19 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { isValidPhrase, normalizePhrase } from './phrase.js';
 
+import { VOTE_BUDGET } from '../config/voting.js';
+
 /**
- * @typedef {{ id: string, name: string, short: string, phrase: string, admin: boolean }} Member
- * @typedef {{ id: string, name: string, short: string, isAdmin: boolean }} PublicMember
+ * `votes` is the member's point budget: the optional roster field, else the
+ * default `VOTE_BUDGET`.
+ * @typedef {{ id: string, name: string, short: string, phrase: string, admin: boolean, votes: number }} Member
+ * @typedef {{ id: string, name: string, short: string, isAdmin: boolean, votes: number }} PublicMember
  */
 
 const ID_FORMAT = /^[a-z0-9][a-z0-9-]{1,23}$/;
 export const EXPECTED_MEMBERS = 8;
+/** Sanity cap for a custom per-member budget. */
+export const MAX_CUSTOM_VOTES = 30;
 
 /**
  * Validate and normalize the raw roster (the parsed `MEMBERS` JSON).
@@ -54,7 +60,21 @@ export function parseMembers(raw) {
 		}
 		phrases.add(phrase);
 
-		members.push({ id, name, short, phrase, admin: e.admin === true });
+		let votes = VOTE_BUDGET;
+		if (e.votes !== undefined) {
+			if (
+				typeof e.votes !== 'number' ||
+				!Number.isInteger(e.votes) ||
+				e.votes < 1 ||
+				e.votes > MAX_CUSTOM_VOTES
+			) {
+				errors.push(
+					`${at} (${id || '?'}): votes must be a whole number from 1 to ${MAX_CUSTOM_VOTES}`
+				);
+			} else votes = e.votes;
+		}
+
+		members.push({ id, name, short, phrase, admin: e.admin === true, votes });
 	});
 
 	if (!members.some((m) => m.admin)) errors.push('at least one member must have "admin": true');
@@ -92,5 +112,5 @@ export function matchPhrase(members, input) {
  * @returns {PublicMember}
  */
 export function toPublic(m) {
-	return { id: m.id, name: m.name, short: m.short, isAdmin: m.admin };
+	return { id: m.id, name: m.name, short: m.short, isAdmin: m.admin, votes: m.votes };
 }

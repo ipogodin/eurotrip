@@ -372,3 +372,18 @@ the shared `tally()`, so a tap shows instantly and polling only moves
 ballots. The agent could not run the two-person check itself (signing in as
 a second member with a test phrase was blocked by a permission rule), so the
 user does that one (I10). Details in `docs/progress.md` (1.6).
+
+---
+
+## 2026-10-08 — Vote page feedback: points left, menu, budgets, photos
+
+The user asked for: the points left to stay visible while voting (now a
+pill in the sticky top bar, for every member); the account menu to close on
+a click anywhere else; an optional per-member vote budget in the roster
+(`votes`, default 6); and, as a planned feature (step 3.4), member photos
+plus a joke "change photo": the app pretends to upload, then swaps in a
+photo from a pool the user provides, with the caption "neh, I think this one
+is better", visible to everyone. Decided while planning 3.4: photos never go
+into `static/` or the public repo (both readable without login); they live
+in a private Blob store behind a member-only route, and the "uploaded" file
+never leaves the browser.

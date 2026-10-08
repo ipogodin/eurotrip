@@ -35,9 +35,12 @@ Env var `MEMBERS` (JSON array), parsed once at server start:
 ```json
 [
   { "id": "illia", "name": "Illia Pogodin", "short": "Illia", "phrase": "copper-heron", "admin": true },
-  { "id": "anna",  "name": "Anna …",        "short": "Anna",  "phrase": "…" }
+  { "id": "anna",  "name": "Anna …",        "short": "Anna",  "phrase": "…", "votes": 8 }
 ]
 ```
+
+- `votes` (optional, whole number 1–30): this member's point budget; default
+  `VOTE_BUDGET` (6). It's public (shown in the UI), unlike the phrase.
 
 - Validation at startup (throws → deploy fails loudly): 8 entries expected
   (warn otherwise), unique `id`, unique normalized `phrase`, ≥1 `admin`.
@@ -171,8 +174,12 @@ export const MAX_PER_VILLA = 3;
   (deadline = now), **reopen** (future deadline; only when no winner),
   **pick winner** (sets `trip.winnerId`, also closes voting), **undo
   winner** (back to `closed`).
-- `validateBallot(ballot, { villaIds, state })`: state must be `open`; keys
-  ⊆ known villa ids; values integers 1–3 (0 → drop the key); sum ≤ 6.
+- `validateBallot(ballot, { villaIds, state, budget, previousSpent })`:
+  state must be `open`; keys ⊆ known villa ids; values integers 1–3 (0 →
+  drop the key); sum ≤ the member's own `budget` (roster `votes`, default
+  6). If an admin lowered someone's budget after they voted, an over-budget
+  ballot is still accepted when it spends **less** than their saved one, so
+  they can step down point by point.
   The server is the only authority. UI limits are a convenience.
 - `tally(ballots, villas, members)` →
   - `byVilla`: `{ villaId, total, rank, voters: [{ memberId, points }] }`,

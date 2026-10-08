@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { matchPhrase, parseMembers, toPublic } from './members.js';
 
+/** @returns {Record<string, unknown>[]} */
 const raw = () => [
 	{ id: 'illia', name: 'Illia Pogodin', short: 'Illia', phrase: 'copper-heron', admin: true },
 	{ id: 'anna', name: 'Anna Example', phrase: 'Sample Words' }
@@ -14,9 +15,24 @@ describe('parseMembers', () => {
 			name: 'Anna Example',
 			short: 'Anna',
 			phrase: 'sample-words',
-			admin: false
+			admin: false,
+			votes: 6
 		});
 		expect(members[0].admin).toBe(true);
+	});
+
+	it('accepts an optional custom vote budget', () => {
+		const r = raw();
+		r[1] = { ...r[1], votes: 9 };
+		expect(parseMembers(r).members.map((m) => m.votes)).toEqual([6, 9]);
+	});
+
+	it('rejects a bad custom vote budget', () => {
+		for (const votes of [0, 2.5, '6', 31]) {
+			const r = raw();
+			r[1] = { ...r[1], votes };
+			expect(() => parseMembers(r)).toThrow(/votes must be/);
+		}
 	});
 
 	it('warns when the roster is not 8 people', () => {
@@ -89,7 +105,13 @@ describe('toPublic', () => {
 	it('never includes the phrase', () => {
 		const { members } = parseMembers(raw());
 		const pub = toPublic(members[0]);
-		expect(pub).toEqual({ id: 'illia', name: 'Illia Pogodin', short: 'Illia', isAdmin: true });
+		expect(pub).toEqual({
+			id: 'illia',
+			name: 'Illia Pogodin',
+			short: 'Illia',
+			isAdmin: true,
+			votes: 6
+		});
 		expect(JSON.stringify(pub)).not.toContain('heron');
 	});
 });

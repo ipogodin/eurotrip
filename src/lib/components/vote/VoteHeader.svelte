@@ -4,7 +4,7 @@
 	import PointsMeter from '$lib/components/ui/PointsMeter.svelte';
 	import Sun from '$lib/components/ui/Sun.svelte';
 	import Wave from '$lib/components/ui/Wave.svelte';
-	import { MAX_PER_VILLA, VOTE_BUDGET } from '$lib/config/voting.js';
+	import { MAX_PER_VILLA } from '$lib/config/voting.js';
 	import { formatDeadline } from '$lib/time.js';
 
 	/**
@@ -13,12 +13,13 @@
 	 *   deadline: string,
 	 *   state: import('$lib/voting.js').VotingState,
 	 *   winnerName: string | null,
-	 *   mySpent: number
+	 *   mySpent: number,
+	 *   budget: number
 	 * }}
 	 */
-	let { name, deadline, state, winnerName, mySpent } = $props();
+	let { name, deadline, state, winnerName, mySpent, budget } = $props();
 
-	const left = $derived(VOTE_BUDGET - mySpent);
+	const left = $derived(Math.max(0, budget - mySpent));
 </script>
 
 <section class="hero">
@@ -36,7 +37,7 @@
 			<h1 class="t-display">Where are we <em>sleeping</em>?</h1>
 			{#if state === 'open'}
 				<p class="lede">
-					{VOTE_BUDGET} points to spend, up to {MAX_PER_VILLA} per villa. Votes save as you tap, and everyone
+					{budget} points to spend, up to {MAX_PER_VILLA} per villa. Votes save as you tap, and everyone
 					can see them.
 				</p>
 			{/if}
@@ -49,10 +50,10 @@
 			</div>
 			{#if state === 'open'}
 				<div class="meter">
-					<PointsMeter spent={mySpent} />
+					<PointsMeter spent={mySpent} {budget} />
 					<p class="left" aria-live="polite">
 						{#if left === 0}
-							All {VOTE_BUDGET} points used. Take one back to move it.
+							All {budget} points used. Take one back to move it.
 						{:else if mySpent === 0}
 							You haven't voted yet.
 						{:else}

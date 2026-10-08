@@ -62,13 +62,16 @@ export function withPoints(ballot, villaId, points) {
 
 /**
  * Validate a submitted ballot. The server must call this on every save.
- * Zeros are dropped from the cleaned ballot.
+ * Zeros are dropped from the cleaned ballot. `budget` is this member's own
+ * budget. `previousSpent` (what their saved ballot uses now) lets someone
+ * whose budget was lowered after voting step back down point by point:
+ * an over-budget ballot is accepted only if it spends less than before.
  * @param {unknown} input
- * @param {{ villaIds: string[], state: VotingState, budget?: number, max?: number }} ctx
+ * @param {{ villaIds: string[], state: VotingState, budget?: number, max?: number, previousSpent?: number }} ctx
  * @returns {{ ok: true, ballot: Ballot } | { ok: false, code: string, error: string }}
  */
 export function validateBallot(input, ctx) {
-	const { villaIds, state, budget = VOTE_BUDGET, max = MAX_PER_VILLA } = ctx;
+	const { villaIds, state, budget = VOTE_BUDGET, max = MAX_PER_VILLA, previousSpent = 0 } = ctx;
 	if (state === 'decided') {
 		return { ok: false, code: 'decided', error: 'A winner has been picked. Voting is over.' };
 	}
@@ -95,7 +98,8 @@ export function validateBallot(input, ctx) {
 		}
 		if (points > 0) clean[villaId] = points;
 	}
-	if (spent(clean) > budget) {
+	const total = spent(clean);
+	if (total > budget && total >= previousSpent) {
 		return { ok: false, code: 'budget', error: `You only have ${budget} points in total.` };
 	}
 	return { ok: true, ballot: clean };
@@ -105,7 +109,7 @@ export function validateBallot(input, ctx) {
  * Results for the three views.
  * @param {Record<string, Ballot>} ballots  memberId -> ballot
  * @param {{ id: string, name: string }[]} villas
- * @param {{ id: string }[]} members  in display order
+ * @param {{ id: string, votes?: number }[]} members  in display order; `votes` = own budget
  * @param {{ budget?: number }} [limits]
  * @returns {{
  *   byVilla: { villaId: string, total: number, rank: number | null,
@@ -124,7 +128,7 @@ export function tally(ballots, villas, members, { budget = VOTE_BUDGET } = {}) {
 			.map(([villaId, points]) => ({ villaId, points }))
 			.sort((a, b) => b.points - a.points);
 		const used = picks.reduce((sum, p) => sum + p.points, 0);
-		return { memberId: m.id, spent: used, left: Math.max(0, budget - used), picks };
+		return { memberId: m.id, spent: used, left: Math.max(0, (m.votes ?? budget) - used), picks };
 	});
 
 	const unsorted = villas.map((v) => {

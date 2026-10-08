@@ -1,5 +1,5 @@
 /**
- * @typedef {{ id: string, name: string, short: string }} PublicMember
+ * @typedef {{ id: string, name: string, short: string, votes?: number }} PublicMember  `votes` = point budget
  */
 
 const HUES = 8;
