@@ -37,6 +37,18 @@ export function spent(ballot) {
 }
 
 /**
+ * A copy of the ballot without points for villas that aren't on the list (any
+ * more). Points on a removed villa must never count against the member.
+ * @param {Ballot} ballot
+ * @param {Iterable<string>} villaIds  the villas that are on the list
+ * @returns {Ballot}
+ */
+export function pruneBallot(ballot, villaIds) {
+	const keep = new Set(villaIds);
+	return Object.fromEntries(Object.entries(ballot).filter(([id]) => keep.has(id)));
+}
+
+/**
  * Whether one more point can go to this villa right now.
  * @param {Ballot} ballot
  * @param {string} villaId

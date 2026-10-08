@@ -26,9 +26,9 @@ The **single source of truth for where the work is.** Plan details are in
 
 ## Current position
 
-**Step:** 1.8 — Admin
+**Step:** 1.9 — Ship R1
 **State:** not started
-**Next action:** step 1.8 (admin), then 1.9 (ship). The user should look at the new map vote page (I12). Open: the two-browser check of 1.6 (I10; Anna's votes already show up in the dev data, so it may have been done). Login page approved by the user 2026-10-08 (I8 done, sea video in).
+**Next action:** step 1.9 (ship). Needs the 8 members (I4) first. The user should look at the new map vote page (I12). Open: the two-browser check of 1.6 (I10; Anna's votes already show up in the dev data, so it may have been done). Login page approved by the user 2026-10-08 (I8 done, sea video in).
 
 ## Step board
 
@@ -41,7 +41,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 1.5  | Villa data + vote logic                 | done   | 2026-10-08 | 2026-10-08 | 72fb769 |
 | 1.6  | Vote page: list + autosave              | done   | 2026-10-08 | 2026-10-08 | 8656cd1 |
 | 1.7  | Map layout + villa detail (can slip)    | done (illustrated map) | 2026-10-08 | 2026-10-08 | see below |
-| 1.8  | Admin                                   | todo   |         |      |        |
+| 1.8  | Admin                                   | done   | 2026-10-08 | 2026-10-08 | see log |
 | 1.9  | Ship R1                                 | todo   |         |      |        |
 | 2.1  | Phase switch + trip state               | todo   |         |      |        |
 | 2.2  | Trip overview tab                       | todo   |         |      |        |
@@ -62,7 +62,8 @@ The **single source of truth for where the work is.** Plan details are in
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
 | I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4) | waiting |
-| I13 | 1.8      | Should the admin also get a "reset everyone's votes" button (everyone's points back, nobody's old votes kept)? Needs a confirm + a clear message to the group | waiting |
+| I13 | 1.8      | Admin reset-everyone's-votes button | done 2026-10-08: yes, built (plus removing a villa, points return to voters) |
+| I14 | 1.8      | Sign in as a NON-admin (e.g. the 2nd dev member) and open `/admin`: it must say 403. The agent can't enter phrases; guards are unit-tested and anonymous requests were checked | waiting |
 | I12 | 1.7      | Look at the map vote page (`npm run dev` → `/vote`) on a phone and a computer: photo size, the spread-out positions in Costa Adeje, the compact header. Say what to change. `VOTE_LAYOUT = 'list'` in `src/lib/config/voting.js` brings back the old card list | **waiting** |
 | I10 | 1.6      | Two-browser check: sign in as the 2nd dev member on `127.0.0.1:<port>` (phrase in your `members.json`), vote, and confirm the other window sees it within 15 s. The agent may not enter phrases itself | **waiting** |
 | I9 | 1.6       | Ages of the 2 kids in Feb 2027: under 2 or 2+? 6 villas allow max 8 guests (Airbnb counts kids 2–12) | done 2026-10-08: both under 2, so all 13 villas fit (no warning needed) |
@@ -74,6 +75,55 @@ The **single source of truth for where the work is.** Plan details are in
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### 1.8 — done (2026-10-08): Admin
+
+`/admin` (admin only: `requireAdmin` in the load AND in every one of the 7
+actions; non-admins get 403, anonymous visitors are redirected by the gate
+before any code runs). Page: **Voting window** (status chip, countdown,
+closing time in PDT; date box in Pacific time; "Update deadline" /
+"Reopen voting" when closed; "Close voting now"), **Results** (ranked villas
+with voter avatars; **Pick winner** and **Remove** per villa), **Removed
+villas** (+ "Bring back"), **Start the vote over** ("Reset everyone's votes"),
+**Login security** (failed logins 24 h, pause status). Every one-way action
+asks first (`ui/ConfirmSheet`); the remove sheet names who gets how many
+points back. Toasts report each outcome (`admin-form.js`).
+The user's additions: (1) reset everyone's votes; (2) remove a villa from
+the list and give its points back to the voters.
+- Storage: `voting` hash gained `removed` (JSON list of villa ids) and
+  `resetAt`; `parseIds` tolerates a corrupted value; the Upstash store takes an
+  injectable client so it's tested with a fake (4 tests).
+- `server/admin-actions.js`: all rules as store-level functions (testable):
+  `setDeadline` (future only, ≤120 days, not while a winner is picked),
+  `closeNow`, `pickWinner` (active villas only), `undoWinner`,
+  `resetAllVotes` (not while decided), `removeVilla` (deletes the villa from
+  every ballot = points return; refuses the winner, a decided vote, and
+  fewer than 2 remaining villas), `restoreVilla` (starts at zero; returned
+  points are NOT re-applied). 25 tests.
+- `time.js`: `pacificToUtc` / `utcToPacificInput` (DST-correct; tests cover
+  Oct 31/Nov 1 2026 and Mar 14 2027, bad input, ambiguous/skipped hours).
+- `server/guards.js` (`requireMember`, `requireAdmin`; 4 tests).
+- Removed villas hide everywhere: `loadVoteData` returns `removed`, prunes
+  every ballot to active villas, the save action validates only against active
+  villas (so no one can vote for a removed one or be charged for leftovers),
+  `pruneBallot` in `voting.js`. A removed villa's own page says "was removed".
+  Pin positions stay put (layout uses the full list).
+- **Member notices** (`useAdminNotices`): after a refresh, members see "The
+  admin reset everyone's votes. You have all N points again." or "<Villa> was
+  removed from the list. Your N points are back." No notice on first load.
+- Verified in Chrome as the admin: remove a villa with votes (points back
+  3 → 6 left… confirm text lists who), the old link shows the removed notice,
+  the server refuses a ballot with the removed villa (400) and accepts the
+  freed points elsewhere; reset everyone (+ notice); close (saves → 409) and
+  reopen with a Pacific time that reads back identically; pick winner (banner
+  "We're staying at …", gold pin, controls locked) and undo; restore; remove →
+  notice "Your 2 points are back." Anonymous GET → login redirect, anonymous
+  POSTs to all 7 actions → redirected, state unchanged. 390 px: no overflow.
+- Not verified by the agent: a signed-in NON-admin getting 403 (credential
+  entry is blocked for the agent; I14). Covered by `guards.test.js`.
+- Gotchas: in zsh a loop variable named `path` overwrites PATH (curl vanished);
+  a Write over `store/upstash.test.js` replaced existing tests (restored): check
+  `git diff` for deletions before committing test files.
 
 ### Reset button wording (2026-10-08, the user's feedback)
 

@@ -22,7 +22,7 @@ contract. If implementation deviates, update this file in the same commit.
 | `/trip`           | member     | Phase 2 overview (redirects to `/vote` while no winner)                         |
 | `/trip/nearby`    | member     | Beaches / attractions / cafés + map                                             |
 | `/trip/flights`   | member     | LON / WAW / FRA ↔ island                                                        |
-| `/admin`          | admin      | Deadline, winner, dates, notes, stats                                           |
+| `/admin`          | admin      | Deadline, winner, reset everyone's votes, remove/restore villas, results, login stats. 403 for non-admins |
 | `/_styleguide`    | dev only   | Component gallery (404 in production)                                           |
 
 Anonymous request to any member route → `303 /?next=<path>` (only same-site
@@ -148,7 +148,7 @@ Keys:
 | Key                   | Type   | Content                                                     |
 | --------------------- | ------ | ----------------------------------------------------------- |
 | `ballot:{memberId}`   | hash   | `villaId → points`                                          |
-| `voting`              | hash   | `deadline` (ISO UTC override)                               |
+| `voting`              | hash   | `deadline` (ISO UTC override), `removed` (JSON list of villa ids the admin removed), `resetAt` (ISO, last reset of everyone's votes) |
 | `trip`                | hash   | `winnerId`, `pickedAt`, `dateStart`, `dateEnd`, `checkIn`, `checkOut`, `notes`, `updatedAt` |
 | `rl:ip:{ip}`          | string | fail count, TTL 15 min                                      |
 | `rl:lock:{ip}`        | string | lock level, TTL = lock duration                             |
@@ -170,7 +170,7 @@ export const MAX_PER_VILLA = 3;
 
 - `effectiveDeadline = voting.deadline ?? DEFAULT_DEADLINE`.
 - `votingState(now, deadline, winnerId)` → `'open' | 'closed' | 'decided'`.
-- Admin actions: **extend** (set deadline to a future time), **close now**
+- Admin actions (all in `server/admin-actions.js`; also **remove villa** = delete it from every ballot, points return to voters; **restore villa**; **reset everyone's votes**): **extend** (set deadline to a future time), **close now**
   (deadline = now), **reopen** (future deadline; only when no winner),
   **pick winner** (sets `trip.winnerId`, also closes voting), **undo
   winner** (back to `closed`).

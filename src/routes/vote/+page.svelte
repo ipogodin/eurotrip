@@ -15,7 +15,7 @@
 	import VoteHeader from '$lib/components/vote/VoteHeader.svelte';
 	import { villas } from '$lib/config/villas.js';
 	import { VOTE_LAYOUT } from '$lib/config/voting.js';
-	import { useVotePolling } from '$lib/vote-polling.svelte.js';
+	import { useAdminNotices, useVotePolling } from '$lib/vote-polling.svelte.js';
 	import { buildVoteView } from '$lib/vote-view.js';
 	import { spent } from '$lib/voting.js';
 
@@ -49,12 +49,20 @@
 	$effect(() => () => client.destroy());
 
 	const villaById = new Map(villas.map((v) => [v.id, v]));
+	// Villas the admin removed disappear for everyone.
+	const activeVillas = $derived(villas.filter((v) => !data.removed.includes(v.id)));
 	const open = $derived(data.state === 'open');
 	const myBallot = $derived(client.ballot);
 	const mySpent = $derived(spent(myBallot));
 	// My unsaved taps count immediately; everyone else's come from the server.
 	const vv = $derived(
-		buildVoteView({ villas, members: data.members, ballots: data.ballots, me: data.me, myBallot })
+		buildVoteView({
+			villas: activeVillas,
+			members: data.members,
+			ballots: data.ballots,
+			me: data.me,
+			myBallot
+		})
 	);
 
 	// Card order (list layout): ranking, but frozen while someone is tapping.
@@ -124,6 +132,14 @@
 			noScroll: true
 		});
 	}
+
+	useAdminNotices({
+		resetAt: () => data.resetAt,
+		removed: () => data.removed,
+		myBallot: () => data.ballots[data.me] ?? {},
+		budget: () => vv.myBudget,
+		villaName: (id) => villaById.get(id)?.name ?? 'A villa'
+	});
 
 	useVotePolling({
 		busy: () => client.busy,

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	canIncrement,
 	effectiveDeadline,
+	pruneBallot,
 	spent,
 	tally,
 	validateBallot,
@@ -28,6 +29,18 @@ describe('votingState / effectiveDeadline', () => {
 		expect(effectiveDeadline('2026-10-11T00:00:00Z', DEADLINE)).toBe('2026-10-11T00:00:00Z');
 		expect(effectiveDeadline(null, DEADLINE)).toBe(DEADLINE);
 		expect(effectiveDeadline('', DEADLINE)).toBe(DEADLINE);
+	});
+});
+
+describe('pruneBallot', () => {
+	it('drops points on villas that are not on the list', () => {
+		expect(pruneBallot({ a: 3, b: 2, gone: 1 }, ['a', 'b', 'c'])).toEqual({ a: 3, b: 2 });
+		expect(spent(pruneBallot({ a: 3, gone: 3 }, ['a']))).toBe(3);
+	});
+	it('does not change the original', () => {
+		const ballot = { a: 1, gone: 2 };
+		pruneBallot(ballot, ['a']);
+		expect(ballot).toEqual({ a: 1, gone: 2 });
 	});
 });
 

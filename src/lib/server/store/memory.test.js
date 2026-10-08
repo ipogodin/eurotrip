@@ -33,7 +33,7 @@ describe('memory store', () => {
 	});
 
 	it('voting deadline override can be set and cleared', async () => {
-		expect(await store.getVoting()).toEqual({ deadline: null });
+		expect(await store.getVoting()).toEqual({ deadline: null, removed: [], resetAt: null });
 		await store.setVoting({ deadline: '2026-10-11T00:00:00Z' });
 		expect((await store.getVoting()).deadline).toBe('2026-10-11T00:00:00Z');
 		await store.setVoting({ deadline: null });
@@ -72,5 +72,21 @@ describe('memory store', () => {
 		await store.setValue('lock', '1', 10);
 		await store.del('lock');
 		expect(await store.getValue('lock')).toBeNull();
+	});
+
+	it('keeps removed villas and the reset time independent of the deadline', async () => {
+		await store.setVoting({ deadline: '2026-10-11T00:00:00Z' });
+		await store.setVoting({ removed: ['a', 'b'], resetAt: '2026-10-09T01:00:00Z' });
+		expect(await store.getVoting()).toEqual({
+			deadline: '2026-10-11T00:00:00Z',
+			removed: ['a', 'b'],
+			resetAt: '2026-10-09T01:00:00Z'
+		});
+		await store.setVoting({ removed: [], resetAt: null });
+		expect(await store.getVoting()).toEqual({
+			deadline: '2026-10-11T00:00:00Z',
+			removed: [],
+			resetAt: null
+		});
 	});
 });

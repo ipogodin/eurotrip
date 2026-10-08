@@ -1,4 +1,4 @@
-import { emptyTrip, TRIP_FIELDS } from './types.js';
+import { emptyTrip, parseIds, TRIP_FIELDS } from './types.js';
 
 /**
  * In-memory store for local dev and tests. Not shared between serverless
@@ -38,11 +38,21 @@ export function createMemoryStore() {
 			else ballots.set(memberId, { ...ballot });
 		},
 		async getVoting() {
-			return { deadline: voting.deadline ?? null };
+			return {
+				deadline: voting.deadline ?? null,
+				removed: parseIds(voting.removed),
+				resetAt: voting.resetAt ?? null
+			};
 		},
 		async setVoting(patch) {
 			if (patch.deadline === null) delete voting.deadline;
 			else if (patch.deadline !== undefined) voting.deadline = patch.deadline;
+			if (patch.removed !== undefined) {
+				if (patch.removed.length === 0) delete voting.removed;
+				else voting.removed = JSON.stringify(patch.removed);
+			}
+			if (patch.resetAt === null) delete voting.resetAt;
+			else if (patch.resetAt !== undefined) voting.resetAt = patch.resetAt;
 		},
 		async getTrip() {
 			const out = emptyTrip();

@@ -423,3 +423,17 @@ of random EFF words. Still `word-word`, still only in `members.json` / the
 shared context is easier for the other members to guess than a random one,
 so each phrase should lean on something only that person (and the admin)
 would think of.
+
+---
+
+## 2026-10-08 — Step 1.8: Admin
+
+Built the admin page as planned (voting window, results, pick winner,
+security stats) plus the user's two additions: the admin can reset everyone's
+votes, and can remove a villa from the list, in which case the points given to
+it go back to the voters (the villa's points are deleted from every ballot;
+a removed villa can be brought back, but starts at zero). Decided: members get
+a short notice when either happens, so changes to their points never come as
+a surprise; a winner must be undone before resetting, removing or changing the
+deadline; at least 2 villas must stay on the list. Open: a non-admin 403
+check by the user (I14).

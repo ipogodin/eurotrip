@@ -64,3 +64,74 @@ export function formatMoney(amount, currency) {
 		maximumFractionDigits: 0
 	}).format(amount);
 }
+
+const LA = 'America/Los_Angeles';
+
+/**
+ * How far Los Angeles clocks are from UTC at an instant, in ms (negative:
+ * behind UTC; PDT = -7 h, PST = -8 h).
+ * @param {number} utcMs
+ */
+function laOffsetMs(utcMs) {
+	const parts = new Intl.DateTimeFormat('en-US', {
+		timeZone: LA,
+		hourCycle: 'h23',
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit',
+		hour: '2-digit',
+		minute: '2-digit',
+		second: '2-digit'
+	}).formatToParts(new Date(utcMs));
+	/** @param {string} type */
+	const n = (type) => Number(parts.find((p) => p.type === type)?.value);
+	const asIfUtc = Date.UTC(
+		n('year'),
+		n('month') - 1,
+		n('day'),
+		n('hour'),
+		n('minute'),
+		n('second')
+	);
+	return asIfUtc - Math.floor(utcMs / 1000) * 1000;
+}
+
+/**
+ * Turn a wall-clock time typed in Pacific time (`<input type="datetime-local">`,
+ * "2026-10-11T09:30") into a UTC ISO string, honouring daylight saving.
+ * Returns null for anything that isn't a valid date and time. A time that
+ * doesn't exist (spring-forward gap) or happens twice (fall-back hour) still
+ * maps to one real instant.
+ * @param {unknown} local
+ * @returns {string | null}
+ */
+export function pacificToUtc(local) {
+	const m = typeof local === 'string' && /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(local);
+	if (!m) return null;
+	const [y, mo, d, h, mi] = m.slice(1).map(Number);
+	const asIfUtc = Date.UTC(y, mo - 1, d, h, mi);
+	const check = new Date(asIfUtc);
+	// Reject rollovers like Feb 30 or 25:00.
+	if (
+		check.getUTCFullYear() !== y ||
+		check.getUTCMonth() !== mo - 1 ||
+		check.getUTCDate() !== d ||
+		check.getUTCHours() !== h ||
+		check.getUTCMinutes() !== mi
+	) {
+		return null;
+	}
+	const first = asIfUtc - laOffsetMs(asIfUtc);
+	const second = asIfUtc - laOffsetMs(first);
+	return new Date(second).toISOString();
+}
+
+/**
+ * The reverse, to prefill `datetime-local`: a UTC ISO string as Pacific
+ * wall-clock "YYYY-MM-DDTHH:mm".
+ * @param {string} iso
+ */
+export function utcToPacificInput(iso) {
+	const t = Date.parse(iso);
+	return new Date(t + laOffsetMs(t)).toISOString().slice(0, 16);
+}

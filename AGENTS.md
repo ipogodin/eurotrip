@@ -127,6 +127,7 @@ src/
     logout/+server.js      # POST clears the cookie
     vote/+page.svelte/.server.js  # vote page: Map|People|My votes (?view=), autosave, polling; save action
     villas/[id]/           # one villa: gallery, vote bar under it, details; votes via /vote?/save
+    admin/                 # admin only: voting window, results, pick winner, reset all, remove/restore villas, login stats
     styleguide/            # dev-only component gallery (404 in production)
   lib/
     components/SeaBackground.svelte  # login splash video loop (poster SSR, video client-only)
@@ -150,6 +151,9 @@ src/
       session.js           # signed cookie tokens, secret check, cookie options
       roster.js            # loads MEMBERS env / dev members.json (only file with $env)
       ratelimit.js         # login lockout rules (Redis-backed)
+      guards.js            # requireMember / requireAdmin (401/403): first line of every member/admin load+action
+      admin-actions.js     # admin rules as store-level functions (deadline, winner, reset all, remove/restore villa)
+      vote-data.js         # shared vote screen data (members, pruned ballots, status, removed villas)
       next.js              # safe post-login redirect target
       store/               # Store interface; upstash.js (prod) + memory.js (dev/tests)
 scripts/

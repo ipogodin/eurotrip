@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis';
-import { emptyTrip, TRIP_FIELDS } from './types.js';
+import { emptyTrip, parseIds, TRIP_FIELDS } from './types.js';
 
 /**
  * With auto-deserialization off, HGETALL comes back as a flat
@@ -21,10 +21,11 @@ export function toHash(raw) {
  * Redis-backed store (Upstash REST). Auto-deserialization is off so every
  * value stays the string we wrote (a note like "123" must not become a number).
  * @param {{ url: string; token: string }} cfg
+ * @param {Redis} [client]  inject a fake in tests
  * @returns {import('./types.js').Store}
  */
-export function createUpstashStore({ url, token }) {
-	const redis = new Redis({ url, token, automaticDeserialization: false });
+export function createUpstashStore({ url, token }, client) {
+	const redis = client ?? new Redis({ url, token, automaticDeserialization: false });
 
 	return {
 		async getBallots(memberIds) {
@@ -53,12 +54,27 @@ export function createUpstashStore({ url, token }) {
 		},
 		async getVoting() {
 			const h = toHash(await redis.hgetall('voting'));
-			return { deadline: h.deadline ?? null };
+			return {
+				deadline: h.deadline ?? null,
+				removed: parseIds(h.removed),
+				resetAt: h.resetAt ?? null
+			};
 		},
 		async setVoting(patch) {
-			if (patch.deadline === null) await redis.hdel('voting', 'deadline');
-			else if (patch.deadline !== undefined)
-				await redis.hset('voting', { deadline: patch.deadline });
+			/** @type {Record<string, string>} */
+			const set = {};
+			/** @type {string[]} */
+			const unset = [];
+			if (patch.deadline === null) unset.push('deadline');
+			else if (patch.deadline !== undefined) set.deadline = patch.deadline;
+			if (patch.removed !== undefined) {
+				if (patch.removed.length === 0) unset.push('removed');
+				else set.removed = JSON.stringify(patch.removed);
+			}
+			if (patch.resetAt === null) unset.push('resetAt');
+			else if (patch.resetAt !== undefined) set.resetAt = patch.resetAt;
+			if (Object.keys(set).length) await redis.hset('voting', set);
+			if (unset.length) await redis.hdel('voting', ...unset);
 		},
 		async getTrip() {
 			const h = toHash(await redis.hgetall('trip'));

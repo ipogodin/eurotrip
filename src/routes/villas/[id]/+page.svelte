@@ -6,11 +6,11 @@
 	import PointsLeft from '$lib/components/vote/PointsLeft.svelte';
 	import ResetVotes from '$lib/components/vote/ResetVotes.svelte';
 	import VoteBar from '$lib/components/vote/VoteBar.svelte';
-	import { villas } from '$lib/config/villas.js';
+	import { findVilla, villas } from '$lib/config/villas.js';
 	import Icon from '$lib/icons/Icon.svelte';
 	import { formatDateRange, formatMoney } from '$lib/time.js';
 	import { buildVoteView } from '$lib/vote-view.js';
-	import { useVotePolling } from '$lib/vote-polling.svelte.js';
+	import { useAdminNotices, useVotePolling } from '$lib/vote-polling.svelte.js';
 	import { spent } from '$lib/voting.js';
 
 	/** @type {{ data: import('./$types').PageData }} */
@@ -23,19 +23,28 @@
 	const myBallot = $derived(client.ballot);
 	const view = $derived(
 		buildVoteView({
-			villas,
+			villas: villas.filter((v) => !data.removed.includes(v.id)),
 			members: data.members,
 			ballots: data.ballots,
 			me: data.me,
 			myBallot
 		})
 	);
-	const row = $derived(
-		/** @type {import('$lib/components/vote/types.js').VillaRow} */ (view.rowById.get(data.villaId))
+	/** The villa's facts always exist in the config; its vote row only while it's on the list. */
+	const villa = $derived(
+		/** @type {import('$lib/config/villas.js').Villa} */ (findVilla(data.villaId))
 	);
-	const villa = $derived(row.villa);
+	const row = $derived(view.rowById.get(villa.id));
 	const perNight = $derived(Math.round(villa.price.total / villa.price.nights));
 	const isWinner = $derived(data.winnerId === villa.id);
+
+	useAdminNotices({
+		resetAt: () => data.resetAt,
+		removed: () => data.removed,
+		myBallot: () => data.ballots[data.me] ?? {},
+		budget: () => view.myBudget,
+		villaName: (id) => villas.find((v) => v.id === id)?.name ?? 'A villa'
+	});
 
 	useVotePolling({
 		busy: () => client.busy,
@@ -73,115 +82,136 @@
 		<Icon name="chevron-left" size={18} /> Back to the map
 	</a>
 
-	<article class="villa" class:winner={isWinner} aria-labelledby="title">
-		<div class="media">
-			<div
-				class="strip"
-				bind:this={strip}
-				onscroll={onScroll}
-				role="group"
-				aria-label="Photos of {villa.name}"
-			>
-				{#each villa.photos as photo, i (photo.src)}
-					<img
-						src={photo.src}
-						srcset="{photo.thumb} 480w, {photo.src} {photo.width}w"
-						sizes="(min-width: 900px) 880px, 100vw"
-						width={photo.width}
-						height={photo.height}
-						alt="{villa.name}, photo {i + 1} of {villa.photos.length}"
-						loading={i === 0 ? 'eager' : 'lazy'}
-						fetchpriority={i === 0 ? 'high' : undefined}
-						decoding="async"
-					/>
-				{/each}
-			</div>
-			{#if villa.photos.length > 1}
-				<button
-					type="button"
-					class="nav prev"
-					aria-label="Previous photo"
-					onclick={() => slide(-1)}
-				>
-					<Icon name="chevron-left" size={20} />
-				</button>
-				<button type="button" class="nav next" aria-label="Next photo" onclick={() => slide(1)}>
-					<Icon name="chevron-right" size={20} />
-				</button>
-				<span class="count num">{index + 1} / {villa.photos.length}</span>
-			{/if}
-			{#if isWinner}
-				<span class="sticker gold"><Icon name="trophy" size={14} /> Winner</span>
-			{:else if row.rank}
-				<span class="sticker" class:gold={row.rank === 1}>#{row.rank}</span>
-			{/if}
+	{#if !row}
+		<div class="gone" role="status">
+			<h1 class="t-title">{villa.name} was removed</h1>
+			<p>The admin took this villa off the list, so it can't get votes any more.</p>
+			<a class="btn btn-primary" href={resolve('/vote')}>Back to the map</a>
 		</div>
+	{:else}
+		<article class="villa" class:winner={isWinner} aria-labelledby="title">
+			<div class="media">
+				<div
+					class="strip"
+					bind:this={strip}
+					onscroll={onScroll}
+					role="group"
+					aria-label="Photos of {villa.name}"
+				>
+					{#each villa.photos as photo, i (photo.src)}
+						<img
+							src={photo.src}
+							srcset="{photo.thumb} 480w, {photo.src} {photo.width}w"
+							sizes="(min-width: 900px) 880px, 100vw"
+							width={photo.width}
+							height={photo.height}
+							alt="{villa.name}, photo {i + 1} of {villa.photos.length}"
+							loading={i === 0 ? 'eager' : 'lazy'}
+							fetchpriority={i === 0 ? 'high' : undefined}
+							decoding="async"
+						/>
+					{/each}
+				</div>
+				{#if villa.photos.length > 1}
+					<button
+						type="button"
+						class="nav prev"
+						aria-label="Previous photo"
+						onclick={() => slide(-1)}
+					>
+						<Icon name="chevron-left" size={20} />
+					</button>
+					<button type="button" class="nav next" aria-label="Next photo" onclick={() => slide(1)}>
+						<Icon name="chevron-right" size={20} />
+					</button>
+					<span class="count num">{index + 1} / {villa.photos.length}</span>
+				{/if}
+				{#if isWinner}
+					<span class="sticker gold"><Icon name="trophy" size={14} /> Winner</span>
+				{:else if row.rank}
+					<span class="sticker" class:gold={row.rank === 1}>#{row.rank}</span>
+				{/if}
+			</div>
 
-		<VoteBar
-			name={villa.name}
-			voters={row.voters}
-			total={row.total}
-			myPoints={row.myPoints}
-			canAdd={row.canAdd}
-			addHint={row.addHint}
-			{open}
-			onchange={(points) => client.set(villa.id, points)}
-		/>
+			<VoteBar
+				name={villa.name}
+				voters={row.voters}
+				total={row.total}
+				myPoints={row.myPoints}
+				canAdd={row.canAdd}
+				addHint={row.addHint}
+				{open}
+				onchange={(points) => client.set(villa.id, points)}
+			/>
 
-		<div class="body">
-			<header>
-				<h1 id="title" class="t-title">{villa.name}</h1>
-				<p class="where">
-					<Icon name="pin" size={14} />
-					{villa.town}, {villa.island}
-					{#if villa.rating}
-						<span aria-hidden="true">·</span>
-						<span aria-label="Rated {villa.rating} out of 5"
-							>★ {villa.rating.toFixed(Number.isInteger(villa.rating * 10) ? 1 : 2)}</span
+			<div class="body">
+				<header>
+					<h1 id="title" class="t-title">{villa.name}</h1>
+					<p class="where">
+						<Icon name="pin" size={14} />
+						{villa.town}, {villa.island}
+						{#if villa.rating}
+							<span aria-hidden="true">·</span>
+							<span aria-label="Rated {villa.rating} out of 5"
+								>★ {villa.rating.toFixed(Number.isInteger(villa.rating * 10) ? 1 : 2)}</span
+							>
+						{/if}
+					</p>
+				</header>
+
+				<div class="chips">
+					<Chip icon="bed">{villa.bedrooms} bedrooms</Chip>
+					<Chip icon="bath">{villa.bathrooms} baths</Chip>
+					<Chip icon="users">Sleeps {villa.sleeps}</Chip>
+				</div>
+
+				<p class="price">
+					<b class="num">{formatMoney(villa.price.total, villa.price.currency)}</b>
+					<span
+						>for {villa.price.nights} nights · ≈ {formatMoney(
+							perNight,
+							villa.price.currency
+						)}/night</span
+					>
+					{#if villa.dates}
+						<span class="saved"
+							>Airbnb price for {formatDateRange(villa.dates)}, not our final dates</span
 						>
 					{/if}
 				</p>
-			</header>
 
-			<div class="chips">
-				<Chip icon="bed">{villa.bedrooms} bedrooms</Chip>
-				<Chip icon="bath">{villa.bathrooms} baths</Chip>
-				<Chip icon="users">Sleeps {villa.sleeps}</Chip>
+				<ul class="highlights" aria-label="Highlights">
+					{#each villa.highlights as h (h)}
+						<li>{h}</li>
+					{/each}
+				</ul>
+
+				<p class="blurb">{villa.blurb}</p>
+
+				<a class="listing" href={villa.url} target="_blank" rel="external noopener noreferrer">
+					See it on Airbnb <Icon name="external" size={14} />
+				</a>
 			</div>
-
-			<p class="price">
-				<b class="num">{formatMoney(villa.price.total, villa.price.currency)}</b>
-				<span
-					>for {villa.price.nights} nights · ≈ {formatMoney(
-						perNight,
-						villa.price.currency
-					)}/night</span
-				>
-				{#if villa.dates}
-					<span class="saved"
-						>Airbnb price for {formatDateRange(villa.dates)}, not our final dates</span
-					>
-				{/if}
-			</p>
-
-			<ul class="highlights" aria-label="Highlights">
-				{#each villa.highlights as h (h)}
-					<li>{h}</li>
-				{/each}
-			</ul>
-
-			<p class="blurb">{villa.blurb}</p>
-
-			<a class="listing" href={villa.url} target="_blank" rel="external noopener noreferrer">
-				See it on Airbnb <Icon name="external" size={14} />
-			</a>
-		</div>
-	</article>
+		</article>
+	{/if}
 </main>
 
 <style>
 	.page {
 		max-width: 880px;
+	}
+	.gone {
+		display: grid;
+		justify-items: start;
+		gap: var(--s3);
+		padding: var(--s6);
+		background: var(--surface);
+		border: 2px dashed var(--line);
+		border-radius: var(--r-lg);
+	}
+	.gone h1,
+	.gone p {
+		margin: 0;
 	}
 	.back {
 		display: inline-flex;

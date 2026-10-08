@@ -12,7 +12,11 @@
  *   updatedAt: string | null;
  * }} TripState
  *
- * @typedef {{ deadline: string | null }} VotingState
+ * @typedef {{
+ *   deadline: string | null,
+ *   removed: string[],
+ *   resetAt: string | null
+ * }} VotingState  `removed` = villa ids the admin took off the list; `resetAt` = when the admin last reset everyone's votes
  *
  * @typedef {{
  *   getBallots(memberIds: string[]): Promise<Record<string, Ballot>>;
@@ -39,6 +43,21 @@ export const TRIP_FIELDS = /** @type {const} */ ([
 	'notes',
 	'updatedAt'
 ]);
+
+/**
+ * Read a stored JSON list of ids; anything malformed counts as empty.
+ * @param {string | null | undefined} raw
+ * @returns {string[]}
+ */
+export function parseIds(raw) {
+	if (!raw) return [];
+	try {
+		const parsed = JSON.parse(raw);
+		return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string') : [];
+	} catch {
+		return [];
+	}
+}
 
 /** @returns {TripState} */
 export function emptyTrip() {
