@@ -59,13 +59,14 @@ of a stolen admin session).
   **gitignored** (add to `.gitignore` in step 1.3). Same JSON shape as above.
 - Loader order: `MEMBERS` env var if set; otherwise, **in dev only**,
   `members.json`. Production without `MEMBERS` → startup error.
-- Scripts (`scripts/members.js`):
+- Scripts (`scripts/members.js`; also `npm run members:init` copies
+  `members.example.json` → `members.json`):
   - `npm run members:check` — validate the file (same rules as startup).
   - `npm run members:gen -- <id>` — set a fresh EFF `word-word` phrase for
     one member (or all members with `--all`) and print it once.
   - `npm run members:push` — validate, then replace `MEMBERS` on Vercel for
-    production + preview via the `vercel env` CLI (remove + add). Never
-    prints phrases.
+    production + preview via the `vercel env` CLI (remove + add, `--sensitive`,
+    value via stdin). Never prints phrases.
 - Env changes apply only to **new deployments** → run `vercel --prod` after
   pushing. Dashboard editing of `MEMBERS` + redeploy is the no-script
   fallback.

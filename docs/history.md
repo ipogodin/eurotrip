@@ -292,3 +292,13 @@ motion, floating pill bottom nav, decorative sun/wave/palm-frond components,
 and a sunset hero in `/styleguide`. `docs/design.md` rewritten; step 1.2's
 result updated in place (same components, new skin). The layout principles
 (mobile first, list/map, public votes) are unchanged.
+
+---
+
+## 2026-10-08 — Step 1.3 done (auth core)
+
+Roster loader/validator, constant-time phrase match, signed session tokens,
+roster CLI (`members:init|check|gen|push`) and the EFF word list; 45 tests
+total. `push` verified against Vercel with a throwaway variable (stored as
+Secret for Production + Preview, replace semantics confirmed, then removed).
+No UI yet; step 1.4 wires it in. Details in `docs/progress.md`.

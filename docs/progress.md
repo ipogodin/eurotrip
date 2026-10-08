@@ -26,9 +26,9 @@ The **single source of truth for where the work is.** Plan details are in
 
 ## Current position
 
-**Step:** 1.3 — Auth core (no UI)
+**Step:** 1.4 — Login splash, gate, delete old report
 **State:** not started
-**Next action:** start 1.3 (members loader, phrase normalize, session cookie, roster scripts, tests).
+**Next action:** start 1.4 (hooks.server.js gate, ratelimit.js, splash page, logout, delete the old report). Needs `members.json` locally (already created with 2 example members; the user may edit names).
 
 ## Step board
 
@@ -36,7 +36,7 @@ The **single source of truth for where the work is.** Plan details are in
 | ---- | --------------------------------------- | ------ | ------- | ---- | ------ |
 | 1.1  | Runtime, storage, test harness          | done   | 2026-10-08 | 2026-10-08 | d6ea475 |
 | 1.2  | Design system + app shell               | done   | 2026-10-08 | 2026-10-08 | 1a00a49 |
-| 1.3  | Auth core                               | todo   |         |      |        |
+| 1.3  | Auth core                               | done   | 2026-10-08 | 2026-10-08 | COMMIT |
 | 1.4  | Login splash, gate, delete old report   | todo   |         |      |        |
 | 1.5  | Villa data + vote logic                 | todo   |         |      |        |
 | 1.6  | Vote page: list + autosave              | todo   |         |      |        |
@@ -67,6 +67,33 @@ The **single source of truth for where the work is.** Plan details are in
 ## Step notes
 
 _(WIP and final notes per step go here, newest first.)_
+
+### 1.3 — done (2026-10-08)
+
+Modules in `src/lib/server/`: `phrase.js` (normalize: case, spaces, `_`,
+typographic dashes; format `word-word`), `members.js` (`parseMembers` reports
+all roster errors at once; `matchPhrase` hashes input and every phrase with
+SHA-256 and compares with `timingSafeEqual`, no early exit; `toPublic` drops
+the phrase), `session.js` (HMAC-SHA256 signed `payload.sig` token, 60-day
+expiry, `resolveSecret` throws in prod without a 32+ char `SESSION_SECRET`,
+`cookieOptions`), `roster.js` (the only module with `$env`/`$app` imports:
+`MEMBERS` env, dev-only fallback to `members.json`, cached; `findMemberById`,
+`getSessionSecret`). Pure modules have no `$` imports so vitest runs them
+directly. 31 new tests (45 total). Added `@types/node` (needed for
+`node:crypto`/`Buffer` under svelte-check).
+Roster CLI `scripts/members.js` (`npm run members:init|check|gen|push`),
+wordlist `scripts/wordlist-eff-large.txt` (EFF large list, CC BY 3.0 US;
+7,772 words, 4 hyphenated removed; validated before use). `members.example.json`
+is committed (fake data); `members.json` is gitignored.
+Verified with the real CLI: init/check/gen, duplicate phrase rejected, unknown
+id rejected, and `push --name ZZ_ROSTER_TEST` set a *Secret* var for
+Production + Preview, replacing (not duplicating) on a second run; the test
+var was then removed. `push` uses `vercel env add ... --sensitive --force`
+with the value on stdin; values are never printed.
+Deviations: added `members:init` (not in the plan); `members.json` currently
+holds the 2 example members (one phrase regenerated while testing). Real names
+and phrases: step 1.9. Note: `grep` in this shell is `ugrep` (rejects
+`grep -v -- '-'`), use python for such filters.
 
 ### 1.2 — done (2026-10-08)
 
@@ -118,6 +145,7 @@ it (it would override the `!.env.example` exception).
 | Date       | Summary                                                                                                    |
 | ---------- | ---------------------------------------------------------------------------------------------------------- |
 | 2026-10-08 | Planning: raw plan captured, decisions made, tech-spec + design + detailed plan + this tracker written. No code. |
+| 2026-10-08 | Step 1.3 done: roster/phrase/session modules, members CLI, 31 tests. |
 | 2026-10-08 | Step 1.2 done: design tokens, icons, 15 ui components, /styleguide. |
 | 2026-10-08 | Step 1.1 done: SSR + Upstash Redis store + vitest. |
 | 2026-10-08 | The user upgraded the Vercel CLI to 63.1.0 and linked the repo to the existing project `ipogodins-projects/eurotrip` (`.vercel/` and `.env.local` are gitignored). |
