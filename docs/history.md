@@ -575,3 +575,11 @@ turn." / "Staff only."), a generic version for other errors, and a button back t
 map (or to sign-in when signed out). Images are compressed WebPs in `static/errors/`;
 the 1254 px originals were moved out of the repo to `~/Downloads`. Anonymous visitors
 never see a 404 (the login gate redirects first), so the page is mostly for members.
+
+---
+
+## 2026-10-09 — Map pins: no red for my votes, podium colours
+
+On the map the villas I voted for no longer get a red border. My points show only in the
+small circle at the bottom right of the photo (now neutral dark instead of red). Ranks
+#1, #2, #3 are gold, silver and copper. Not checked on a signed-in screen from here.

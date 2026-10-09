@@ -95,7 +95,6 @@
 					class="pin"
 					draggable="false"
 					class:featured
-					class:mine={row.myPoints > 0}
 					class:winner={row.villa.id === winnerId}
 					href={resolve('/villas/[id]', { id: row.villa.id })}
 					style:left={pct((featured ? pin.ax : pin.x) - VIEWPORT.x, VIEWPORT.w)}
@@ -118,7 +117,12 @@
 						/>
 					{/if}
 					<span class="name">{row.villa.name}</span>
-					{#if row.rank}<span class="rank" class:gold={row.rank === 1}>#{row.rank}</span>{/if}
+					{#if row.rank}<span
+							class="rank"
+							class:gold={row.rank === 1}
+							class:silver={row.rank === 2}
+							class:copper={row.rank === 3}>#{row.rank}</span
+						>{/if}
 					{#if row.myPoints}<span class="mine-badge num">{row.myPoints}</span>{/if}
 					{#if row.comments > 0}
 						<span class="chat num"><Icon name="message-circle" size={11} /> {row.comments}</span>
@@ -272,9 +276,6 @@
 		transform: scale(1.18);
 		box-shadow: 0 10px 24px rgb(12 59 62 / 0.45);
 	}
-	.pin.mine {
-		border-color: var(--hibiscus);
-	}
 	.pin.winner {
 		border-color: var(--mango);
 		box-shadow:
@@ -328,8 +329,18 @@
 		background: #fff;
 		color: var(--ink);
 	}
+	/* Podium colours for the top three. */
 	.rank.gold {
-		background: var(--grad-sun);
+		background: linear-gradient(135deg, #ffe27a 0%, #f2b01e 100%);
+		color: #5a3a00;
+	}
+	.rank.silver {
+		background: linear-gradient(135deg, #f4f6f8 0%, #aeb7c0 100%);
+		color: #2f3a44;
+	}
+	.rank.copper {
+		background: linear-gradient(135deg, #e8a572 0%, #b0602c 100%);
+		color: #3d1c08;
 	}
 	.chat {
 		position: absolute;
@@ -352,7 +363,7 @@
 		bottom: -8px;
 		min-width: 24px;
 		height: 24px;
-		background: var(--hibiscus);
+		background: var(--ink); /* neutral: my votes aren't a colour on the map */
 		color: #fff;
 		font-size: 13px;
 	}
