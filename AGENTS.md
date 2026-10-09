@@ -1,7 +1,7 @@
 # Eurotrip — Agent Briefing
 
 Repo: **https://github.com/ipogodin/eurotrip**
-Live site: **https://eurotrip.vercel.app** (to be confirmed after first deploy)
+Live site: **https://2027eurotrip.vercel.app** (Vercel project `eurotrip`; deployed 2026-10-08)
 
 Read `docs/history.md` before doing anything else in this project — it has the
 full origin story and every decision made so far, in chronological order, so a
@@ -46,6 +46,10 @@ in files, never only in conversation context.
   needed in "Blockers / inputs".
 - **Scope/decision changes:** update the plan's decisions table (dated) +
   `history.md`, not just chat.
+- **Never regenerate phrases without asking.** `npm run members:gen` REPLACES
+  phrases, and the user chooses some by hand for each person (2026-10-08: an agent
+  overwrote them with generated ones; they were restored from the ignored
+  `members.md` mirror). Ask first; the command now keeps `members.json.bak`.
 - **Secrets:** never write invite phrases, `SESSION_SECRET`, tokens or the
   roster to any tracked file, doc or commit message. The GitHub repo is
   **public**. The roster lives in the `MEMBERS` env var (Vercel) and the

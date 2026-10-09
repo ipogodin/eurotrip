@@ -77,7 +77,8 @@ if (cmd === 'init') {
 	const { members } = validate(raw);
 	const all = args.includes('--all');
 	const target = args.find((a) => !a.startsWith('--'));
-	if (!all && !target) die('Usage: members:gen -- <member-id> | --all');
+	if (!all && !target)
+		die('Usage: members:gen -- <member-id> | --all  (REPLACES existing phrases; a backup is kept)');
 	if (!all && !members.some((m) => m.id === target)) die(`No member with id "${target}".`);
 
 	const words = loadWords();
@@ -95,7 +96,12 @@ if (cmd === 'init') {
 		changed.push([entry.name, phrase]);
 	}
 	validate(raw);
+	// Phrases are often chosen by hand for each person: never overwrite them without
+	// a way back. One backup, replaced each time; git-ignored like members.json.
+	const backup = `${FILE}.bak`;
+	copyFileSync(FILE, backup);
 	writeFileSync(FILE, `${JSON.stringify(raw, null, '\t')}\n`);
+	console.log(`The previous file is saved as ${backup} (undo: copy it back over ${FILE}).`);
 	console.log('New phrases (give these to people privately; they are also in members.json):\n');
 	for (const [name, phrase] of changed) console.log(`  ${name.padEnd(24)} ${phrase}`);
 	console.log('\nNext: npm run members:push, then redeploy (vercel --prod).');

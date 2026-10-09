@@ -42,7 +42,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 1.6  | Vote page: list + autosave              | done   | 2026-10-08 | 2026-10-08 | 8656cd1 |
 | 1.7  | Map layout + villa detail (can slip)    | done (illustrated map) | 2026-10-08 | 2026-10-08 | see below |
 | 1.8  | Admin                                   | done   | 2026-10-08 | 2026-10-08 | 20bba06 |
-| 1.9  | Ship R1                                 | todo   |         |      |        |
+| 1.9  | Ship R1                                 | done (live) | 2026-10-08 | 2026-10-08 | see below |
 | 2.1  | Phase switch + trip state               | todo   |         |      |        |
 | 2.2  | Trip overview tab                       | todo   |         |      |        |
 | 2.3  | Nearby tab                              | todo   |         |      |        |
@@ -456,6 +456,35 @@ The integration install also added third-party agent skills
 (`.agents/`, `.claude/skills/`, `skills-lock.json`); gitignored on purpose.
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
+
+### 1.9 — SHIPPED (2026-10-08): live at https://2027eurotrip.vercel.app
+
+Done, in order: default deadline set to **Sat 2026-10-10 10:00 am Pacific (PDT,
+17:00Z)** (the user wrote "10 am PST"; in October Pacific time is PDT, so 10:00
+local; change it in /admin if strict PST was meant); `SESSION_SECRET` (random, never
+printed) and `MEMBERS` (the roster) set on Vercel as hidden secrets for
+Production + Preview; the 16 photos uploaded to the live Redis (checked read-back:
+16 images, 0 votes, no deadline override, no winner); `vercel --prod`. Live checks
+without a real phrase: login page 200; /vote, /admin, /villas/*, /avatars/*,
+/styleguide all 303 to the invite screen for anonymous visitors; security headers
+(HSTS, nosniff, DENY framing, no-store); public files load; ONE wrong phrase gets
+the generic "That phrase didn't work" after the built-in delay (so the roster loaded
+from the secret); a cross-site POST gets 403; no error logs. Not tested live: a real
+phrase login (the agent can't type phrases): the user does that on their phone.
+- The deployment-specific `*.vercel.app` addresses sit behind Vercel's own login
+  (Vercel Authentication); the public project address does not, so members use
+  `https://2027eurotrip.vercel.app`.
+- **Incident:** to "generate the invites" the agent ran `members:gen --all`, which
+  overwrote the phrases the user had chosen by hand for each person (the user
+  hadn't said to replace them). Noticed because the user said so mid-deploy;
+  restored from the git-ignored `members.md` table (full name -> phrase), roster
+  check OK, `MEMBERS` re-pushed and redeployed within minutes. The generated
+  phrases that had been shown in chat were live for ~20 min and are void. Fixes:
+  `members:gen` now keeps `members.json.bak`, AGENTS.md says never to regenerate
+  phrases without asking.
+- Still the user's: send each person their phrase; confirm `members.json` has the
+  phrases they intended (the restore used `members.md`, which could be older than
+  their latest edit); log in on a phone and try voting.
 
 ### Villa list cut to the south-west + zoomed map (2026-10-08, the user's request)
 

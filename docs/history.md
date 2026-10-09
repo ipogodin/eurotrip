@@ -509,3 +509,15 @@ The user dropped 5 of the 13 villas (the ones outside the south-west) and asked
 for the map to be magnified a little around that area. They were removed from the
 villa list for good (config and photos), leaving 8, and the map now shows a zoomed
 window on the south-west of Tenerife.
+
+---
+
+## 2026-10-08 — Launch (step 1.9)
+
+Went live at https://2027eurotrip.vercel.app after the user's go-ahead: deadline
+Sat 10 Oct 10:00 Pacific, session secret and roster set as private Vercel
+settings, photos uploaded to the live Redis, production deploy, anonymous live
+checks. Mistake during the launch: generating "new invite phrases" overwrote the
+phrases the user had picked by hand for each person; the user caught it, they were
+restored from the ignored `members.md` mirror and redeployed. Phrase generation now
+keeps a backup and must not be run without asking.
