@@ -1,5 +1,5 @@
 import { Redis } from '@upstash/redis';
-import { emptyTrip, parseIds, TRIP_FIELDS } from './types.js';
+import { emptyTrip, parseComments, parseIds, TRIP_FIELDS } from './types.js';
 
 /**
  * With auto-deserialization off, HGETALL comes back as a flat
@@ -144,6 +144,22 @@ export function createUpstashStore({ url, token }, client) {
 		},
 		async setAvatarImage(memberId, version, base64) {
 			await redis.set(`avatar:img:${memberId}:${version}`, base64);
+		},
+		async getComments(villaId) {
+			return parseComments(Object.values(toHash(await redis.hgetall(`comments:${villaId}`))));
+		},
+		async addComment(villaId, comment) {
+			await redis.hset(`comments:${villaId}`, { [comment.id]: JSON.stringify(comment) });
+		},
+		async deleteComment(villaId, commentId) {
+			return Number(await redis.hdel(`comments:${villaId}`, commentId)) > 0;
+		},
+		async getCommentCounts(villaIds) {
+			if (villaIds.length === 0) return {};
+			const pipe = redis.pipeline();
+			for (const id of villaIds) pipe.hlen(`comments:${id}`);
+			const results = await pipe.exec();
+			return Object.fromEntries(villaIds.map((id, i) => [id, Number(results[i]) || 0]));
 		}
 	};
 }

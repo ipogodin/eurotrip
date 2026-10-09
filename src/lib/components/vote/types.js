@@ -11,7 +11,8 @@
  *   voters: { member: Member, points: number }[],
  *   myPoints: number,
  *   canAdd: boolean,
- *   addHint: string
+ *   addHint: string,
+ *   comments: number
  * }} VillaRow
  *
  * @typedef {{

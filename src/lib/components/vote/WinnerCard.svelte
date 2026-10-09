@@ -5,9 +5,9 @@
 
 	/**
 	 * The chosen villa, in short, under the map once voting is over.
-	 * @type {{ villa: import('$lib/config/villas.js').Villa }}
+	 * @type {{ villa: import('$lib/config/villas.js').Villa, comments?: number }}
 	 */
-	let { villa } = $props();
+	let { villa, comments = 0 } = $props();
 </script>
 
 <section class="winner" aria-labelledby="winner-title">
@@ -27,7 +27,7 @@
 	</ul>
 	<p class="blurb">{villa.blurb}</p>
 	<a class="btn btn-primary" href={resolve('/villas/[id]', { id: villa.id })}>
-		See the photos and details
+		See the photos and details{comments ? ` (${comments} comment${comments === 1 ? '' : 's'})` : ''}
 	</a>
 </section>
 

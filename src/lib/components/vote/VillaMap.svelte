@@ -1,5 +1,6 @@
 <script>
 	import { resolve } from '$app/paths';
+	import Icon from '$lib/icons/Icon.svelte';
 	import { OUTLINE, PLACES, TEIDE, VIEWPORT, project } from '$lib/config/tenerife.js';
 	import { villas } from '$lib/config/villas.js';
 	import { smoothClosedPath, spreadPins } from '$lib/map-layout.js';
@@ -98,7 +99,9 @@
 					href={resolve('/villas/[id]', { id: row.villa.id })}
 					style:left={pct((featured ? pin.ax : pin.x) - VIEWPORT.x, VIEWPORT.w)}
 					style:top={pct((featured ? pin.ay : pin.y) - VIEWPORT.y, VIEWPORT.h)}
-					aria-label="{row.villa.name}, {row.villa.town}. {row.myPoints
+					aria-label="{row.villa.name}, {row.villa.town}. {row.comments
+						? `${row.comments} comment${row.comments === 1 ? '' : 's'}. `
+						: ''}{row.myPoints
 						? `You gave ${row.myPoints} point${row.myPoints === 1 ? '' : 's'}. `
 						: ''}{row.total} point{row.total === 1 ? '' : 's'} in total{row.rank
 						? `, ranked ${row.rank}`
@@ -116,6 +119,9 @@
 					<span class="name">{row.villa.name}</span>
 					{#if row.rank}<span class="rank" class:gold={row.rank === 1}>#{row.rank}</span>{/if}
 					{#if row.myPoints}<span class="mine-badge num">{row.myPoints}</span>{/if}
+					{#if row.comments > 0}
+						<span class="chat num"><Icon name="message-circle" size={11} /> {row.comments}</span>
+					{/if}
 				</a>
 			{/if}
 		{/each}
@@ -317,6 +323,22 @@
 	}
 	.rank.gold {
 		background: var(--grad-sun);
+	}
+	.chat {
+		position: absolute;
+		left: -8px;
+		bottom: -8px;
+		display: inline-flex;
+		align-items: center;
+		gap: 3px;
+		height: 22px;
+		padding: 0 7px;
+		border-radius: var(--r-pill);
+		background: #fff;
+		color: var(--lagoon-deep);
+		font-size: 12px;
+		font-weight: 900;
+		box-shadow: 0 2px 6px rgb(12 59 62 / 0.35);
 	}
 	.mine-badge {
 		right: -8px;

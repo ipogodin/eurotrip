@@ -68,7 +68,8 @@
 			members: withCallName(data.members, data.member),
 			ballots: data.ballots,
 			me: data.me,
-			myBallot
+			myBallot,
+			commentCounts: data.commentCounts
 		})
 	);
 
@@ -180,7 +181,7 @@
 		{#if winnerRow}
 			<h2 class="sr-only">Our villa on the map</h2>
 			<VillaMap rows={[winnerRow]} winnerId={data.winnerId} featured />
-			<WinnerCard villa={winnerRow.villa} />
+			<WinnerCard villa={winnerRow.villa} comments={winnerRow.comments} />
 		{/if}
 	{:else}
 		<div class="views">

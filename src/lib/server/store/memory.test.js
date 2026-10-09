@@ -102,4 +102,23 @@ describe('memory store', () => {
 		expect(await store.getAvatarImage('a', 3)).toBeNull();
 		expect(await store.getAvatarImage('b', 1)).toBeNull();
 	});
+
+	it('keeps comments per villa, oldest first, and counts and deletes them', async () => {
+		const c = (/** @type {string} */ id, /** @type {string} */ at) => ({
+			id,
+			memberId: 'a',
+			text: `t-${id}`,
+			createdAt: at
+		});
+		await store.addComment('v1', c('late', '2026-10-09T10:05:00Z'));
+		await store.addComment('v1', c('early', '2026-10-09T10:01:00Z'));
+		await store.addComment('v2', c('other', '2026-10-09T10:02:00Z'));
+		expect((await store.getComments('v1')).map((x) => x.id)).toEqual(['early', 'late']);
+		expect(await store.getCommentCounts(['v1', 'v2', 'v3'])).toEqual({ v1: 2, v2: 1, v3: 0 });
+		expect(await store.deleteComment('v1', 'early')).toBe(true);
+		expect(await store.deleteComment('v1', 'early')).toBe(false);
+		expect(await store.deleteComment('v9', 'x')).toBe(false);
+		expect(await store.getCommentCounts(['v1'])).toEqual({ v1: 1 });
+		expect(await store.getComments('v3')).toEqual([]);
+	});
 });

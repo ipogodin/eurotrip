@@ -135,3 +135,25 @@ export function utcToPacificInput(iso) {
 	const t = Date.parse(iso);
 	return new Date(t + laOffsetMs(t)).toISOString().slice(0, 16);
 }
+
+/**
+ * A friendly "how long ago" for a comment: "just now", "5 min ago", "3 h ago",
+ * then a short date and time in the viewer's own zone.
+ * @param {string} iso  UTC ISO time
+ * @param {number} now  ms epoch
+ */
+export function formatAgo(iso, now) {
+	const t = Date.parse(iso);
+	if (!Number.isFinite(t)) return '';
+	const mins = Math.floor((now - t) / 60_000);
+	if (mins < 1) return 'just now'; // also covers a clock a little behind the server's
+	if (mins < 60) return `${mins} min ago`;
+	const hours = Math.floor(mins / 60);
+	if (hours < 24) return `${hours} h ago`;
+	return new Intl.DateTimeFormat('en-US', {
+		month: 'short',
+		day: 'numeric',
+		hour: 'numeric',
+		minute: '2-digit'
+	}).format(new Date(t));
+}

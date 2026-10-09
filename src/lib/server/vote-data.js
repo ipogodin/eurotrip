@@ -3,6 +3,7 @@ import { hueForIndex } from '$lib/members-ui.js';
 import { DEFAULT_DEADLINE } from '$lib/config/voting.js';
 import { effectiveDeadline, pruneBallot, votingState } from '$lib/voting.js';
 import { photoVersions } from './avatar-state.js';
+import { visibleCounts } from './comments.js';
 import { avatarCounts } from './avatars.js';
 import { getMembers } from './roster.js';
 import { getStore } from './store/index.js';
@@ -62,10 +63,17 @@ export async function loadVoteData(me) {
 		getStore().getBallots(members.map((m) => m.id)),
 		votingStatus()
 	]);
+	// How many comments each villa has. After a winner is picked only the winner's
+	// is shown: the others count as 0 and are never sent.
+	const activeIds = activeVillaIds(status.removed);
+	const commentCounts = await visibleCounts(getStore(), activeIds, {
+		activeIds,
+		winnerId: status.winnerId
+	});
 	// Points on a removed villa never count, even if a removal stopped half-way.
 	const keep = activeVillaIds(status.removed);
 	const ballots = Object.fromEntries(
 		Object.entries(raw).map(([id, b]) => [id, pruneBallot(b, keep)])
 	);
-	return { me: me.id, members, ballots, ...status };
+	return { me: me.id, members, ballots, commentCounts, ...status };
 }

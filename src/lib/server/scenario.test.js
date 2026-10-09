@@ -163,6 +163,56 @@ describe.each(roster.map((m) => [m.short + (m.admin ? ' (admin)' : ''), m]))(
 			}
 		});
 
+		it('can comment on a villa, sees what others wrote, and can delete only their own', async () => {
+			const asMember = locals(member);
+			const others = roster.filter((x) => x.id !== member.id);
+			const say = (
+				/** @type {App.Locals} */ who,
+				/** @type {string} */ id,
+				/** @type {string} */ text
+			) =>
+				outcome(
+					/** @type {any} */ (villaPage.actions.comment)({
+						locals: who,
+						params: { id },
+						request: post({ text })
+					})
+				);
+			const read = async (/** @type {App.Locals} */ who, /** @type {string} */ id) =>
+				(await villaPage.load(/** @type {any} */ ({ locals: who, params: { id }, depends() {} })))
+					.comments;
+			// someone else already commented
+			expect((await say(locals(others[0]), V[0], `from ${others[0].id}`)).status).toBe(200);
+			// this member writes one too
+			expect((await say(asMember, V[0], `from ${member.id}`)).status).toBe(200);
+			const seen = await read(asMember, V[0]);
+			expect(seen.map((/** @type {any} */ c) => c.memberId).sort()).toEqual(
+				[others[0].id, member.id].sort()
+			);
+			// the comment data only ever names people by id: nobody's private preferred name is in it
+			for (const x of roster) expect(JSON.stringify(seen)).not.toContain(x.preferred);
+			// can delete their own, not the other person's
+			const mine = /** @type {any} */ (
+				seen.find((/** @type {any} */ c) => c.memberId === member.id)
+			);
+			const theirs = /** @type {any} */ (
+				seen.find((/** @type {any} */ c) => c.memberId === others[0].id)
+			);
+			const del = (/** @type {string} */ commentId) =>
+				outcome(
+					/** @type {any} */ (villaPage.actions.deleteComment)({
+						locals: asMember,
+						params: { id: V[0] },
+						request: post({ commentId })
+					})
+				);
+			expect((await del(theirs.id)).status).toBe(member.admin ? 200 : 400); // only the admin may
+			expect((await del(mine.id)).status).toBe(200);
+			const left = (await read(asMember, V[0])).map((/** @type {any} */ c) => c.memberId);
+			expect(left).not.toContain(member.id);
+			expect(left.includes(others[0].id)).toBe(!member.admin);
+		});
+
 		it('can open every villa page', async () => {
 			for (const id of V) {
 				const d = await villaPage.load(
@@ -325,5 +375,54 @@ describe('the whole group voting together', () => {
 		for (const m of roster) expect((await outcome(save(m, { [V[0]]: 1 }))).status, m.id).toBe(409);
 		const all = await /** @type {any} */ (h.store).getBallots(roster.map((m) => m.id));
 		for (const m of roster) expect(all[m.id]).toEqual({ [V[0]]: 2 }); // frozen as they were
+	});
+
+	it('comments: the whole group writes, and once a winner is picked only the winner keeps its comments', async () => {
+		const admin0 = /** @type {import('./members.js').Member} */ (roster.find((m) => m.admin));
+		const say = (/** @type {import('./members.js').Member} */ m, /** @type {string} */ id) =>
+			outcome(
+				/** @type {any} */ (villaPage.actions.comment)({
+					locals: locals(m),
+					params: { id },
+					request: post({ text: `hello from ${m.id}` })
+				})
+			);
+		for (const m of roster) {
+			expect((await say(m, V[0])).status).toBe(200);
+			expect((await say(m, V[1])).status).toBe(200);
+		}
+		const read = async (/** @type {string} */ id) =>
+			villaPage.load(/** @type {any} */ ({ locals: locals(admin0), params: { id }, depends() {} }));
+		const counts = async () =>
+			(await vote.load(/** @type {any} */ ({ locals: locals(admin0), depends() {} })))
+				.commentCounts;
+
+		expect((await read(V[0])).comments).toHaveLength(8);
+		expect((await read(V[1])).comments).toHaveLength(8);
+		expect((await counts())[V[1]]).toBe(8);
+
+		await adminFns.pickWinner({ locals: locals(admin0), request: post({ villaId: V[0] }) });
+
+		// the winner keeps everything, every other villa shows nothing at all
+		expect((await read(V[0])).comments).toHaveLength(8);
+		for (const id of V.slice(1)) {
+			const page = await read(id);
+			expect(page.comments, id).toEqual([]);
+			expect(JSON.stringify(page)).not.toContain('hello from');
+		}
+		const after = await counts();
+		expect(after[V[0]]).toBe(8);
+		expect(
+			Object.entries(after)
+				.filter(([id]) => id !== V[0])
+				.every(([, n]) => n === 0)
+		).toBe(true);
+		// nobody can add to a villa that wasn't chosen, but they can to the winner
+		for (const m of roster) expect((await say(m, V[1])).status, m.id).toBe(400);
+		expect((await say(roster[1], V[0])).status).toBe(200);
+
+		// undoing the winner brings the hidden comments back (they were only hidden)
+		await adminFns.undoWinner({ locals: locals(admin0), request: post({}) });
+		expect((await read(V[1])).comments).toHaveLength(8);
 	});
 });

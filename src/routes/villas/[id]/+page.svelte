@@ -3,6 +3,7 @@
 	import { BallotClient } from '$lib/ballot-client.svelte.js';
 	import AppBar from '$lib/components/ui/AppBar.svelte';
 	import Chip from '$lib/components/ui/Chip.svelte';
+	import Comments from '$lib/components/villa/Comments.svelte';
 	import PointsLeft from '$lib/components/vote/PointsLeft.svelte';
 	import ResetVotes from '$lib/components/vote/ResetVotes.svelte';
 	import VoteBar from '$lib/components/vote/VoteBar.svelte';
@@ -28,7 +29,8 @@
 			members: withCallName(data.members, data.member),
 			ballots: data.ballots,
 			me: data.me,
-			myBallot
+			myBallot,
+			commentCounts: data.commentCounts
 		})
 	);
 	/** The villa's facts always exist in the config; its vote row only while it's on the list. */
@@ -219,6 +221,14 @@
 				<a class="listing" href={villa.url} target="_blank" rel="external noopener noreferrer">
 					See it on Airbnb <Icon name="external" size={14} />
 				</a>
+
+				<Comments
+					comments={data.comments}
+					members={withCallName(data.members, data.member)}
+					me={data.me}
+					isAdmin={Boolean(data.member?.isAdmin)}
+					max={data.commentMax}
+				/>
 			</div>
 		</article>
 	{/if}

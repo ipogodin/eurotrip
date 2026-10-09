@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	formatDateRange,
+	formatAgo,
 	formatDeadline,
 	formatMoney,
 	formatRemaining,
@@ -101,5 +102,24 @@ describe('utcToPacificInput', () => {
 	});
 	it('shows the default deadline as 9:30 am Pacific', () => {
 		expect(utcToPacificInput('2026-10-10T16:30:00Z')).toBe('2026-10-10T09:30');
+	});
+});
+
+describe('formatAgo', () => {
+	const now = Date.parse('2026-10-09T18:00:00Z');
+	const ago = (/** @type {number} */ ms) => new Date(now - ms).toISOString();
+	it('says just now for the last minute, and for a slightly-ahead clock', () => {
+		expect(formatAgo(ago(20_000), now)).toBe('just now');
+		expect(formatAgo(new Date(now + 30_000).toISOString(), now)).toBe('just now');
+	});
+	it('counts minutes, then hours', () => {
+		expect(formatAgo(ago(5 * 60_000), now)).toBe('5 min ago');
+		expect(formatAgo(ago(59 * 60_000), now)).toBe('59 min ago');
+		expect(formatAgo(ago(60 * 60_000), now)).toBe('1 h ago');
+		expect(formatAgo(ago(23 * 3_600_000), now)).toBe('23 h ago');
+	});
+	it('switches to a date after a day, and copes with junk', () => {
+		expect(formatAgo(ago(30 * 3_600_000), now)).toMatch(/^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d{2}/);
+		expect(formatAgo('not a date', now)).toBe('');
 	});
 });

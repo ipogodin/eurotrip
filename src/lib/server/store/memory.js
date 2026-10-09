@@ -1,4 +1,4 @@
-import { emptyTrip, parseIds, TRIP_FIELDS } from './types.js';
+import { emptyTrip, parseComments, parseIds, TRIP_FIELDS } from './types.js';
 
 /**
  * In-memory store for local dev and tests. Not shared between serverless
@@ -20,6 +20,8 @@ export function createMemoryStore() {
 	const avatarCounts = {};
 	/** @type {Map<string, string>} "id:version" -> base64 image */
 	const avatarImages = new Map();
+	/** @type {Map<string, Map<string, string>>} villa id -> comment id -> comment JSON */
+	const comments = new Map();
 
 	/** @param {string} key */
 	function live(key) {
@@ -110,6 +112,19 @@ export function createMemoryStore() {
 		},
 		async setAvatarImage(memberId, version, base64) {
 			avatarImages.set(`${memberId}:${version}`, base64);
+		},
+		async getComments(villaId) {
+			return parseComments(comments.get(villaId)?.values() ?? []);
+		},
+		async addComment(villaId, comment) {
+			if (!comments.has(villaId)) comments.set(villaId, new Map());
+			comments.get(villaId)?.set(comment.id, JSON.stringify(comment));
+		},
+		async deleteComment(villaId, commentId) {
+			return comments.get(villaId)?.delete(commentId) ?? false;
+		},
+		async getCommentCounts(villaIds) {
+			return Object.fromEntries(villaIds.map((id) => [id, comments.get(id)?.size ?? 0]));
 		}
 	};
 }

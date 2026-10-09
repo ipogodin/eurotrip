@@ -12,10 +12,11 @@ import { canIncrement, tally } from '$lib/voting.js';
  *   members: import('$lib/members-ui.js').PublicMember[],
  *   ballots: Record<string, import('$lib/voting.js').Ballot>,
  *   me: string,
- *   myBallot: import('$lib/voting.js').Ballot
+ *   myBallot: import('$lib/voting.js').Ballot,
+ *   commentCounts?: Record<string, number>
  * }} input
  */
-export function buildVoteView({ villas, members, ballots, me, myBallot }) {
+export function buildVoteView({ villas, members, ballots, me, myBallot, commentCounts = {} }) {
 	const memberById = new Map(members.map((m) => [m.id, m]));
 	const villaById = new Map(villas.map((v) => [v.id, v]));
 	const myBudget = memberById.get(me)?.votes ?? VOTE_BUDGET;
@@ -40,7 +41,8 @@ export function buildVoteView({ villas, members, ballots, me, myBallot }) {
 			addHint:
 				myPoints >= MAX_PER_VILLA
 					? `${MAX_PER_VILLA} points is the most one villa can get from you.`
-					: `All ${myBudget} points are used. Take one back from another villa first.`
+					: `All ${myBudget} points are used. Take one back from another villa first.`,
+			comments: commentCounts[r.villaId] ?? 0
 		});
 	}
 	return { results, rowById, memberById, villaById, myBudget };

@@ -1,6 +1,9 @@
 /**
  * @typedef {Record<string, 1 | 2 | 3>} Ballot  villaId -> points
  *
+ * @typedef {{ id: string, memberId: string, text: string, createdAt: string }} Comment
+ *   one public comment on a villa; `createdAt` is a UTC ISO time
+ *
  * @typedef {{
  *   winnerId: string | null;
  *   pickedAt: string | null;
@@ -36,6 +39,10 @@
  *   setAvatarCount(memberId: string, count: number): Promise<void>;
  *   getAvatarImage(memberId: string, version: number): Promise<string | null>;
  *   setAvatarImage(memberId: string, version: number, base64: string): Promise<void>;
+ *   getComments(villaId: string): Promise<Comment[]>;
+ *   addComment(villaId: string, comment: Comment): Promise<void>;
+ *   deleteComment(villaId: string, commentId: string): Promise<boolean>;
+ *   getCommentCounts(villaIds: string[]): Promise<Record<string, number>>;
  * }} Store
  */
 
@@ -77,4 +84,32 @@ export function emptyTrip() {
 		notes: null,
 		updatedAt: null
 	};
+}
+
+/**
+ * Read stored comment JSON strings back into comments, oldest first. Anything
+ * malformed is dropped rather than breaking the whole page.
+ * @param {Iterable<string>} values
+ * @returns {Comment[]}
+ */
+export function parseComments(values) {
+	/** @type {Comment[]} */
+	const out = [];
+	for (const raw of values) {
+		try {
+			const c = JSON.parse(raw);
+			if (
+				c &&
+				typeof c.id === 'string' &&
+				typeof c.memberId === 'string' &&
+				typeof c.text === 'string' &&
+				typeof c.createdAt === 'string'
+			) {
+				out.push({ id: c.id, memberId: c.memberId, text: c.text, createdAt: c.createdAt });
+			}
+		} catch {
+			/* skip a corrupted entry */
+		}
+	}
+	return out.sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id));
 }
