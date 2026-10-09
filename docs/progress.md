@@ -478,7 +478,7 @@ failed) and restoring. Verified in Chrome on a throwaway second dev server with
 test values: the person sees their own preferred name in all those places and
 exactly 1 copy of it in the data sent to the browser; another member's test
 value appeared 0 times, including on the admin page.
-**The user's `members.json` has no `preferred` values yet** (`members:check`
+**Blank `"preferred": ""` fields were added to all 8 members in `members.json` for the user to fill in (a blank = not filled in = the short name is used; `members:check` warns until they are).** Earlier the file had no `preferred` values (`members:check`
 now warns: 8 members have none), so everyone is currently called by their short
 name. The user adds them (names are theirs to choose).
 

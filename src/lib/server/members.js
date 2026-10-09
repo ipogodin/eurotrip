@@ -81,16 +81,21 @@ export function parseMembers(raw) {
 			} else votes = e.votes;
 		}
 
+		// Blank (or null) = "not filled in yet": the app uses the short name instead.
 		let preferred = short;
-		if (e.preferred !== undefined) {
-			const p = typeof e.preferred === 'string' ? e.preferred.trim() : '';
+		const given = e.preferred;
+		if (given === undefined || given === null || (typeof given === 'string' && !given.trim())) {
+			withoutPreferred++;
+		} else if (
+			typeof given !== 'string' ||
+			given.trim().length > MAX_PREFERRED ||
 			// eslint-disable-next-line no-control-regex -- reject newlines and other control characters
-			if (!p || p.length > MAX_PREFERRED || /[\u0000-\u001f\u007f]/.test(p)) {
-				errors.push(
-					`${at} (${id || '?'}): preferred must be 1-${MAX_PREFERRED} characters on one line`
-				);
-			} else preferred = p;
-		} else withoutPreferred++;
+			/[\u0000-\u001f\u007f]/.test(given.trim())
+		) {
+			errors.push(
+				`${at} (${id || '?'}): preferred must be 1-${MAX_PREFERRED} characters on one line (or left blank)`
+			);
+		} else preferred = given.trim();
 
 		members.push({ id, name, short, preferred, phrase, admin: e.admin === true, votes });
 	});

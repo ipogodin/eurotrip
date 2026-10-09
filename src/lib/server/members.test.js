@@ -30,8 +30,18 @@ describe('parseMembers', () => {
 		expect(warnings.join(' ')).toMatch(/1 member has no "preferred"/); // illia has none
 	});
 
-	it('rejects a preferred name that is empty, too long, or has a line break', () => {
-		for (const preferred of ['', '   ', 'x'.repeat(31), 'two\nlines', 'tab\there', 5, null]) {
+	it('treats a blank preferred name as not filled in yet (falls back to short)', () => {
+		for (const preferred of ['', '   ', null]) {
+			const r = raw();
+			r[1] = { ...r[1], preferred };
+			const { members, warnings } = parseMembers(r);
+			expect(members[1].preferred, JSON.stringify(preferred)).toBe('Anna');
+			expect(warnings.join(' ')).toMatch(/2 members have no "preferred"/);
+		}
+	});
+
+	it('rejects a preferred name that is too long, has a line break, or is not text', () => {
+		for (const preferred of ['x'.repeat(31), 'two\nlines', 'tab\there', 5, true, {}]) {
 			const r = raw();
 			r[1] = { ...r[1], preferred };
 			expect(() => parseMembers(r), JSON.stringify(preferred)).toThrow(/preferred must be/);
