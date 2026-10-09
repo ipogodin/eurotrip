@@ -8,15 +8,15 @@
 
 /**
  * @param {{ id: string, x: number, y: number }[]} anchors  true positions
- * @param {{ minDist: number, width: number, height: number, margin: number }} opts
+ * @param {{ minDist: number, bounds: { x: number, y: number, w: number, h: number }, margin: number }} opts
  * @returns {{ id: string, x: number, y: number, ax: number, ay: number }[]}
  */
-export function spreadPins(anchors, { minDist, width, height, margin }) {
+export function spreadPins(anchors, { minDist, bounds, margin }) {
 	const pts = anchors.map((a) => ({ id: a.id, ax: a.x, ay: a.y, x: a.x, y: a.y }));
 	const clamp = () => {
 		for (const p of pts) {
-			p.x = Math.min(width - margin, Math.max(margin, p.x));
-			p.y = Math.min(height - margin, Math.max(margin, p.y));
+			p.x = Math.min(bounds.x + bounds.w - margin, Math.max(bounds.x + margin, p.x));
+			p.y = Math.min(bounds.y + bounds.h - margin, Math.max(bounds.y + margin, p.y));
 		}
 	};
 

@@ -8,6 +8,14 @@
 /** Map drawing area (SVG units). Extra sea around the island leaves room for photos. */
 export const VIEW = { w: 1000, h: 880 };
 
+/**
+ * The part of the drawing the map actually shows: a zoomed-in window on the
+ * south-west of the island (Teno coast to Teide, down to Los Cristianos), where
+ * all the villas are. Same shape as VIEW (1000:880) so the map keeps its
+ * proportions. Zoom in or out by changing this; photos and spacing follow it.
+ */
+export const VIEWPORT = { x: 20, y: 282, w: 680, h: 598 };
+
 const LNG0 = -16.95;
 const LAT0 = 28.64;
 const PX_PER_LNG = 1038; // 1180 px per degree of latitude * cos(28.3°)
@@ -67,5 +75,6 @@ export const TEIDE = project([28.272, -16.642]);
 export const PLACES = [
 	{ text: 'Santa Cruz', at: project([28.475, -16.2]) },
 	{ text: 'Puerto de la Cruz', at: project([28.43, -16.62]) },
-	{ text: 'Los Gigantes', at: project([28.255, -16.93]) }
+	{ text: 'Los Gigantes', at: project([28.255, -16.885]) },
+	{ text: 'Los Cristianos', at: project([27.995, -16.595]) }
 ];

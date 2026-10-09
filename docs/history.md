@@ -500,3 +500,12 @@ afterwards with more about the location (surf spots and so on). Built the
 decided-state view (winner map + info card, no voting screens, other villas say
 they weren't chosen); the richer trip hub stays phase 2, to be done after the
 winner is known.
+
+---
+
+## 2026-10-08 — Only the south-west villas; zoomed map
+
+The user dropped 5 of the 13 villas (the ones outside the south-west) and asked
+for the map to be magnified a little around that area. They were removed from the
+villa list for good (config and photos), leaving 8, and the map now shows a zoomed
+window on the south-west of Tenerife.

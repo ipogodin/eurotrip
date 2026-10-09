@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { villas } from '$lib/config/villas.js';
-import { OUTLINE, project, VIEW } from '$lib/config/tenerife.js';
+import { OUTLINE, project, VIEW, VIEWPORT } from '$lib/config/tenerife.js';
 import { smoothClosedPath, spreadPins } from './map-layout.js';
 
-const opts = { minDist: 125, width: VIEW.w, height: VIEW.h, margin: 63 };
+// Photos are 12.5% of the shown map width, exactly as in VillaMap.
+const PIN = VIEWPORT.w * 0.125;
+const opts = { minDist: PIN, bounds: VIEWPORT, margin: PIN / 2 };
 const anchors = () => villas.map((v) => ({ id: v.id, ...project(v.coords) }));
 
 describe('spreadPins', () => {
@@ -19,40 +21,61 @@ describe('spreadPins', () => {
 
 	it('keeps every pin inside the map', () => {
 		for (const p of spreadPins(anchors(), opts)) {
-			expect(p.x).toBeGreaterThanOrEqual(opts.margin - 0.5);
-			expect(p.x).toBeLessThanOrEqual(VIEW.w - opts.margin + 0.5);
-			expect(p.y).toBeGreaterThanOrEqual(opts.margin - 0.5);
-			expect(p.y).toBeLessThanOrEqual(VIEW.h - opts.margin + 0.5);
+			expect(p.x).toBeGreaterThanOrEqual(VIEWPORT.x + opts.margin - 0.5);
+			expect(p.x).toBeLessThanOrEqual(VIEWPORT.x + VIEWPORT.w - opts.margin + 0.5);
+			expect(p.y).toBeGreaterThanOrEqual(VIEWPORT.y + opts.margin - 0.5);
+			expect(p.y).toBeLessThanOrEqual(VIEWPORT.y + VIEWPORT.h - opts.margin + 0.5);
 		}
 	});
 
 	it('keeps each pin reasonably near its true position', () => {
 		for (const p of spreadPins(anchors(), opts)) {
-			expect(Math.hypot(p.x - p.ax, p.y - p.ay)).toBeLessThan(350);
+			expect(Math.hypot(p.x - p.ax, p.y - p.ay)).toBeLessThan(PIN * 2.5);
 		}
 	});
 
 	it('is deterministic, and leaves already-spread pins alone', () => {
 		expect(spreadPins(anchors(), opts)).toEqual(spreadPins(anchors(), opts));
 		const far = [
-			{ id: 'a', x: 200, y: 200 },
-			{ id: 'b', x: 700, y: 600 }
+			{ id: 'a', x: 200, y: 450 },
+			{ id: 'b', x: 520, y: 800 }
 		];
 		const out = spreadPins(far, opts);
 		expect(out.map((p) => [Math.round(p.x), Math.round(p.y)])).toEqual([
-			[200, 200],
-			[700, 600]
+			[200, 450],
+			[520, 800]
 		]);
 	});
 
 	it('separates villas at exactly the same spot', () => {
 		const same = [
-			{ id: 'a', x: 500, y: 500 },
-			{ id: 'b', x: 500, y: 500 },
-			{ id: 'c', x: 500, y: 500 }
+			{ id: 'a', x: 300, y: 600 },
+			{ id: 'b', x: 300, y: 600 },
+			{ id: 'c', x: 300, y: 600 }
 		];
 		const out = spreadPins(same, opts);
-		expect(Math.hypot(out[0].x - out[1].x, out[0].y - out[1].y)).toBeGreaterThan(100);
+		expect(Math.hypot(out[0].x - out[1].x, out[0].y - out[1].y)).toBeGreaterThan(PIN * 0.8);
+	});
+});
+
+describe('the zoomed map window', () => {
+	it('has the same proportions as the whole drawing', () => {
+		expect(VIEWPORT.w / VIEWPORT.h).toBeCloseTo(VIEW.w / VIEW.h, 2);
+	});
+	it('stays inside the drawing', () => {
+		expect(VIEWPORT.x).toBeGreaterThanOrEqual(0);
+		expect(VIEWPORT.y).toBeGreaterThanOrEqual(0);
+		expect(VIEWPORT.x + VIEWPORT.w).toBeLessThanOrEqual(VIEW.w);
+		expect(VIEWPORT.y + VIEWPORT.h).toBeLessThanOrEqual(VIEW.h);
+	});
+	it('contains every villa, with room for its photo (none can fall off the edge)', () => {
+		for (const v of villas) {
+			const p = project(v.coords);
+			expect(p.x, v.id).toBeGreaterThan(VIEWPORT.x + PIN);
+			expect(p.x, v.id).toBeLessThan(VIEWPORT.x + VIEWPORT.w - PIN);
+			expect(p.y, v.id).toBeGreaterThan(VIEWPORT.y + PIN);
+			expect(p.y, v.id).toBeLessThan(VIEWPORT.y + VIEWPORT.h - PIN);
+		}
 	});
 });
 

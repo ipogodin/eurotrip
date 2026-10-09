@@ -457,6 +457,31 @@ The integration install also added third-party agent skills
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
 
+### Villa list cut to the south-west + zoomed map (2026-10-08, the user's request)
+
+The user removed 5 villas (Airbnb rooms 49901573, 1443528584945991888,
+735931048615921810, 22045753, 674271392481837871 = San Miguel de Abona, Golf del
+Sur, Arico, Güímar, La Matanza) so only the south-west remains, and asked to
+magnify the island a little to show the area closer.
+- **Removed from `src/lib/config/villas.js` and their photo folders deleted
+  from `static/villas/`** (13 MB -> 6.6 MB), not hidden with the admin "Remove"
+  feature: it's before launch and nobody has voted. 8 villas remain: 6 in Costa
+  Adeje/Adeje, 1 in Arona and 1 in Callao Salvaje (see the config). Git history still holds the old photos.
+- **Zoom:** `VIEWPORT` in `config/tenerife.js` is the window the map shows
+  (x 20, y 282, w 680, h 598 of the 1000 x 880 drawing = about 1.5x, the south-west
+  from Los Gigantes to Teide and down to Los Cristianos). The SVG `viewBox`, pin
+  positions (percent of the window), pin spacing (`PIN_UNITS` = 12.5% of the window
+  width) and the stage's aspect ratio all follow it, so changing the zoom is one
+  line. `spreadPins` now takes `bounds` instead of width/height. A first try at
+  1.67x cut the island into a corner and no longer read as Tenerife; 1.47x keeps it
+  recognizable. Labels moved (Los Gigantes inward, Los Cristianos below the photos).
+- Tests: spreading/bounds updated, plus 3 guards: the window keeps the drawing's
+  proportions, stays inside the drawing, and contains every villa with room for its
+  photo (so a villa added later can't fall off the edge of the map).
+- Verified in Chrome: desktop and 390 px (8 photos of 44 px, all inside the map,
+  none overlapping, no overflow) and the winner-only view on the zoomed map (picked
+  a test winner, then undid it).
+
 ### Winner-only main page (2026-10-08, the user's request)
 
 Once the admin picks a winner, the main page is about that villa only, and a later

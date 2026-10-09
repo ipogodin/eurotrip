@@ -1,6 +1,6 @@
 <script>
 	import { resolve } from '$app/paths';
-	import { OUTLINE, PLACES, TEIDE, VIEW, project } from '$lib/config/tenerife.js';
+	import { OUTLINE, PLACES, TEIDE, VIEWPORT, project } from '$lib/config/tenerife.js';
 	import { villas } from '$lib/config/villas.js';
 	import { smoothClosedPath, spreadPins } from '$lib/map-layout.js';
 
@@ -15,14 +15,14 @@
 	 */
 	let { rows, winnerId, featured = false } = $props();
 
-	// Pin size is 12.5% of the map width (capped), so the spreading distance
+	// Pin size is 12.5% of the shown map width (capped), so the spreading distance
 	// matches the on-screen size. Laid out in config order, so pins never jump
 	// when the ranking changes.
-	const PIN_UNITS = 125;
+	const PIN_UNITS = VIEWPORT.w * 0.125;
 	const pins = new Map(
 		spreadPins(
 			villas.map((v) => ({ id: v.id, ...project(v.coords) })),
-			{ minDist: PIN_UNITS, width: VIEW.w, height: VIEW.h, margin: PIN_UNITS / 2 }
+			{ minDist: PIN_UNITS, bounds: VIEWPORT, margin: PIN_UNITS / 2 }
 		).map((p) => [p.id, p])
 	);
 
@@ -30,9 +30,13 @@
 	const pct = (/** @type {number} */ v, /** @type {number} */ of) => `${(v / of) * 100}%`;
 </script>
 
-<figure class="map">
+<figure class="map" style:--aspect={VIEWPORT.w / VIEWPORT.h}>
 	<div class="stage">
-		<svg viewBox="0 0 {VIEW.w} {VIEW.h}" role="presentation" aria-hidden="true">
+		<svg
+			viewBox="{VIEWPORT.x} {VIEWPORT.y} {VIEWPORT.w} {VIEWPORT.h}"
+			role="presentation"
+			aria-hidden="true"
+		>
 			<defs>
 				<linearGradient id="land" x1="0" y1="0" x2="0" y2="1">
 					<stop offset="0" stop-color="#d7ecb8" />
@@ -44,6 +48,8 @@
 				<path d="M20 120 q60-30 120 0 t120 0 t120 0" />
 				<path d="M700 780 q60-30 120 0 t120 0" />
 				<path d="M40 560 q50-26 100 0 t100 0" />
+				<path d="M130 850 q50-26 100 0 t100 0" />
+				<path d="M440 400 q50-26 100 0 t80 0" />
 				<path d="M780 60 q50-26 100 0 t80 0" />
 			</g>
 			<path class="shadow" d={island} transform="translate(8 14)" />
@@ -76,8 +82,8 @@
 					class:mine={row.myPoints > 0}
 					class:winner={row.villa.id === winnerId}
 					href={resolve('/villas/[id]', { id: row.villa.id })}
-					style:left={pct(featured ? pin.ax : pin.x, VIEW.w)}
-					style:top={pct(featured ? pin.ay : pin.y, VIEW.h)}
+					style:left={pct((featured ? pin.ax : pin.x) - VIEWPORT.x, VIEWPORT.w)}
+					style:top={pct((featured ? pin.ay : pin.y) - VIEWPORT.y, VIEWPORT.h)}
 					aria-label="{row.villa.name}, {row.villa.town}. {row.myPoints
 						? `You gave ${row.myPoints} point${row.myPoints === 1 ? '' : 's'}. `
 						: ''}{row.total} point{row.total === 1 ? '' : 's'} in total{row.rank
@@ -121,8 +127,8 @@
 		position: relative;
 		container-type: inline-size;
 		/* As big as the screen allows without cutting the island */
-		width: min(100%, calc((100dvh - 290px) * 1000 / 880));
-		aspect-ratio: 1000 / 880;
+		width: min(100%, calc((100dvh - 290px) * var(--aspect)));
+		aspect-ratio: var(--aspect);
 		border-radius: var(--r-lg);
 		overflow: hidden;
 		background:
