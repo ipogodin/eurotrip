@@ -543,3 +543,14 @@ User asked to raise the most points one person can give a single villa from 3 to
 single source: the stepper and dots now default to it instead of a hard-coded 3, the
 stored ballot type is just numbers, and the tests follow the constant. Existing votes
 (all ≤3) stay valid.
+
+---
+
+## 2026-10-09 — Link preview
+
+The preview chat apps showed for the site was a generic description. The login page
+(the only page an anonymous visitor or a link crawler can reach) now has a title, the
+user's own wording as the description ("OMG! This is so nice it is almost illegal. Grab
+some Spain into your February schedule."), and a beach picture (`static/og.jpg`,
+1200×630, cut from the login background). Chat apps cache previews, so an old one may
+linger for a while.

@@ -33,12 +33,28 @@
 	const clock = $derived(
 		`${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')}`
 	);
+
+	const SITE_URL = 'https://2027eurotrip.vercel.app';
+	const SHARE_TITLE = 'Eurotrip 2027 · Pick our Tenerife villa 🌴';
+	const SHARE_DESCRIPTION =
+		'OMG! This is so nice it is almost illegal. Grab some Spain into your February schedule.';
 </script>
 
 <svelte:head>
 	<title>Eurotrip · Enter your invite phrase</title>
 	<meta name="robots" content="noindex" />
 	<meta name="theme-color" content="#d81b60" />
+	<!-- The link preview chat apps show. Absolute URLs: crawlers don't resolve relative ones. -->
+	<meta name="description" content={SHARE_DESCRIPTION} />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Eurotrip 2027" />
+	<meta property="og:title" content={SHARE_TITLE} />
+	<meta property="og:description" content={SHARE_DESCRIPTION} />
+	<meta property="og:url" content={SITE_URL} />
+	<meta property="og:image" content="{SITE_URL}/og.jpg" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 
 <div class="scene">
