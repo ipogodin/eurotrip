@@ -61,7 +61,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
-| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Photos delivered 2026-10-08 as `avatars/<id>_1` (default) and `<id>_2` (prank); `npm run avatars:check`: 6 of 8 members fine, `illia_1` (149x177) and `marina_1` (196x218) are too small. Still need the caption text + admin-reset/notification answers | partly done |
+| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Photos delivered 2026-10-08 as `avatars/<id>_1` (default), `<id>_2` ... (versions); `npm run avatars:check`: 8 of 8 fine; faces checked in circle crops. Phrases file done. Still to answer: can the admin reset someone to version 1? | mostly done |
 | I13 | 1.8      | Admin reset-everyone's-votes button | done 2026-10-08: yes, built (plus removing a villa, points return to voters) |
 | I14 | 1.8      | Sign in as a NON-admin (e.g. the 2nd dev member) and open `/admin`: it must say 403. The agent can't enter phrases; guards are unit-tested and anonymous requests were checked | waiting |
 | I12 | 1.7      | Look at the map vote page (`npm run dev` → `/vote`) on a phone and a computer: photo size, the spread-out positions in Costa Adeje, the compact header. Say what to change. `VOTE_LAYOUT = 'list'` in `src/lib/config/voting.js` brings back the old card list | **waiting** |
@@ -454,6 +454,26 @@ The integration install also added third-party agent skills
 (`.agents/`, `.claude/skills/`, `skills-lock.json`); gitignored on purpose.
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
+
+### Photos re-verified, faces checked, phrases + versions (2026-10-08)
+
+The user replaced `illia_1` and `marina_1` and asked to re-verify and to check
+face placement. The checker found `illia_1` twice (the old 149x177 .jpg left
+beside the new 344x454 .png); the old one was moved (not deleted) to the
+scratchpad. Result: 16 photos, 8 of 8 members fine, no identical pairs.
+Faces: rendered all 16 as the app will show them (centered square crop, circle)
+and looked at them: every face is fully inside its circle, none cut; notes:
+`alex_1` is tilted sideways (EXIF rotation applied; the user should say if
+it's wrong), `illia_1` fills the circle and clips the very top of the head.
+So the plain center crop is enough; no per-photo focus setting needed.
+Built (tested, 11 tests): `src/lib/config/avatar-phrases.txt` (12 phrases to
+edit; random, never the same twice in a row), `src/lib/avatar.js`
+(`parsePhrases`, `pickPhrase`, `currentVersion`, `nextVersion`). Checker now
+accepts any number of versions (`_3` ...), flags gaps and identical pictures.
+Decision: the avatar a member shows is just a version number; each "update"
+moves them up one and they stay on the last (easy to change). The upload,
+private storage and the swap UI are still step 3.4; custom notifications to
+others are a later, separate feature.
 
 ### Avatar photos delivered (2026-10-08)
 

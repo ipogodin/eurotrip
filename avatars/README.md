@@ -7,19 +7,22 @@ stored privately and shown only to signed-in members.
 
 ## Names
 
-Two photos per member, named with the member's `id` from `members.json`:
+Photos are numbered versions, named with the member's `id` from `members.json`:
 
-| File                       | What it is                                                  |
-| -------------------------- | ----------------------------------------------------------- |
-| `avatars/<member-id>_1.<ext>` | The member's own photo. **This is the default avatar.**  |
-| `avatars/<member-id>_2.<ext>` | The replacement photo for the "neh, this one is better" prank |
+| File                          | What it is                                                      |
+| ----------------------------- | --------------------------------------------------------------- |
+| `avatars/<member-id>_1.<ext>` | The member's own photo. **This is the default avatar.**         |
+| `avatars/<member-id>_2.<ext>` | The photo they get the first time they "update" their picture   |
+| `avatars/<member-id>_3.<ext>` | (optional) what they get the next time, and so on               |
 
-Example: `avatars/anna_1.jpg` and `avatars/anna_2.png`.
+Every time a member "updates" their avatar they move up one version, and stay
+on the last one when there are no more. Versions must run 1, 2, 3 … without
+gaps. Example: `avatars/anna_1.jpg`, `avatars/anna_2.png`, `avatars/anna_3.jpg`.
 
 - `<member-id>` is written exactly as in `members.json` (lowercase).
 - `<ext>`: `jpg`, `jpeg`, `png` or `webp`; the two files may differ. iPhone
   photos are often HEIC: export or share them as JPG first.
-- Exactly one `_1` and one `_2` per member, and they must be different pictures.
+- Exactly one file per version, and no two versions of a member may be the same picture.
 
 ## Good photos
 

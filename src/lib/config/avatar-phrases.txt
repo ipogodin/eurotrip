@@ -1,0 +1,16 @@
+# What the app says when someone "updates" their photo and gets a different one.
+# One phrase per line. Empty lines and lines starting with # are ignored.
+# One is picked at random each time. Add, change or delete freely.
+
+Neh, I think this one is better.
+Neh, I think this is better.
+Photo updated! We went with a different one. You're welcome.
+Great choice! Just kidding, we picked this one instead.
+Your photo was lovely. This one is lovelier.
+Plot twist: we chose for you.
+We ran it past the committee. This one won.
+Nice try. This one suits you better.
+Our photo department has spoken.
+We know your good side, and it's this one.
+Upload received. Upload ignored. Enjoy your new look!
+Trust us on this one.

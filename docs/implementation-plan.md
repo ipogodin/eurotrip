@@ -432,12 +432,17 @@ this one is better"**. Everyone else sees the swapped photo too (on their
 next 15 s refresh), so the joke is shared.
 
 **Inputs from the user (I11):**
-- DONE 2026-10-08: two photos per member in the git-ignored `avatars/` folder:
-  `<id>_1` (own photo, the default) and `<id>_2` (the prank replacement).
-  So the swap is one fixed replacement per person (no shared pool).
-- Still needed: the exact caption text ("neh, I think this one is better"?).
-- Still to confirm: can the admin put someone's real photo back; do the others
-  get a "Anna has a new photo" note?
+- DONE 2026-10-08: numbered photo versions per member in the git-ignored
+  `avatars/` folder: `<id>_1` (own photo, the default), `<id>_2` (first
+  replacement), `<id>_3` ... if more are added. Each "update" moves the member
+  up one version; on the last one they stay. (Replaces the earlier shared-pool
+  idea.) The stored value is just the version number.
+- DONE 2026-10-08: the phrases live in `src/lib/config/avatar-phrases.txt`
+  (one per line, `#` comments; edit freely), picked at random (never the same
+  phrase twice in a row), logic in `src/lib/avatar.js` (tested).
+- Still to confirm: can the admin put someone's real photo back (set version 1)?
+- Later, separate feature: notifying the others when someone changes their
+  photo (e.g. "Anna has a new photo"). Not part of 3.4.
 
 **Privacy (decided):** the repo is public and `static/` files are served to
 anyone with the URL, without login. So member photos and the prank pool go
@@ -451,7 +456,9 @@ private`), resized to 96 / 256 px webp at upload time.
    `scripts/avatars.js upload` to crop/resize and upload `<id>_1.webp` and
    `<id>_2.webp` (the checker `npm run avatars:check` already exists); record
    the blob keys, never the files, in config.
-2. Redis `avatar:{memberId}` = `{ photo: 1 | 2, changedAt }` (1 = own, 2 = replacement);
+2. Redis `avatar:{memberId}` = the version number (1 = own photo, 2 = first replacement, ...);
+   the highest version per member comes from the upload (a small manifest), via
+   `currentVersion` / `nextVersion` in `avatar.js`;
    the vote/trip `load` returns each member's current avatar version so
    polling picks up swaps.
 3. `Avatar.svelte`: photo when available (`<img>` from `/avatars/<id>?v=…`,
@@ -459,10 +466,10 @@ private`), resized to 96 / 256 px webp at upload time.
 4. Account menu → **Change photo** → native file picker (`accept="image/*"`).
    The chosen file is **never uploaded or stored**: the client only shows a
    preview + fake progress (~1.5 s), then posts a form action
-   `?/swapPhoto` (no file) that switches the member to photo 2 (and never back, unless the admin resets).
+   `?/swapPhoto` (no file) that moves the member up one version and returns a random phrase from the
+   phrases file (and never back, unless the admin resets).
    Then a Sheet reveals the new avatar with the caption.
-5. Optional: a short toast for everyone else on their next refresh, e.g.
-   "Anna has a new photo". Confirm with the user.
+5. (Moved to a later feature.) Notifying the others, e.g. "Anna has a new photo".
 6. Admin: "Reset photo" per member (back to `own`).
 
 **Acceptance:** photos never reachable without a session (curl the URL

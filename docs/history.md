@@ -437,3 +437,16 @@ a short notice when either happens, so changes to their points never come as
 a surprise; a winner must be undone before resetting, removing or changing the
 deadline; at least 2 villas must stay on the list. Open: a non-admin 403
 check by the user (I14).
+
+---
+
+## 2026-10-08 — Avatar photos checked; versions and phrases
+
+The user fixed the two too-small photos and asked to re-verify and to check
+face placement: all 8 members now have good photos and every face sits inside
+its circle crop. Requirements for the photo prank, clarified by the user: the
+photos are real; when someone "updates" their avatar the app pretends, then
+gives them the next prepared version (`_2`, then `_3` if added), not the photo
+they picked, with a random phrase from an editable file ("neh, I think this is
+better" and similar). The app tracks which version each member is on.
+Notifying others about a changed photo is a later, separate feature.
