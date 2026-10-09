@@ -126,7 +126,7 @@
 						</span>
 					{/if}
 					{#if row.comments > 0}
-						<span class="chat" aria-hidden="true"><Icon name="message-circle" size={14} /></span>
+						<span class="chat" aria-hidden="true"><Icon name="message-circle" size={11} /></span>
 					{/if}
 				</a>
 			{/if}
@@ -350,12 +350,12 @@
 	/* A speech bubble when the villa has comments; no number. */
 	.chat {
 		position: absolute;
-		right: -8px;
-		bottom: -8px;
+		right: -6px;
+		bottom: -6px;
 		display: grid;
 		place-items: center;
-		width: 28px;
-		height: 28px;
+		width: 21px;
+		height: 21px;
 		border-radius: 50%;
 		border: 2px solid #fff;
 		background: var(--ink);

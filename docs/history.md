@@ -603,3 +603,9 @@ Per the user's reference picture: a crown badge (gold) on the group favourite, m
 comment bubble moved to the bottom right as a dark circle. Podium pins sit above
 their neighbours so the badge is never hidden. New icons: `crown`, `medal`. Checked on
 a signed-in local screen with seeded test votes (memory store, nothing live touched).
+
+---
+
+## 2026-10-09 — Smaller comment bubble
+
+The comment bubble on map pins went from 28 px to 21 px (75%), icon 14 → 11 px, at the user's request.
