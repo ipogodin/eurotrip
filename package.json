@@ -20,6 +20,7 @@
 		"members:gen": "node scripts/members.js gen",
 		"members:push": "node scripts/members.js push",
 		"villas:photos": "node scripts/photos.js",
+		"avatars:check": "node scripts/avatars.js",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint ."
 	},

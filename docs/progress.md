@@ -61,7 +61,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
-| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4) | waiting |
+| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Put photos in the git-ignored `avatars/` folder as `<member-id>.jpg` (pool: `avatars/pool/<n>.jpg`); `npm run avatars:check` verifies | waiting for the photos |
 | I13 | 1.8      | Admin reset-everyone's-votes button | done 2026-10-08: yes, built (plus removing a villa, points return to voters) |
 | I14 | 1.8      | Sign in as a NON-admin (e.g. the 2nd dev member) and open `/admin`: it must say 403. The agent can't enter phrases; guards are unit-tested and anonymous requests were checked | waiting |
 | I12 | 1.7      | Look at the map vote page (`npm run dev` → `/vote`) on a phone and a computer: photo size, the spread-out positions in Costa Adeje, the compact header. Say what to change. `VOTE_LAYOUT = 'list'` in `src/lib/config/voting.js` brings back the old card list | **waiting** |
@@ -454,6 +454,19 @@ The integration install also added third-party agent skills
 (`.agents/`, `.claude/skills/`, `skills-lock.json`); gitignored on purpose.
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
+
+### Roster loaded + avatar folder (2026-10-08)
+
+The user filled `members.json` with all 8 members (`npm run members:check`
+OK, 1 admin; no custom `votes` yet) and asked where to upload avatar images and
+how to name them. Answer: a private, git-ignored `avatars/` folder
+(`avatars/<member-id>.<jpg|jpeg|png|webp>`; prank photos in `avatars/pool/`
+as `<n>.<ext>` or `<member-id>.<ext>`), tracked README only, and a checker
+(`npm run avatars:check`: missing/duplicate/unknown names, < 512 px, very
+wide/tall, unreadable files, > 10 MB; tested with dummy files). Photos are not
+used by the app yet: the upload to private Blob + the `Avatar` photo support is
+step 3.4. `members.md` (untracked, ignored, never committed) exists in the
+repo root; the agent did not read it.
 
 ## Session log
 

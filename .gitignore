@@ -31,3 +31,7 @@ members.json
 .claude/skills/
 skills-lock.json
 members.md
+
+# Member photos are private: the repo is public, so only the README is tracked
+/avatars/*
+!/avatars/README.md

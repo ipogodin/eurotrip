@@ -158,6 +158,7 @@ src/
       store/               # Store interface; upstash.js (prod) + memory.js (dev/tests)
 scripts/
   members.js               # roster CLI: init|check|gen|push (npm run members:*)
+  avatars.js               # `npm run avatars:check`: checks the private avatars/ folder against the roster
   wordlist-eff-large.txt   # EFF word list for phrase generation
 static/
   favicon.svg
@@ -219,6 +220,16 @@ roster from `members.json`; production reads the `MEMBERS` env var.
 `resolve()` from `$app/paths` once there's more than one route.
 
 ---
+
+## Member photos (private)
+
+The repo is public, so member photos are **never committed and never put in
+`static/`**. The user drops them in the git-ignored `avatars/` folder
+(`avatars/<member-id>.jpg|png|webp`, prank pool in `avatars/pool/`; see
+`avatars/README.md`) and `npm run avatars:check` validates the names. Step 3.4
+uploads them to a private Blob store behind a member-only route. Never write a
+member's name or phrase into a tracked file: ids/names live in `members.json`
+(ignored) and the `MEMBERS` env var; `members.md` is also ignored.
 
 ## Deploy
 
