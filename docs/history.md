@@ -609,3 +609,10 @@ a signed-in local screen with seeded test votes (memory store, nothing live touc
 ## 2026-10-09 — Smaller comment bubble
 
 The comment bubble on map pins went from 28 px to 21 px (75%), icon 14 → 11 px, at the user's request.
+
+---
+
+## 2026-10-09 — Comment bubble inside the photo
+
+The bubble now sits inside the round photo, tucked into its lower right (9% from the
+edges), instead of hanging off the corner. Checked on a signed-in local screen.

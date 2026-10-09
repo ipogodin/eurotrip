@@ -350,8 +350,9 @@
 	/* A speech bubble when the villa has comments; no number. */
 	.chat {
 		position: absolute;
-		right: -6px;
-		bottom: -6px;
+		/* Inside the round photo, tucked into its lower right (percentages of the photo). */
+		right: 9%;
+		bottom: 9%;
 		display: grid;
 		place-items: center;
 		width: 21px;
