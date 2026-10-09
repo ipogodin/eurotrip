@@ -1,6 +1,7 @@
 <script>
+	import { MAX_PER_VILLA } from '$lib/config/voting.js';
 	/** @type {{ value: number, max?: number, size?: number }} */
-	let { value, max = 3, size = 10 } = $props();
+	let { value, max = MAX_PER_VILLA, size = 10 } = $props();
 </script>
 
 <span class="dots" style:--d="{size}px" role="img" aria-label="{value} of {max} points">

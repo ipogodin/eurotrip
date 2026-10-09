@@ -27,7 +27,7 @@ private trip app for 8 people:
    the user's video later) and an invite-phrase field, with server-side
    brute-force protection and a client cooldown UX.
 2. **Phase 1, villa voting:** 6–10 candidate rentals on the island, shown as a
-   **list** or on a **map**, mobile-first. 6 points per person, max 3 per villa,
+   **list** or on a **map**, mobile-first. 6 points per person, max 5 per villa (was 3),
    autosaved, editable until the deadline. Votes are public: _By villa_ /
    _By person_ / _My votes_ filters in one view.
 3. **Admin (Illia Pogodin):** extend / close / reopen the deadline, pick the
@@ -44,7 +44,7 @@ The old island report is **deleted** in step 1.4 (git history keeps it).
 | Date       | Topic          | Decision                                                                                                   |
 | ---------- | -------------- | ---------------------------------------------------------------------------------------------------------- |
 | 2026-10-08 | Storage        | Upstash Redis via Vercel Marketplace                                                                       |
-| 2026-10-08 | Vote rules     | ≤6 pts (need not spend all), ≤3 per villa, editable until deadline, live + public                         |
+| 2026-10-08 | Vote rules     | ≤6 pts (need not spend all), ≤5 per villa (raised from 3 on 2026-10-08), editable until deadline, live + public                         |
 | 2026-10-08 | Phase 2 data   | Config files + redeploy; admin UI edits only deadline, winner, dates, notes                               |
 | 2026-10-08 | Gating         | Everything behind login; `/` is the login splash when anonymous                                            |
 | 2026-10-08 | Deadline       | Default Sat 2026-10-10 09:30 PDT (`16:30Z`); admin can extend / close now / reopen without redeploy       |
@@ -258,7 +258,7 @@ Tasks:
 4. `src/lib/voting.js` (shared, no server imports): `votingState()`,
    `effectiveDeadline()`, `validateBallot()`, `tally()`, `spent()`,
    `canIncrement()` per the tech-spec.
-5. `src/lib/voting.test.js`: limits (3 per villa, 6 total, 0 drops a key),
+5. `src/lib/voting.test.js`: limits (per-villa cap, 6 total, 0 drops a key),
    unknown villa, non-integer, closed/decided rejection, tie ranks,
    byPerson, notVotedYet, deadline override precedence.
 

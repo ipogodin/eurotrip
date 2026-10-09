@@ -533,3 +533,13 @@ exact or approximate. Both are built on a branch and wait for the user's approva
 live. Discovered that the Vercel project is connected to GitHub, so every push to
 `main` deploys to production; new features now go on branches. Tetiana's phrase was
 updated by the user and pushed to production from `main`.
+
+---
+
+## 2026-10-08 — Per-villa cap raised from 3 to 5
+
+User asked to raise the most points one person can give a single villa from 3 to 5
+(each person's total stays 6). `MAX_PER_VILLA` in `src/lib/config/voting.js` is the
+single source: the stepper and dots now default to it instead of a hard-coded 3, the
+stored ballot type is just numbers, and the tests follow the constant. Existing votes
+(all ≤3) stay valid.

@@ -6,7 +6,7 @@ export const DEADLINE_LABEL = 'Sat 10 Oct, 10:00 am PDT';
 /** Points each person can spend in total. */
 export const VOTE_BUDGET = 6;
 /** Most points one person can give a single villa. */
-export const MAX_PER_VILLA = 3;
+export const MAX_PER_VILLA = 5;
 
 /**
  * How the "Villas" view of /vote is drawn. One line to flip, then redeploy:
