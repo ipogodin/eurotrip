@@ -123,7 +123,7 @@ describe('POST /avatars/swap  ("Change photo")', () => {
 		const photos = Object.fromEntries(data.members.map((/** @type {any} */ m) => [m.id, m.photo]));
 		expect(photos).toEqual({ anna: 1, ben: 2, cara: 1 });
 	});
-	it('a member who is already on their last photo stays there', async () => {
+	it('a member with only one photo stays on it', async () => {
 		const r = await pressUpdate(as('cara')); // cara has only one photo
 		expect(await r.res.json()).toMatchObject({ version: 1, changed: false });
 	});

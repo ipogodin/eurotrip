@@ -51,8 +51,12 @@ describe('photo versions', () => {
 		expect(nextVersion(undefined, 3)).toEqual({ version: 2, changed: true });
 		expect(nextVersion(2, 3)).toEqual({ version: 3, changed: true });
 	});
-	it('stays on the last photo when there are no more', () => {
-		expect(nextVersion(3, 3)).toEqual({ version: 3, changed: false });
+	it('goes round to the first photo after the last one', () => {
+		expect(nextVersion(3, 3)).toEqual({ version: 1, changed: true });
+		expect(nextVersion(2, 2)).toEqual({ version: 1, changed: true });
+		expect(nextVersion(9, 3)).toEqual({ version: 1, changed: true }); // stored value above the count
+	});
+	it('with a single photo there is nothing to change to', () => {
 		expect(nextVersion(1, 1)).toEqual({ version: 1, changed: false });
 	});
 	it('falls back safely on missing, garbled or too-high stored values', () => {

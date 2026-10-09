@@ -616,3 +616,13 @@ The comment bubble on map pins went from 28 px to 21 px (75%), icon 14 → 11 px
 
 The bubble now sits inside the round photo, tucked into its lower right (9% from the
 edges), instead of hanging off the corner. Checked on a signed-in local screen.
+
+---
+
+## 2026-10-09 — Photos go round in a circle
+
+"Change photo" used to stop on the member's last photo. Now after the last one they go
+back to the first (their own photo), then up again, and so on. A member with only one
+photo still never changes. Rule lives in `nextVersion` (`src/lib/avatar.js`); tests and
+the `avatars/README.md` were updated. No data change: the stored value is still just a
+version number.

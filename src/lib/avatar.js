@@ -45,13 +45,15 @@ export function currentVersion(stored, latest) {
 
 /**
  * What happens when the member "updates" their photo: they move up one
- * version, and stay on the last one when there are no more.
+ * version, and after the last one they go round to the first again. With a
+ * single photo there's nothing to change to.
  * @param {unknown} stored
  * @param {number} latest
  * @returns {{ version: number, changed: boolean }}
  */
 export function nextVersion(stored, latest) {
 	const now = currentVersion(stored, latest);
-	const version = Math.min(now + 1, Math.max(1, Math.floor(latest) || 1));
+	const top = Math.max(1, Math.floor(latest) || 1);
+	const version = now >= top ? 1 : now + 1;
 	return { version, changed: version !== now };
 }

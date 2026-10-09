@@ -436,7 +436,7 @@ next 15 s refresh), so the joke is shared.
 - DONE 2026-10-08: numbered photo versions per member in the git-ignored
   `avatars/` folder: `<id>_1` (own photo, the default), `<id>_2` (first
   replacement), `<id>_3` ... if more are added. Each "update" moves the member
-  up one version; on the last one they stay. (Replaces the earlier shared-pool
+  up one version; after the last one they go round to the first (changed 2026-10-09). (Replaces the earlier shared-pool
   idea.) The stored value is just the version number.
 - DONE 2026-10-08: the phrases live in `src/lib/config/avatar-phrases.txt`
   (one per line, `#` comments; edit freely), picked at random (never the same

@@ -35,11 +35,14 @@ describe('swapPhoto', () => {
 		expect(await swapPhoto(store, 'ben', counts)).toMatchObject({ version: 3, changed: true });
 		expect((await photoVersions(store, ['ben'], counts)).ben).toBe(3);
 	});
-	it('stays on the last photo when there are no more', async () => {
+	it('goes round to the first photo after the last one', async () => {
 		await swapPhoto(store, 'anna', counts);
+		expect((await photoVersions(store, ['anna'], counts)).anna).toBe(2);
 		const again = await swapPhoto(store, 'anna', counts);
-		expect(again).toMatchObject({ ok: true, version: 2, changed: false });
+		expect(again).toMatchObject({ ok: true, version: 1, changed: true });
 		expect(/** @type {any} */ (again).phrase).toBeTruthy();
+		expect((await photoVersions(store, ['anna'], counts)).anna).toBe(1);
+		expect(await swapPhoto(store, 'anna', counts)).toMatchObject({ version: 2, changed: true });
 	});
 	it('a member with only one photo does not change but still gets a phrase', async () => {
 		expect(await swapPhoto(store, 'cara', counts)).toMatchObject({ version: 1, changed: false });

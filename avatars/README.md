@@ -15,8 +15,8 @@ Photos are numbered versions, named with the member's `id` from `members.json`:
 | `avatars/<member-id>_2.<ext>` | The photo they get the first time they "update" their picture   |
 | `avatars/<member-id>_3.<ext>` | (optional) what they get the next time, and so on               |
 
-Every time a member "updates" their avatar they move up one version, and stay
-on the last one when there are no more. Versions must run 1, 2, 3 … without
+Every time a member "updates" their avatar they move up one version, and after
+the last one they go round to the first again (a member with one photo never changes). Versions must run 1, 2, 3 … without
 gaps. Example: `avatars/anna_1.jpg`, `avatars/anna_2.png`, `avatars/anna_3.jpg`.
 
 - `<member-id>` is written exactly as in `members.json` (lowercase).
