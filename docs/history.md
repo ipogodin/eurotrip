@@ -583,3 +583,13 @@ never see a 404 (the login gate redirects first), so the page is mostly for memb
 On the map the villas I voted for no longer get a red border. My points show only in the
 small circle at the bottom right of the photo (now neutral dark instead of red). Ranks
 #1, #2, #3 are gold, silver and copper. Not checked on a signed-in screen from here.
+
+---
+
+## 2026-10-09 — Calmer map pins
+
+The map had too much on each photo. Now a pin shows only two things: the place as the
+photo's border colour (gold, silver, copper for 1st to 3rd; ties share a colour) and a
+small speech-bubble icon when the villa has comments (no numbers). The "#n" labels, my
+points and the comment count were removed from the map. They remain on the villa page
+and in the screen-reader label.

@@ -7,7 +7,7 @@
 
 	/**
 	 * Tenerife with each villa as a photo. Tap a photo to open the villa's
-	 * page (where you vote). The photo shows your points and the group rank.
+	 * page (where you vote). The photo's border shows the group rank (gold, silver, copper); a bubble means comments.
 	 * @type {{
 	 *   rows: import('./types.js').VillaRow[],
 	 *   winnerId: string | null,
@@ -96,6 +96,9 @@
 					draggable="false"
 					class:featured
 					class:winner={row.villa.id === winnerId}
+					class:gold={row.rank === 1}
+					class:silver={row.rank === 2}
+					class:copper={row.rank === 3}
 					href={resolve('/villas/[id]', { id: row.villa.id })}
 					style:left={pct((featured ? pin.ax : pin.x) - VIEWPORT.x, VIEWPORT.w)}
 					style:top={pct((featured ? pin.ay : pin.y) - VIEWPORT.y, VIEWPORT.h)}
@@ -117,15 +120,8 @@
 						/>
 					{/if}
 					<span class="name">{row.villa.name}</span>
-					{#if row.rank}<span
-							class="rank"
-							class:gold={row.rank === 1}
-							class:silver={row.rank === 2}
-							class:copper={row.rank === 3}>#{row.rank}</span
-						>{/if}
-					{#if row.myPoints}<span class="mine-badge num">{row.myPoints}</span>{/if}
 					{#if row.comments > 0}
-						<span class="chat num"><Icon name="message-circle" size={11} /> {row.comments}</span>
+						<span class="chat" aria-hidden="true"><Icon name="message-circle" size={14} /></span>
 					{/if}
 				</a>
 			{/if}
@@ -276,6 +272,25 @@
 		transform: scale(1.18);
 		box-shadow: 0 10px 24px rgb(12 59 62 / 0.45);
 	}
+	/* Podium: the photo's border carries the place. Ties share a colour. */
+	.pin.gold {
+		border-color: #f2b01e;
+		box-shadow:
+			0 0 0 3px rgb(242 176 30 / 0.4),
+			0 6px 16px rgb(12 59 62 / 0.35);
+	}
+	.pin.silver {
+		border-color: #b4bdc6;
+		box-shadow:
+			0 0 0 3px rgb(180 189 198 / 0.45),
+			0 6px 16px rgb(12 59 62 / 0.35);
+	}
+	.pin.copper {
+		border-color: #b86a34;
+		box-shadow:
+			0 0 0 3px rgb(184 106 52 / 0.4),
+			0 6px 16px rgb(12 59 62 / 0.35);
+	}
 	.pin.winner {
 		border-color: var(--mango);
 		box-shadow:
@@ -309,63 +324,19 @@
 			opacity: 1;
 		}
 	}
-	.rank,
-	.mine-badge {
-		position: absolute;
-		display: grid;
-		place-items: center;
-		min-width: 20px;
-		height: 20px;
-		padding: 0 5px;
-		border-radius: var(--r-pill);
-		font-size: 11px;
-		font-weight: 900;
-		line-height: 1;
-		box-shadow: 0 2px 6px rgb(12 59 62 / 0.35);
-	}
-	.rank {
-		left: -8px;
-		top: -8px;
-		background: #fff;
-		color: var(--ink);
-	}
-	/* Podium colours for the top three. */
-	.rank.gold {
-		background: linear-gradient(135deg, #ffe27a 0%, #f2b01e 100%);
-		color: #5a3a00;
-	}
-	.rank.silver {
-		background: linear-gradient(135deg, #f4f6f8 0%, #aeb7c0 100%);
-		color: #2f3a44;
-	}
-	.rank.copper {
-		background: linear-gradient(135deg, #e8a572 0%, #b0602c 100%);
-		color: #3d1c08;
-	}
+	/* A speech bubble when the villa has comments; no number. */
 	.chat {
 		position: absolute;
-		left: -8px;
-		bottom: -8px;
-		display: inline-flex;
-		align-items: center;
-		gap: 3px;
-		height: 22px;
-		padding: 0 7px;
-		border-radius: var(--r-pill);
+		left: -6px;
+		bottom: -6px;
+		display: grid;
+		place-items: center;
+		width: 26px;
+		height: 26px;
+		border-radius: 50%;
 		background: #fff;
 		color: var(--lagoon-deep);
-		font-size: 12px;
-		font-weight: 900;
 		box-shadow: 0 2px 6px rgb(12 59 62 / 0.35);
-	}
-	.mine-badge {
-		right: -8px;
-		bottom: -8px;
-		min-width: 24px;
-		height: 24px;
-		background: var(--ink); /* neutral: my votes aren't a colour on the map */
-		color: #fff;
-		font-size: 13px;
 	}
 	.caption,
 	.legend {
