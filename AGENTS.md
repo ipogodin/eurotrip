@@ -127,6 +127,8 @@ src/
     logout/+server.js      # POST clears the cookie
     vote/+page.svelte/.server.js  # vote page: Map|People|My votes (?view=), autosave, polling; save action
     villas/[id]/           # one villa: gallery, vote bar under it, details; votes via /vote?/save
+    avatars/[id]/[version]/ # GET one member's photo (members only; never ahead of the version they're on)
+    avatars/swap/          # POST: "Change photo" -> next prepared version + random phrase (no picture is sent)
     admin/                 # admin only: voting window, results, pick winner, reset all, remove/restore villas, login stats
     styleguide/            # dev-only component gallery (404 in production)
   lib/
@@ -153,12 +155,16 @@ src/
       ratelimit.js         # login lockout rules (Redis-backed)
       guards.js            # requireMember / requireAdmin (401/403): first line of every member/admin load+action
       admin-actions.js     # admin rules as store-level functions (deadline, winner, reset all, remove/restore villa)
+      avatar-state.js      # which photo each member shows; swapPhoto / resetPhoto
+      avatars.js           # photo bytes: Redis (live) or the local avatars/ folder (dev only)
+      avatar-image.js      # processAvatar: any photo -> 256 px square WebP (sharp)
       vote-data.js         # shared vote screen data (members, pruned ballots, status, removed villas)
       next.js              # safe post-login redirect target
       store/               # Store interface; upstash.js (prod) + memory.js (dev/tests)
 scripts/
   members.js               # roster CLI: init|check|gen|push (npm run members:*)
   avatars.js               # `npm run avatars:check`: checks the private avatars/ folder against the roster
+  avatars-upload.js        # `npm run avatars:upload`: processes the photos and stores them in the live Redis (private)
   wordlist-eff-large.txt   # EFF word list for phrase generation
 static/
   favicon.svg
@@ -227,7 +233,7 @@ The repo is public, so member photos are **never committed and never put in
 `static/`**. The user drops them in the git-ignored `avatars/` folder
 (`avatars/<member-id>.jpg|png|webp`, prank pool in `avatars/pool/`; see
 `avatars/README.md`) and `npm run avatars:check` validates the names. Step 3.4
-uploads them to a private Blob store behind a member-only route. Never write a
+stores them privately in Redis (`npm run avatars:upload`) behind a member-only route; local dev reads the folder directly. Never write a
 member's name or phrase into a tracked file: ids/names live in `members.json`
 (ignored) and the `MEMBERS` env var; `members.md` is also ignored.
 

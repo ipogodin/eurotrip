@@ -2,17 +2,27 @@ import { villas } from '$lib/config/villas.js';
 import { hueForIndex } from '$lib/members-ui.js';
 import { DEFAULT_DEADLINE } from '$lib/config/voting.js';
 import { effectiveDeadline, pruneBallot, votingState } from '$lib/voting.js';
+import { photoVersions } from './avatar-state.js';
+import { avatarCounts } from './avatars.js';
 import { getMembers } from './roster.js';
 import { getStore } from './store/index.js';
 
 /** Everyone's public identity + point budget, in roster order. Never phrases. */
-export function publicMembers() {
-	return getMembers().map(({ id, name, short, votes }, i) => ({
+export async function publicMembers() {
+	const roster = getMembers();
+	const store = getStore();
+	const photos = await photoVersions(
+		store,
+		roster.map((m) => m.id),
+		await avatarCounts(store)
+	);
+	return roster.map(({ id, name, short, votes }, i) => ({
 		id,
 		name,
 		short,
 		votes,
-		hue: hueForIndex(i)
+		hue: hueForIndex(i),
+		photo: photos[id] || undefined
 	}));
 }
 
@@ -47,7 +57,7 @@ export function activeVillaIds(removed) {
  * @param {import('$lib/server/members.js').PublicMember} me
  */
 export async function loadVoteData(me) {
-	const members = publicMembers();
+	const members = await publicMembers();
 	const [raw, status] = await Promise.all([
 		getStore().getBallots(members.map((m) => m.id)),
 		votingStatus()

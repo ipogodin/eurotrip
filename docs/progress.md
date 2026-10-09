@@ -51,7 +51,7 @@ The **single source of truth for where the work is.** Plan details are in
 | 3.1  | Canary video background                 | done (early) | 2026-10-08 | 2026-10-08 | 4366b5b |
 | 3.2  | Quality pass                            | todo   |         |      |        |
 | 3.3  | SvelteKit 3 upgrade                     | todo   |         |      |        |
-| 3.4  | Member photos + "neh" photo swap        | todo (needs I11) |   |      |        |
+| 3.4  | Member photos + "neh" photo swap        | done (live upload pending) | 2026-10-08 | 2026-10-08 | see below |
 
 ## Blockers / inputs from the user
 
@@ -61,6 +61,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
+| I15 | 1.9      | Go-ahead to run `npm run avatars:upload` against the live Redis (writes only avatar keys; 158 KB) | waiting |
 | I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Photos delivered 2026-10-08 as `avatars/<id>_1` (default), `<id>_2` ... (versions); `npm run avatars:check`: 8 of 8 fine; faces checked in circle crops. Phrases file done. Admin can reset someone to version 1: yes (decided). Remaining: build 3.4 | mostly done |
 | I13 | 1.8      | Admin reset-everyone's-votes button | done 2026-10-08: yes, built (plus removing a villa, points return to voters) |
 | I14 | 1.8      | Sign in as a NON-admin (e.g. the 2nd dev member) and open `/admin`: it must say 403. The agent can't enter phrases; guards are unit-tested and anonymous requests were checked | waiting |
@@ -454,6 +455,53 @@ The integration install also added third-party agent skills
 (`.agents/`, `.claude/skills/`, `skills-lock.json`); gitignored on purpose.
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
+
+### 3.4 — done early (2026-10-08): photo avatars, "Change photo", profiles
+
+Triggered by the user: "no avatars on the local page", so they couldn't verify
+visually. The page only had coloured initials; this step built the photos.
+- **Where photos come from.** Live: pre-made 256 px WebPs in Redis (private;
+  keys `avatar:img:<id>:<n>`; hashes `avatars:version` = the photo each member
+  shows, `avatars:count` = how many exist), served only to signed-in members by
+  `GET /avatars/<id>/<version>`. Local `npm run dev`: read straight from the
+  git-ignored `avatars/` folder (so the real photos show with no upload); that
+  code is `import.meta.env.DEV`-guarded and verified absent from the production
+  build (no `sharp`, no folder access). All 16 photos = 158 KB.
+- **No spoilers:** the image route serves a member's photo only up to the
+  version they're on now, so nobody can guess the prank photo's URL
+  (`/avatars/<id>/2` is 404 until they get it).
+- **Avatar** shows the photo over the coloured initials (initials remain if an
+  image fails or a member has none). Member data (`PublicMember.photo`) carries
+  each member's current version via `publicMembers()` and the root layout load
+  (re-runs with the 15 s vote refresh), so a photo change reaches everyone's
+  screen within ~15 s.
+- **Change photo** (account menu): choose a photo, fake "Uploading…" (~2.2 s,
+  progress bar, preview of the chosen picture), then reveal of the NEXT PREPARED
+  version with a random phrase from `avatar-phrases.txt`. The chosen picture
+  never leaves the device: the request (`POST /avatars/swap`, a form post so
+  SvelteKit's cross-site check applies, 415 otherwise) carries only
+  `action=update`; verified by intercepting the request in Chrome. Each press
+  moves up one version; on the last one the member stays.
+- **Admin:** a "Profile photos" card (photo n of N per member) with "Back to own
+  photo" (version 1; votes untouched). Action `resetPhoto` behind `requireAdmin`.
+- **Profiles:** in People, clicking/tapping a member's picture opens a sheet with
+  their photo enlarged (200 px from a 256 px source), their name, nickname if it
+  differs, and what they voted for; a computer also shows a hover/keyboard-focus
+  preview. 44 px tap targets.
+- **`npm run avatars:upload`** (`-- --dry-run` to only report) processes the
+  photos and writes them to the Redis in `.env.local`; it never touches which
+  version anyone is on. NOT RUN against the live database yet: needs the user's
+  go-ahead (part of launch).
+- Tests (+25): store (memory + fake Redis), `photoVersions`/`swapPhoto`/
+  `resetPhoto`, the image route (members only, no spoilers, 404s), the swap
+  route (401/415/400, only the presser changes, others see it), admin reset
+  (403 for non-admins). Verified in Chrome as a non-admin test member: photos
+  for all 8 in People and the app bar, full Change-photo flow, profile sheet,
+  hover preview. The test swap moved that dev member to photo 2 (in-memory dev
+  store; resets on restart).
+- Not done: notifying others of a changed photo (later feature); the admin photo
+  reset was verified by tests, not in the browser (the browser was signed in as
+  a non-admin).
 
 ### Pre-launch verification for all 8 members (2026-10-08)
 

@@ -2,14 +2,26 @@
 	import Avatar from '$lib/components/ui/Avatar.svelte';
 	import PointDots from '$lib/components/ui/PointDots.svelte';
 	import { VOTE_BUDGET } from '$lib/config/voting.js';
+	import PersonProfile from './PersonProfile.svelte';
 
 	/** @type {{ person: import('./types.js').PersonRowData, isMe: boolean }} */
 	let { person, isMe } = $props();
+
+	let profileOpen = $state(false);
 </script>
 
 <li class="person" class:me={isMe}>
 	<div class="who">
-		<Avatar member={person.member} size={40} ring />
+		<!-- Click or tap to see the photo enlarged with their profile; a computer also gets a quick hover preview. -->
+		<button
+			type="button"
+			class="face"
+			aria-label="See {person.member.name}'s profile"
+			onclick={() => (profileOpen = true)}
+		>
+			<Avatar member={person.member} size={40} ring />
+			<span class="zoom" aria-hidden="true"><Avatar member={person.member} size={140} ring /></span>
+		</button>
 		<div>
 			<p class="name">
 				{person.member.name}
@@ -37,6 +49,8 @@
 	{/if}
 </li>
 
+<PersonProfile {person} {isMe} open={profileOpen} onclose={() => (profileOpen = false)} />
+
 <style>
 	.person {
 		display: grid;
@@ -48,6 +62,41 @@
 	}
 	.person.me {
 		border-color: var(--hibiscus);
+	}
+	.face {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 44px;
+		height: 44px;
+		padding: 0;
+		border: 0;
+		border-radius: 50%;
+		background: transparent;
+		cursor: zoom-in;
+	}
+	.zoom {
+		position: absolute;
+		left: -6px;
+		top: -6px;
+		z-index: 20;
+		display: none;
+		pointer-events: none;
+		filter: drop-shadow(0 10px 18px rgb(60 20 40 / 0.35));
+	}
+	/* A bigger look on hover/keyboard focus, only where there is a real pointer. */
+	@media (hover: hover) {
+		.face:hover .zoom,
+		.face:focus-visible .zoom {
+			display: block;
+			animation: pop var(--t-ui) var(--spring);
+		}
+	}
+	@keyframes pop {
+		from {
+			opacity: 0;
+			transform: scale(0.6);
+		}
 	}
 	.who {
 		display: flex;

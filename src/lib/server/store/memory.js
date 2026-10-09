@@ -14,6 +14,12 @@ export function createMemoryStore() {
 	const trip = {};
 	/** @type {Map<string, { value: string; expires: number }>} */
 	const kv = new Map();
+	/** @type {Record<string, number>} member id -> the photo version they show */
+	const avatarVersions = {};
+	/** @type {Record<string, number>} member id -> how many photo versions exist */
+	const avatarCounts = {};
+	/** @type {Map<string, string>} "id:version" -> base64 image */
+	const avatarImages = new Map();
 
 	/** @param {string} key */
 	function live(key) {
@@ -86,6 +92,24 @@ export function createMemoryStore() {
 		},
 		async del(key) {
 			kv.delete(key);
+		},
+		async getAvatarVersions() {
+			return { ...avatarVersions };
+		},
+		async setAvatarVersion(memberId, version) {
+			avatarVersions[memberId] = version;
+		},
+		async getAvatarCounts() {
+			return { ...avatarCounts };
+		},
+		async setAvatarCount(memberId, count) {
+			avatarCounts[memberId] = count;
+		},
+		async getAvatarImage(memberId, version) {
+			return avatarImages.get(`${memberId}:${version}`) ?? null;
+		},
+		async setAvatarImage(memberId, version, base64) {
+			avatarImages.set(`${memberId}:${version}`, base64);
 		}
 	};
 }

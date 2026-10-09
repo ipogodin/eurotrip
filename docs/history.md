@@ -462,3 +462,18 @@ The check found that avatar colours collided (4 colours for 8 people); fixed by
 colouring by roster position. All per-member rules pass in an automated
 scenario test, including the 403s for the 7 non-admins. Invites are generated
 only after this.
+
+---
+
+## 2026-10-08 — Photo avatars built (step 3.4, early)
+
+The user couldn't verify avatars visually on the local page because only
+initials existed. Built the photo feature so it can be checked locally with
+the real photos: avatars show the photos; "Change photo" fakes an upload and
+gives the member the next prepared photo with a random phrase (their chosen
+picture never leaves the device); the admin can put someone back on their own
+photo; clicking a person in People opens an enlarged profile (plus a hover
+preview), requested by the user mid-build. Decision: photos live in the
+existing Redis (158 KB total) instead of a new Blob store, served only to
+signed-in members and never ahead of the version a member is on. The live
+upload is waiting for the user's go-ahead.

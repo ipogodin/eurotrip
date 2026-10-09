@@ -1,8 +1,18 @@
 <script>
+	import { resolve } from '$app/paths';
 	import { initials, memberColor } from '$lib/members-ui.js';
 
 	/** @type {{ member: import('$lib/members-ui.js').PublicMember, size?: number, ring?: boolean }} */
 	let { member, size = 28, ring = false } = $props();
+
+	// The photo (when there is one) sits on top of the coloured initials, so a
+	// photo that fails to load simply leaves the initials showing.
+	const src = $derived(
+		member.photo
+			? resolve('/avatars/[id]/[version]', { id: member.id, version: String(member.photo) })
+			: ''
+	);
+	let failedSrc = $state('');
 </script>
 
 <span
@@ -15,6 +25,9 @@
 	aria-label={member.name}
 >
 	<span aria-hidden="true">{initials(member.name)}</span>
+	{#if src && failedSrc !== src}
+		<img {src} alt="" loading="lazy" decoding="async" onerror={() => (failedSrc = src)} />
+	{/if}
 </span>
 
 <style>
@@ -32,6 +45,20 @@
 		box-shadow:
 			0 0 0 2px #fff,
 			0 2px 6px rgb(120 60 20 / 0.25);
+	}
+	.avatar {
+		position: relative;
+		overflow: hidden;
+	}
+	.avatar > span {
+		grid-area: 1 / 1;
+	}
+	.avatar img {
+		grid-area: 1 / 1;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 50%;
 	}
 	.ring {
 		box-shadow:

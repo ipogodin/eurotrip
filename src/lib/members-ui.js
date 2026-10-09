@@ -1,6 +1,7 @@
 /**
- * @typedef {{ id: string, name: string, short: string, votes?: number, hue?: number }} PublicMember
- *   `votes` = point budget; `hue` = avatar colour slot 1-8 (by roster position)
+ * @typedef {{ id: string, name: string, short: string, votes?: number, hue?: number, photo?: number }} PublicMember
+ *   `votes` = point budget; `hue` = avatar colour slot 1-8 (by roster position);
+ *   `photo` = which photo version they show now (absent = no photo, initials only)
  */
 
 const HUES = 8;

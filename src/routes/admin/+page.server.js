@@ -1,6 +1,5 @@
 import { fail } from '@sveltejs/kit';
 import { villas } from '$lib/config/villas.js';
-import { hueForIndex } from '$lib/members-ui.js';
 import { pacificToUtc, utcToPacificInput } from '$lib/time.js';
 import { pruneBallot, tally } from '$lib/voting.js';
 import {
@@ -17,7 +16,9 @@ import { requireAdmin } from '$lib/server/guards.js';
 import { getLoginStats } from '$lib/server/ratelimit.js';
 import { getMembers } from '$lib/server/roster.js';
 import { getStore } from '$lib/server/store/index.js';
-import { activeVillaIds } from '$lib/server/vote-data.js';
+import { avatarCounts } from '$lib/server/avatars.js';
+import { resetPhoto } from '$lib/server/avatar-state.js';
+import { activeVillaIds, publicMembers } from '$lib/server/vote-data.js';
 
 const allVillaIds = villas.map((v) => v.id);
 
@@ -35,13 +36,8 @@ const text = (form, name) => {
 export async function load({ locals }) {
 	requireAdmin(locals);
 	const store = getStore();
-	const members = getMembers().map(({ id, name, short, votes }, i) => ({
-		id,
-		name,
-		short,
-		votes,
-		hue: hueForIndex(i)
-	}));
+	const members = await publicMembers();
+	const counts = await avatarCounts(store);
 	const [status, rawBallots, stats] = await Promise.all([
 		currentStatus(store, Date.now()),
 		store.getBallots(members.map((m) => m.id)),
@@ -62,7 +58,9 @@ export async function load({ locals }) {
 		/** The deadline as Pacific wall-clock time, for the date box. */
 		deadlineInput: utcToPacificInput(status.deadline),
 		results,
-		stats
+		stats,
+		/** How many photo versions each member has (for the Photos card). */
+		photoCounts: counts
 	};
 }
 
@@ -110,6 +108,15 @@ export const actions = {
 				now: Date.now()
 			})
 		);
+	},
+	resetPhoto: async ({ locals, request }) => {
+		requireAdmin(locals);
+		const memberId = text(await request.formData(), 'memberId');
+		if (!getMembers().some((m) => m.id === memberId)) {
+			return fail(400, { message: 'That member does not exist.' });
+		}
+		const store = getStore();
+		return respond(await resetPhoto(store, memberId, await avatarCounts(store)));
 	},
 	restoreVilla: async ({ locals, request }) => {
 		requireAdmin(locals);

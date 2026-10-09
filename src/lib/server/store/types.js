@@ -30,6 +30,12 @@
  *   setValue(key: string, value: string, ttlSec: number): Promise<void>;
  *   ttl(key: string): Promise<number>;
  *   del(key: string): Promise<void>;
+ *   getAvatarVersions(): Promise<Record<string, number>>;
+ *   setAvatarVersion(memberId: string, version: number): Promise<void>;
+ *   getAvatarCounts(): Promise<Record<string, number>>;
+ *   setAvatarCount(memberId: string, count: number): Promise<void>;
+ *   getAvatarImage(memberId: string, version: number): Promise<string | null>;
+ *   setAvatarImage(memberId: string, version: number, base64: string): Promise<void>;
  * }} Store
  */
 

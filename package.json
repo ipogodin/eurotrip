@@ -21,6 +21,7 @@
 		"members:push": "node scripts/members.js push",
 		"villas:photos": "node scripts/photos.js",
 		"avatars:check": "node scripts/avatars.js",
+		"avatars:upload": "node scripts/avatars-upload.js",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint ."
 	},

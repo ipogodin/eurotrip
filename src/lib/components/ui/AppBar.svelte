@@ -1,5 +1,6 @@
 <script>
 	import { resolve } from '$app/paths';
+	import ChangePhoto from '$lib/components/profile/ChangePhoto.svelte';
 	import Avatar from './Avatar.svelte';
 	import Icon from '$lib/icons/Icon.svelte';
 	import Sun from './Sun.svelte';
@@ -16,6 +17,7 @@
 	let { title = 'Eurotrip', member, nav = [], current = '', children } = $props();
 
 	let menuOpen = $state(false);
+	let changingPhoto = $state(false);
 	/** @type {HTMLDivElement | undefined} */
 	let menuEl = $state();
 
@@ -70,6 +72,16 @@
 									<Icon name="shield" size={16} /> Admin
 								</a>
 							{/if}
+							<button
+								type="button"
+								role="menuitem"
+								onclick={() => {
+									menuOpen = false;
+									changingPhoto = true;
+								}}
+							>
+								<Icon name="users" size={16} /> Change photo
+							</button>
 							<form method="POST" action="/logout">
 								<button type="submit" role="menuitem"
 									><Icon name="log-out" size={16} /> Log out</button
@@ -82,6 +94,10 @@
 		</div>
 	</div>
 </header>
+
+{#if member}
+	<ChangePhoto {member} open={changingPhoto} onclose={() => (changingPhoto = false)} />
+{/if}
 
 <style>
 	.bar {

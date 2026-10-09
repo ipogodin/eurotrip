@@ -240,6 +240,35 @@
 		</section>
 	</Card>
 
+	<!-- Profile photos -->
+	<Card>
+		<section class="stack" aria-labelledby="h-photos">
+			<h2 id="h-photos" class="t-headline">Profile photos</h2>
+			<p class="muted">
+				Everyone starts on their own photo. When someone presses "Change photo" they move on to the
+				next prepared one. Here you can put someone back on their own; their votes aren't touched.
+			</p>
+			<ul class="photos">
+				{#each data.members as m (m.id)}
+					{@const total = data.photoCounts[m.id] ?? 0}
+					<li>
+						<Avatar member={m} size={36} />
+						<span class="pname">{m.name}</span>
+						<span class="muted num">
+							{total ? `photo ${m.photo ?? 1} of ${total}` : 'no photos'}
+						</span>
+						{#if (m.photo ?? 0) > 1}
+							<form method="POST" action="?/resetPhoto" use:enhance={submit}>
+								<input type="hidden" name="memberId" value={m.id} />
+								<Button type="submit" variant="secondary" size="sm">Back to own photo</Button>
+							</form>
+						{/if}
+					</li>
+				{/each}
+			</ul>
+		</section>
+	</Card>
+
 	<!-- Security -->
 	<Card>
 		<section class="stack" aria-labelledby="h-sec">
@@ -487,6 +516,23 @@
 		padding: var(--s3) var(--s4);
 		border-radius: var(--r-md);
 		background: var(--sun-soft);
+	}
+	.photos {
+		display: grid;
+		gap: var(--s3);
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	.photos li {
+		display: flex;
+		align-items: center;
+		gap: var(--s3);
+		flex-wrap: wrap;
+	}
+	.pname {
+		font-weight: 800;
+		flex: 1 1 140px;
 	}
 	.removed {
 		display: grid;

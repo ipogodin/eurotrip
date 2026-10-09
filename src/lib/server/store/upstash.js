@@ -18,6 +18,21 @@ export function toHash(raw) {
 }
 
 /**
+ * A hash of numbers stored as strings -> numbers (bad values are dropped).
+ * @param {Record<string, string>} hash
+ * @returns {Record<string, number>}
+ */
+function numbers(hash) {
+	/** @type {Record<string, number>} */
+	const out = {};
+	for (const [k, v] of Object.entries(hash)) {
+		const n = Number(v);
+		if (Number.isFinite(n)) out[k] = n;
+	}
+	return out;
+}
+
+/**
  * Redis-backed store (Upstash REST). Auto-deserialization is off so every
  * value stays the string we wrote (a note like "123" must not become a number).
  * @param {{ url: string; token: string }} cfg
@@ -110,6 +125,25 @@ export function createUpstashStore({ url, token }, client) {
 		},
 		async del(key) {
 			await redis.del(key);
+		},
+		async getAvatarVersions() {
+			return numbers(toHash(await redis.hgetall('avatars:version')));
+		},
+		async setAvatarVersion(memberId, version) {
+			await redis.hset('avatars:version', { [memberId]: String(version) });
+		},
+		async getAvatarCounts() {
+			return numbers(toHash(await redis.hgetall('avatars:count')));
+		},
+		async setAvatarCount(memberId, count) {
+			await redis.hset('avatars:count', { [memberId]: String(count) });
+		},
+		async getAvatarImage(memberId, version) {
+			const v = await redis.get(`avatar:img:${memberId}:${version}`);
+			return typeof v === 'string' && v ? v : null;
+		},
+		async setAvatarImage(memberId, version, base64) {
+			await redis.set(`avatar:img:${memberId}:${version}`, base64);
 		}
 	};
 }

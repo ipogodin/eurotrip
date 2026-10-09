@@ -89,4 +89,17 @@ describe('memory store', () => {
 			resetAt: null
 		});
 	});
+
+	it('stores avatar versions, counts and images per member', async () => {
+		expect(await store.getAvatarVersions()).toEqual({});
+		await store.setAvatarCount('a', 2);
+		await store.setAvatarVersion('a', 2);
+		await store.setAvatarImage('a', 1, 'AAAA');
+		await store.setAvatarImage('a', 2, 'BBBB');
+		expect(await store.getAvatarCounts()).toEqual({ a: 2 });
+		expect(await store.getAvatarVersions()).toEqual({ a: 2 });
+		expect(await store.getAvatarImage('a', 2)).toBe('BBBB');
+		expect(await store.getAvatarImage('a', 3)).toBeNull();
+		expect(await store.getAvatarImage('b', 1)).toBeNull();
+	});
 });

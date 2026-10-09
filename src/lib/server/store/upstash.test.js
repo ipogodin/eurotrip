@@ -16,14 +16,23 @@ describe('toHash', () => {
 function fakeRedis() {
 	/** @type {Map<string, Record<string, string>>} */
 	const hashes = new Map();
+	/** @type {Map<string, string>} */
+	const strings = new Map();
 	return {
 		hashes,
+		strings,
 		async hgetall(/** @type {string} */ key) {
 			// Auto-deserialization off: Upstash returns a flat [field, value, ...] array.
 			return Object.entries(hashes.get(key) ?? {}).flat();
 		},
 		async hset(/** @type {string} */ key, /** @type {Record<string,string>} */ obj) {
 			hashes.set(key, { ...(hashes.get(key) ?? {}), ...obj });
+		},
+		async get(/** @type {string} */ key) {
+			return strings.get(key) ?? null;
+		},
+		async set(/** @type {string} */ key, /** @type {string} */ value) {
+			strings.set(key, value);
 		},
 		async hdel(/** @type {string} */ key, /** @type {string[]} */ ...fields) {
 			const h = { ...(hashes.get(key) ?? {}) };
@@ -79,5 +88,24 @@ describe('upstash store: voting hash', () => {
 		const { redis, store } = make();
 		redis.hashes.set('voting', { removed: '{not json' });
 		expect((await store.getVoting()).removed).toEqual([]);
+	});
+
+	it('stores avatar versions and counts as numbers, images as plain strings', async () => {
+		const { redis, store } = make();
+		await store.setAvatarVersion('a', 2);
+		await store.setAvatarCount('a', 3);
+		expect(redis.hashes.get('avatars:version')).toEqual({ a: '2' });
+		expect(await store.getAvatarVersions()).toEqual({ a: 2 });
+		expect(await store.getAvatarCounts()).toEqual({ a: 3 });
+		await store.setAvatarImage('a', 2, 'UklGRg==');
+		expect(redis.strings.get('avatar:img:a:2')).toBe('UklGRg==');
+		expect(await store.getAvatarImage('a', 2)).toBe('UklGRg==');
+		expect(await store.getAvatarImage('a', 9)).toBeNull();
+	});
+
+	it('ignores corrupted numbers in the avatar hashes', async () => {
+		const { redis, store } = make();
+		redis.hashes.set('avatars:version', { a: '2', b: 'oops' });
+		expect(await store.getAvatarVersions()).toEqual({ a: 2 });
 	});
 });

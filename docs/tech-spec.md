@@ -155,6 +155,9 @@ Keys:
 | `rl:day:{ip}`         | string | fail count, TTL 24 h                                        |
 | `rl:global`           | string | fail count, TTL 1 h                                         |
 | `stats:fails`         | string | fail count, TTL 24 h                                        |
+| `avatars:version`     | hash   | `memberId -> photo version they show now` (absent = 1)      |
+| `avatars:count`       | hash   | `memberId -> number of photo versions` (from the upload)    |
+| `avatar:img:{id}:{n}` | string | base64 256 px WebP of that photo (no TTL; private, served by `/avatars/<id>/<n>`) |
 
 Villa facts are **not** in Redis; they're in config.
 
