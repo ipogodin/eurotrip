@@ -1,6 +1,7 @@
 <script>
 	import Avatar from '$lib/components/ui/Avatar.svelte';
 	import Stepper from '$lib/components/ui/Stepper.svelte';
+	import { nameFor } from '$lib/members-ui.js';
 
 	/**
 	 * Who voted for this villa, and my +/- buttons. Sits directly under the
@@ -24,11 +25,11 @@
 		{#if voters.length}
 			<ul class="voters" aria-label="Votes for {name}">
 				{#each voters as v (v.member.id)}
-					<li title="{v.member.short}: {v.points} pt{v.points === 1 ? '' : 's'}">
+					<li title="{nameFor(v.member)}: {v.points} pt{v.points === 1 ? '' : 's'}">
 						<Avatar member={v.member} size={28} ring />
 						<span class="pts num" aria-hidden="true">{v.points}</span>
 						<span class="sr-only"
-							>{v.member.short}, {v.points} point{v.points === 1 ? '' : 's'}</span
+							>{nameFor(v.member)}, {v.points} point{v.points === 1 ? '' : 's'}</span
 						>
 					</li>
 				{/each}

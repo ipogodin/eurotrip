@@ -10,13 +10,17 @@
 	import ConfirmSheet from '$lib/components/ui/ConfirmSheet.svelte';
 	import Countdown from '$lib/components/ui/Countdown.svelte';
 	import { villas } from '$lib/config/villas.js';
+	import { nameFor, withCallName } from '$lib/members-ui.js';
 	import { formatDeadline } from '$lib/time.js';
 
 	/** @type {{ data: import('./$types').PageData }} */
 	let { data } = $props();
 
 	const villaById = new Map(villas.map((v) => [v.id, v]));
-	const memberById = $derived(new Map(data.members.map((m) => [m.id, m])));
+	// The admin is also a member, so their own entry carries their private preferred name.
+	const memberById = $derived(
+		new Map(withCallName(data.members, data.member).map((m) => [m.id, m]))
+	);
 
 	/**
 	 * Which confirmation is open (one at a time).
@@ -42,7 +46,7 @@
 		if (!villa) return null;
 		const voters = (row?.voters ?? []).flatMap((v) => {
 			const member = memberById.get(v.memberId);
-			return member ? [{ name: member.short, points: v.points }] : [];
+			return member ? [{ name: nameFor(member), points: v.points }] : [];
 		});
 		return { villa, voters, total: row?.total ?? 0 };
 	});
@@ -152,10 +156,10 @@
 										{#each r.voters as v (v.memberId)}
 											{@const member = memberById.get(v.memberId)}
 											{#if member}
-												<li title="{member.short}: {v.points}">
+												<li title="{nameFor(member)}: {v.points}">
 													<Avatar {member} size={26} ring />
 													<span class="pts num" aria-hidden="true">{v.points}</span>
-													<span class="sr-only">{member.short}, {v.points} points</span>
+													<span class="sr-only">{nameFor(member)}, {v.points} points</span>
 												</li>
 											{/if}
 										{/each}
@@ -187,7 +191,7 @@
 			{#if notVoted.length}
 				<p class="note">
 					<b>Haven't voted yet:</b>
-					{notVoted.map((m) => m.short).join(', ')}.
+					{notVoted.map((m) => nameFor(m)).join(', ')}.
 				</p>
 			{/if}
 		</section>

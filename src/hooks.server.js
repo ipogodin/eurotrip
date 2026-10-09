@@ -1,6 +1,6 @@
 import { dev } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
-import { toPublic } from '$lib/server/members.js';
+import { toSelf } from '$lib/server/members.js';
 import { findMemberById, getSessionSecret, hueFor } from '$lib/server/roster.js';
 import { COOKIE_NAME, readSession } from '$lib/server/session.js';
 
@@ -15,7 +15,7 @@ export async function handle({ event, resolve }) {
 	if (token) {
 		const session = readSession(token, getSessionSecret());
 		const member = session ? findMemberById(session.memberId) : undefined;
-		if (member) event.locals.member = toPublic(member, hueFor(member.id));
+		if (member) event.locals.member = toSelf(member, hueFor(member.id));
 		else event.cookies.delete(COOKIE_NAME, { path: '/' }); // forged, expired or removed member
 	}
 

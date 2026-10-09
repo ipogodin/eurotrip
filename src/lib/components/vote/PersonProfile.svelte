@@ -3,6 +3,7 @@
 	import PointDots from '$lib/components/ui/PointDots.svelte';
 	import Sheet from '$lib/components/ui/Sheet.svelte';
 	import { VOTE_BUDGET } from '$lib/config/voting.js';
+	import { nameFor } from '$lib/members-ui.js';
 
 	/**
 	 * A member's profile: their photo enlarged, and what they've voted for.
@@ -31,6 +32,10 @@
 			{#if isMe}<span class="you">That's you</span>{/if}
 			{#if aka}<span class="aka">Known as <b>{aka}</b></span>{/if}
 		</p>
+		{#if isMe && person.member.callName}
+			<!-- Only ever shown to the person themselves: nobody else has this name. -->
+			<p class="called">The app calls you <b>{person.member.callName}</b></p>
+		{/if}
 		<p class="spent num">
 			{#if person.spent === 0}
 				Hasn't voted yet
@@ -39,7 +44,7 @@
 			{/if}
 		</p>
 		{#if person.picks.length}
-			<ul class="picks" aria-label="Votes by {person.member.short}">
+			<ul class="picks" aria-label="Votes by {nameFor(person.member)}">
 				{#each person.picks as pick (pick.villa.id)}
 					<li>
 						<span>{pick.villa.name}</span>
@@ -70,6 +75,11 @@
 		justify-content: center;
 		color: var(--ink-2);
 		font-weight: 700;
+	}
+	.called {
+		color: var(--ink-2);
+		font-weight: 700;
+		font-size: 14px;
 	}
 	.you {
 		color: var(--hibiscus);

@@ -477,3 +477,15 @@ preview), requested by the user mid-build. Decision: photos live in the
 existing Redis (158 KB total) instead of a new Blob store, served only to
 signed-in members and never ahead of the version a member is on. The live
 upload is waiting for the user's go-ahead.
+
+---
+
+## 2026-10-08 — Private "preferred name"
+
+The user asked for an extra roster field, a "preferred name" (like an alias or
+pronoun-style name) that the app uses to address a person, visible only to that
+person when logged in: others cannot see it. Their full name (and nickname)
+remain on their profile. Built as the optional `preferred` field with a
+private-by-construction design (public vs self member shapes) and an automated
+leak check for all 8 members. The values themselves are for the user to add to
+`members.json`.

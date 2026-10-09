@@ -2,6 +2,7 @@
 	import Avatar from '$lib/components/ui/Avatar.svelte';
 	import PointDots from '$lib/components/ui/PointDots.svelte';
 	import { VOTE_BUDGET } from '$lib/config/voting.js';
+	import { nameFor } from '$lib/members-ui.js';
 	import PersonProfile from './PersonProfile.svelte';
 
 	/** @type {{ person: import('./types.js').PersonRowData, isMe: boolean }} */
@@ -24,7 +25,7 @@
 		</button>
 		<div>
 			<p class="name">
-				{person.member.name}
+				{isMe ? nameFor(person.member) : person.member.name}
 				{#if isMe}<span class="you">(you)</span>{/if}
 			</p>
 			<p class="spent num">

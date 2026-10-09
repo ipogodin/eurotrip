@@ -8,7 +8,7 @@
 	/**
 	 * @type {{
 	 *   title?: string,
-	 *   member: (import('$lib/members-ui.js').PublicMember & { isAdmin?: boolean }) | null,
+	 *   member: (import('$lib/members-ui.js').PublicMember & { isAdmin?: boolean, preferred?: string }) | null,
 	 *   nav?: { href: string, label: string }[],
 	 *   current?: string,
 	 *   children?: import('svelte').Snippet
@@ -66,6 +66,7 @@
 					</button>
 					{#if menuOpen}
 						<div class="pop" role="menu">
+							{#if member.preferred}<p class="hi">Hi, {member.preferred}!</p>{/if}
 							<p class="who-name">{member.name}</p>
 							{#if member.isAdmin}
 								<a role="menuitem" href={resolve(/** @type {any} */ ('/admin'))}>
@@ -210,6 +211,18 @@
 		border-radius: var(--r-md);
 		box-shadow: var(--e2);
 		display: grid;
+	}
+	.hi {
+		margin: 0;
+		padding: var(--s2) var(--s3) 0;
+		font-weight: 900;
+		color: var(--hibiscus);
+	}
+	.hi + .who-name {
+		padding-top: 0;
+		font-size: 14px;
+		font-weight: 700;
+		color: var(--ink-2);
 	}
 	.who-name {
 		padding: var(--s2) var(--s3);

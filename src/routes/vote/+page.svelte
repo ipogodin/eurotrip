@@ -14,6 +14,7 @@
 	import VillaMap from '$lib/components/vote/VillaMap.svelte';
 	import VoteHeader from '$lib/components/vote/VoteHeader.svelte';
 	import { villas } from '$lib/config/villas.js';
+	import { withCallName } from '$lib/members-ui.js';
 	import { VOTE_LAYOUT } from '$lib/config/voting.js';
 	import { useAdminNotices, useVotePolling } from '$lib/vote-polling.svelte.js';
 	import { buildVoteView } from '$lib/vote-view.js';
@@ -58,7 +59,7 @@
 	const vv = $derived(
 		buildVoteView({
 			villas: activeVillas,
-			members: data.members,
+			members: withCallName(data.members, data.member),
 			ballots: data.ballots,
 			me: data.me,
 			myBallot
@@ -158,7 +159,7 @@
 </AppBar>
 
 <VoteHeader
-	name={data.member?.short ?? ''}
+	name={data.member?.preferred ?? data.member?.short ?? ''}
 	deadline={data.deadline}
 	state={data.state}
 	{winnerName}

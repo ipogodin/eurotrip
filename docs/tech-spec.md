@@ -41,6 +41,14 @@ Env var `MEMBERS` (JSON array), parsed once at server start:
 
 - `votes` (optional, whole number 1–30): this member's point budget; default
   `VOTE_BUDGET` (6). It's public (shown in the UI), unlike the phrase.
+- `preferred` (optional, 1–30 characters, one line): what the app calls this
+  person when it talks TO them (greeting in the account menu, their own row in
+  People, the "Still deciding" line, their own votes). Default: `short`.
+  **Private to that member**: it is in the roster/env var but never in
+  `PublicMember`; only `SelfMember` (`locals.member`, i.e. the person themselves)
+  carries it. Other members and the admin never receive it (tested for every
+  member). A member's full name and short name stay public; their own profile
+  shows full name, nickname and "The app calls you …".
 
 - Validation at startup (throws → deploy fails loudly): 8 entries expected
   (warn otherwise), unique `id`, unique normalized `phrase`, ≥1 `admin`.

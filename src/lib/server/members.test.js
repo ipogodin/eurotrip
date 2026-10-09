@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { matchPhrase, parseMembers, toPublic } from './members.js';
+import { matchPhrase, parseMembers, toPublic, toSelf } from './members.js';
 
 /** @returns {Record<string, unknown>[]} */
 const raw = () => [
@@ -14,11 +14,34 @@ describe('parseMembers', () => {
 			id: 'anna',
 			name: 'Anna Example',
 			short: 'Anna',
+			preferred: 'Anna', // no preferred name given: falls back to the short name
 			phrase: 'sample-words',
 			admin: false,
 			votes: 6
 		});
 		expect(members[0].admin).toBe(true);
+	});
+
+	it('takes a preferred name, trimmed, with unicode allowed', () => {
+		const r = raw();
+		r[1] = { ...r[1], preferred: '  Ánna-Marie  ' };
+		const { members, warnings } = parseMembers(r);
+		expect(members.map((m) => m.preferred)).toEqual(['Illia', 'Ánna-Marie']);
+		expect(warnings.join(' ')).toMatch(/1 member has no "preferred"/); // illia has none
+	});
+
+	it('rejects a preferred name that is empty, too long, or has a line break', () => {
+		for (const preferred of ['', '   ', 'x'.repeat(31), 'two\nlines', 'tab\there', 5, null]) {
+			const r = raw();
+			r[1] = { ...r[1], preferred };
+			expect(() => parseMembers(r), JSON.stringify(preferred)).toThrow(/preferred must be/);
+		}
+	});
+
+	it('warns once about everyone who has no preferred name', () => {
+		expect(parseMembers(raw()).warnings.join(' ')).toMatch(/2 members have no "preferred"/);
+		const r = raw().map((m, i) => ({ ...m, preferred: `P${i}` }));
+		expect(parseMembers(r).warnings.join(' ')).not.toMatch(/preferred/);
 	});
 
 	it('accepts an optional custom vote budget', () => {
@@ -114,5 +137,18 @@ describe('toPublic', () => {
 			hue: 3
 		});
 		expect(JSON.stringify(pub)).not.toContain('heron');
+	});
+
+	it('toSelf adds the preferred name for the signed-in person; toPublic never has it', () => {
+		const r = raw();
+		r[0] = { ...r[0], preferred: 'Secret Nickname' };
+		const { members } = parseMembers(r);
+		expect(toSelf(members[0], 2)).toMatchObject({
+			id: 'illia',
+			preferred: 'Secret Nickname',
+			hue: 2
+		});
+		expect(toPublic(members[0], 2)).not.toHaveProperty('preferred');
+		expect(JSON.stringify(toPublic(members[0], 2))).not.toContain('Secret Nickname');
 	});
 });

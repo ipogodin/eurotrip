@@ -7,6 +7,7 @@
 	import ResetVotes from '$lib/components/vote/ResetVotes.svelte';
 	import VoteBar from '$lib/components/vote/VoteBar.svelte';
 	import { findVilla, villas } from '$lib/config/villas.js';
+	import { withCallName } from '$lib/members-ui.js';
 	import Icon from '$lib/icons/Icon.svelte';
 	import { formatDateRange, formatMoney } from '$lib/time.js';
 	import { buildVoteView } from '$lib/vote-view.js';
@@ -24,7 +25,7 @@
 	const view = $derived(
 		buildVoteView({
 			villas: villas.filter((v) => !data.removed.includes(v.id)),
-			members: data.members,
+			members: withCallName(data.members, data.member),
 			ballots: data.ballots,
 			me: data.me,
 			myBallot

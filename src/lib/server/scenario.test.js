@@ -16,7 +16,7 @@ import { villas } from '../config/villas.js';
 import { hueForIndex } from '../members-ui.js';
 import { spent } from '../voting.js';
 import { createMemoryStore } from './store/memory.js';
-import { toPublic } from './members.js';
+import { toSelf } from './members.js';
 
 const h = vi.hoisted(() => ({
 	/** @type {import('./store/types.js').Store | null} */ store: null,
@@ -39,6 +39,7 @@ vi.mock('./roster.js', () => ({
 const vote = await import('../../routes/vote/+page.server.js');
 const admin = await import('../../routes/admin/+page.server.js');
 const villaPage = await import('../../routes/villas/[id]/+page.server.js');
+const layout = await import('../../routes/+layout.server.js');
 
 const REAL = existsSync('members.json');
 /** @returns {import('./members.js').Member[]} */
@@ -52,6 +53,8 @@ function loadRoster() {
 				admin: i === 0
 			}));
 	return raw.map((m, i) => ({
+		// Always a unique marker (never the real value), so a leak is detectable.
+		preferred: `zzpref-${i}`,
 		id: String(m.id),
 		name: String(m.name),
 		short: typeof m.short === 'string' && m.short ? m.short : String(m.name).split(' ')[0],
@@ -67,7 +70,7 @@ const V = villas.map((v) => v.id); // 13 villa ids
 
 /** @param {import('./members.js').Member} m */
 function locals(m) {
-	return /** @type {App.Locals} */ ({ member: toPublic(m, hueForIndex(roster.indexOf(m))) });
+	return /** @type {App.Locals} */ ({ member: toSelf(m, hueForIndex(roster.indexOf(m))) });
 }
 /** @param {Record<string, string>} fields */
 function post(fields) {
@@ -129,6 +132,35 @@ describe.each(roster.map((m) => [m.short + (m.admin ? ' (admin)' : ''), m]))(
 			const json = JSON.stringify(data);
 			expect(json).not.toContain('phrase');
 			for (const x of roster) expect(json).not.toContain(x.phrase);
+		});
+
+		it("gets their own preferred name, and never anyone else's, in anything they can receive", async () => {
+			const own = member.preferred;
+			const others = roster.filter((x) => x.id !== member.id).map((x) => x.preferred);
+			const received = {
+				layout: await layout.load(/** @type {any} */ ({ locals: locals(member), depends() {} })),
+				vote: await vote.load(/** @type {any} */ ({ locals: locals(member), depends() {} })),
+				villas: await Promise.all(
+					V.map((id) =>
+						villaPage.load(
+							/** @type {any} */ ({ locals: locals(member), params: { id }, depends() {} })
+						)
+					)
+				),
+				admin: member.admin
+					? await admin.load(/** @type {any} */ ({ locals: locals(member) }))
+					: null
+			};
+			// They see their own private name (in the layout data that feeds the greeting)...
+			expect(received.layout.member?.preferred).toBe(own);
+			// ...and nothing they receive contains anyone else's.
+			const json = JSON.stringify(received);
+			for (const other of others) expect(json).not.toContain(other);
+			// The roster that goes to everyone has no such field at all.
+			for (const m of received.vote.members) expect(m).not.toHaveProperty('preferred');
+			if (received.admin) {
+				for (const m of received.admin.members) expect(m).not.toHaveProperty('preferred');
+			}
 		});
 
 		it('can open every villa page', async () => {

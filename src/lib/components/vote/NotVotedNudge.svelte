@@ -1,10 +1,11 @@
 <script>
 	import AvatarStack from '$lib/components/ui/AvatarStack.svelte';
+	import { nameFor } from '$lib/members-ui.js';
 
 	/** @type {{ members: import('$lib/members-ui.js').PublicMember[] }} */
 	let { members } = $props();
 
-	const names = $derived(members.map((m) => m.short));
+	const names = $derived(members.map((m) => nameFor(m)));
 	const list = $derived(
 		names.length <= 1 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`
 	);

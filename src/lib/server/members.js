@@ -5,13 +5,19 @@ import { VOTE_BUDGET } from '../config/voting.js';
 
 /**
  * `votes` is the member's point budget: the optional roster field, else the
- * default `VOTE_BUDGET`.
- * @typedef {{ id: string, name: string, short: string, phrase: string, admin: boolean, votes: number }} Member
+ * default `VOTE_BUDGET`. `preferred` is what the app calls this person when it
+ * talks TO them (greetings and so on): the optional roster field, else `short`.
+ * It is PRIVATE to that member: never part of `PublicMember`, so it can't end up
+ * on anyone else's screen; only `SelfMember` (the signed-in person) carries it.
+ * @typedef {{ id: string, name: string, short: string, preferred: string, phrase: string, admin: boolean, votes: number }} Member
  * @typedef {{ id: string, name: string, short: string, isAdmin: boolean, votes: number, hue: number }} PublicMember
+ * @typedef {PublicMember & { preferred: string }} SelfMember
  */
 
 const ID_FORMAT = /^[a-z0-9][a-z0-9-]{1,23}$/;
 export const EXPECTED_MEMBERS = 8;
+/** Longest preferred name; keeps a greeting from breaking a layout. */
+export const MAX_PREFERRED = 30;
 /** Sanity cap for a custom per-member budget. */
 export const MAX_CUSTOM_VOTES = 30;
 
@@ -35,6 +41,7 @@ export function parseMembers(raw) {
 	const members = [];
 	const ids = new Set();
 	const phrases = new Set();
+	let withoutPreferred = 0;
 
 	raw.forEach((entry, i) => {
 		const at = `member #${i + 1}`;
@@ -74,13 +81,29 @@ export function parseMembers(raw) {
 			} else votes = e.votes;
 		}
 
-		members.push({ id, name, short, phrase, admin: e.admin === true, votes });
+		let preferred = short;
+		if (e.preferred !== undefined) {
+			const p = typeof e.preferred === 'string' ? e.preferred.trim() : '';
+			// eslint-disable-next-line no-control-regex -- reject newlines and other control characters
+			if (!p || p.length > MAX_PREFERRED || /[\u0000-\u001f\u007f]/.test(p)) {
+				errors.push(
+					`${at} (${id || '?'}): preferred must be 1-${MAX_PREFERRED} characters on one line`
+				);
+			} else preferred = p;
+		} else withoutPreferred++;
+
+		members.push({ id, name, short, preferred, phrase, admin: e.admin === true, votes });
 	});
 
 	if (!members.some((m) => m.admin)) errors.push('at least one member must have "admin": true');
 	if (errors.length) throw new Error(`Invalid roster:\n- ${errors.join('\n- ')}`);
 	if (members.length !== EXPECTED_MEMBERS) {
 		warnings.push(`Roster has ${members.length} members (expected ${EXPECTED_MEMBERS}).`);
+	}
+	if (withoutPreferred > 0) {
+		warnings.push(
+			`${withoutPreferred} member${withoutPreferred === 1 ? ' has' : 's have'} no "preferred" name; the app will use their short name.`
+		);
 	}
 	return { members, warnings };
 }
@@ -115,4 +138,16 @@ export function matchPhrase(members, input) {
  */
 export function toPublic(m, hue) {
 	return { id: m.id, name: m.name, short: m.short, isAdmin: m.admin, votes: m.votes, hue };
+}
+
+/**
+ * The signed-in member as THEY see themselves: everything public plus their own
+ * preferred name. Only ever used for `locals.member` (the current visitor), never
+ * for the roster shown to others.
+ * @param {Member} m
+ * @param {number} hue
+ * @returns {SelfMember}
+ */
+export function toSelf(m, hue) {
+	return { ...toPublic(m, hue), preferred: m.preferred };
 }

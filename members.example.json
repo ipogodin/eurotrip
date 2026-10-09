@@ -6,5 +6,11 @@
 		"phrase": "example-phrase",
 		"admin": true
 	},
-	{ "id": "anna", "name": "Anna Example", "short": "Anna", "phrase": "sample-words" }
+	{
+		"id": "anna",
+		"name": "Anna Example",
+		"short": "Anna",
+		"preferred": "Annie",
+		"phrase": "sample-words"
+	}
 ]

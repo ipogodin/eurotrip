@@ -58,6 +58,7 @@ The old island report is **deleted** in step 1.4 (git history keeps it).
 | 2026-10-08 | Kit version    | Stay on SvelteKit 2 for R1/R2; Kit 3 upgrade is step 3.3                                                   |
 | 2026-10-08 | Villas         | 13 Tenerife listings from the user's Airbnb wishlist (was "6–10")                                         |
 | 2026-10-08 | Vote budget    | Default 6; optional per-member `votes` in the roster (1–30) overrides it. Launch roster: nobody has a custom number (all 6) |
+| 2026-10-08 | Preferred name | Optional private roster field `preferred`: only the signed-in person receives it; everyone else sees full/short names |
 | 2026-10-08 | Member photos  | User supplies photos; "change photo" is a prank swap (step 3.4); photos never in `static/` or the repo     |
 
 ## 3. Timeline

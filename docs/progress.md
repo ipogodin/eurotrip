@@ -61,6 +61,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
+| I16 | 1.9      | Add a `"preferred"` name per member in `members.json` (optional; otherwise the short name is used), then `npm run members:check` | waiting |
 | I15 | 1.9      | Go-ahead to run `npm run avatars:upload` against the live Redis (writes only avatar keys; 158 KB) | waiting |
 | I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Photos delivered 2026-10-08 as `avatars/<id>_1` (default), `<id>_2` ... (versions); `npm run avatars:check`: 8 of 8 fine; faces checked in circle crops. Phrases file done. Admin can reset someone to version 1: yes (decided). Remaining: build 3.4 | mostly done |
 | I13 | 1.8      | Admin reset-everyone's-votes button | done 2026-10-08: yes, built (plus removing a villa, points return to voters) |
@@ -455,6 +456,31 @@ The integration install also added third-party agent skills
 (`.agents/`, `.claude/skills/`, `skills-lock.json`); gitignored on purpose.
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
+
+### Preferred name (2026-10-08, the user's request)
+
+New optional roster field `preferred`: how the app calls a person when it
+talks to them. Rules from the user: only the signed-in person ever sees it;
+other members (and the admin) can't see anyone else's; the profile still shows
+full name (+ nickname); everywhere else the app uses the preferred name for the
+viewer. Built: roster parsing (trimmed, 1-30 chars, one line, unicode ok;
+falls back to `short`; warns how many members lack one), two shapes
+(`PublicMember` for everyone, never has it; `SelfMember` for `locals.member`
+only; `toSelf`), viewer-side helpers `withCallName`/`nameFor` (the viewer's own
+entry gets `callName`; nobody else's), used in: account menu ("Hi, {preferred}!"
+above the full name), the greeting in the list layout, the viewer's own People
+row, the "Still deciding" line, voter-list titles and the admin page's own
+entries; the profile sheet shows "The app calls you …" to the person only.
+Tests (+15): parsing/validation, shapes, helpers, and for EVERY member that
+nothing they receive (layout, vote, all 13 villa pages, admin) contains anyone
+else's preferred name; proven by making the member list leak it (8 tests
+failed) and restoring. Verified in Chrome on a throwaway second dev server with
+test values: the person sees their own preferred name in all those places and
+exactly 1 copy of it in the data sent to the browser; another member's test
+value appeared 0 times, including on the admin page.
+**The user's `members.json` has no `preferred` values yet** (`members:check`
+now warns: 8 members have none), so everyone is currently called by their short
+name. The user adds them (names are theirs to choose).
 
 ### 3.4 — done early (2026-10-08): photo avatars, "Change photo", profiles
 
