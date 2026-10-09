@@ -7,7 +7,7 @@
 
 	/**
 	 * Tenerife with each villa as a photo. Tap a photo to open the villa's
-	 * page (where you vote). The photo's border shows the group rank (gold, silver, copper); a bubble means comments.
+	 * page (where you vote). A crown marks the group favourite, medals the runners-up (silver, copper); a bubble means comments.
 	 * @type {{
 	 *   rows: import('./types.js').VillaRow[],
 	 *   winnerId: string | null,
@@ -120,6 +120,11 @@
 						/>
 					{/if}
 					<span class="name">{row.villa.name}</span>
+					{#if row.rank && row.rank <= 3}
+						<span class="medal" aria-hidden="true">
+							<Icon name={row.rank === 1 ? 'crown' : 'medal'} size={16} />
+						</span>
+					{/if}
 					{#if row.comments > 0}
 						<span class="chat" aria-hidden="true"><Icon name="message-circle" size={14} /></span>
 					{/if}
@@ -272,24 +277,42 @@
 		transform: scale(1.18);
 		box-shadow: 0 10px 24px rgb(12 59 62 / 0.45);
 	}
-	/* Podium: the photo's border carries the place. Ties share a colour. */
+	/* Podium: a thin coloured border plus a crown or medal. Ties share a colour. */
 	.pin.gold {
+		z-index: 4; /* so the crown or medal is never hidden by a neighbour */
 		border-color: #f2b01e;
-		box-shadow:
-			0 0 0 3px rgb(242 176 30 / 0.4),
-			0 6px 16px rgb(12 59 62 / 0.35);
 	}
 	.pin.silver {
+		z-index: 3; /* so the crown or medal is never hidden by a neighbour */
 		border-color: #b4bdc6;
-		box-shadow:
-			0 0 0 3px rgb(180 189 198 / 0.45),
-			0 6px 16px rgb(12 59 62 / 0.35);
 	}
 	.pin.copper {
+		z-index: 2; /* so the crown or medal is never hidden by a neighbour */
 		border-color: #b86a34;
-		box-shadow:
-			0 0 0 3px rgb(184 106 52 / 0.4),
-			0 6px 16px rgb(12 59 62 / 0.35);
+	}
+	.medal {
+		position: absolute;
+		left: -10px;
+		top: -10px;
+		display: grid;
+		place-items: center;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		border: 2px solid #fff;
+		box-shadow: 0 2px 6px rgb(12 59 62 / 0.4);
+	}
+	.gold .medal {
+		background: #f6dc8c;
+		color: #8a6410;
+	}
+	.silver .medal {
+		background: #dde1e6;
+		color: #4a5560;
+	}
+	.copper .medal {
+		background: #e8b698;
+		color: #8a4a1f;
 	}
 	.pin.winner {
 		border-color: var(--mango);
@@ -327,15 +350,16 @@
 	/* A speech bubble when the villa has comments; no number. */
 	.chat {
 		position: absolute;
-		left: -6px;
-		bottom: -6px;
+		right: -8px;
+		bottom: -8px;
 		display: grid;
 		place-items: center;
-		width: 26px;
-		height: 26px;
+		width: 28px;
+		height: 28px;
 		border-radius: 50%;
-		background: #fff;
-		color: var(--lagoon-deep);
+		border: 2px solid #fff;
+		background: var(--ink);
+		color: #fff;
 		box-shadow: 0 2px 6px rgb(12 59 62 / 0.35);
 	}
 	.caption,

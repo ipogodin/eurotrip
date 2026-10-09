@@ -593,3 +593,13 @@ photo's border colour (gold, silver, copper for 1st to 3rd; ties share a colour)
 small speech-bubble icon when the villa has comments (no numbers). The "#n" labels, my
 points and the comment count were removed from the map. They remain on the villa page
 and in the screen-reader label.
+
+---
+
+## 2026-10-09 — Crown and medals on the map
+
+Per the user's reference picture: a crown badge (gold) on the group favourite, medals
+(silver, copper) on the runners-up, each with a thin border in the same colour; the
+comment bubble moved to the bottom right as a dark circle. Podium pins sit above
+their neighbours so the badge is never hidden. New icons: `crown`, `medal`. Checked on
+a signed-in local screen with seeded test votes (memory store, nothing live touched).
