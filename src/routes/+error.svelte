@@ -25,7 +25,6 @@
 	};
 
 	const copy = $derived(COPY[/** @type {403 | 404} */ (page.status)] ?? COPY.other);
-	const home = $derived(page.data.member ? resolve('/vote') : resolve('/'));
 </script>
 
 <svelte:head>
@@ -38,7 +37,7 @@
 	<p class="code num" aria-hidden="true">{page.status}</p>
 	<h1>{copy.title}</h1>
 	<p class="text">{copy.text}</p>
-	<a class="btn btn-primary" href={home}
+	<a class="btn btn-primary" href={page.data.member ? resolve('/vote') : resolve('/')}
 		>{page.data.member ? 'Back to the map' : 'Back to sign in'}</a
 	>
 </main>
