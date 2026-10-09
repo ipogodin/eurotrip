@@ -5,7 +5,7 @@ import { smoothClosedPath, spreadPins } from './map-layout.js';
 
 // Photos are 12.5% of the shown map width, exactly as in VillaMap.
 const PIN = VIEWPORT.w * 0.125;
-const opts = { minDist: PIN, bounds: VIEWPORT, margin: PIN / 2 };
+const opts = { minDist: PIN, bounds: VIEWPORT, margin: PIN / 2, keepClear: PIN / 2 + 28 };
 const anchors = () => villas.map((v) => ({ id: v.id, ...project(v.coords) }));
 
 describe('spreadPins', () => {
@@ -15,6 +15,16 @@ describe('spreadPins', () => {
 			for (let j = i + 1; j < pins.length; j++) {
 				const d = Math.hypot(pins[i].x - pins[j].x, pins[i].y - pins[j].y);
 				expect(d, `${pins[i].id} vs ${pins[j].id}`).toBeGreaterThanOrEqual(opts.minDist * 0.97);
+			}
+		}
+	});
+
+	it('keeps every photo off every real spot, so no dot or ring is hidden', () => {
+		const pins = spreadPins(anchors(), opts);
+		for (const p of pins) {
+			for (const a of anchors()) {
+				const d = Math.hypot(p.x - a.x, p.y - a.y);
+				expect(d, `${p.id} over the spot of ${a.id}`).toBeGreaterThanOrEqual(opts.keepClear * 0.97);
 			}
 		}
 	});
@@ -30,7 +40,7 @@ describe('spreadPins', () => {
 
 	it('keeps each pin reasonably near its true position', () => {
 		for (const p of spreadPins(anchors(), opts)) {
-			expect(Math.hypot(p.x - p.ax, p.y - p.ay)).toBeLessThan(PIN * 2.5);
+			expect(Math.hypot(p.x - p.ax, p.y - p.ay)).toBeLessThan(PIN * 4);
 		}
 	});
 
@@ -40,11 +50,17 @@ describe('spreadPins', () => {
 			{ id: 'a', x: 200, y: 450 },
 			{ id: 'b', x: 520, y: 800 }
 		];
-		const out = spreadPins(far, opts);
+		// Without the keep-clear rule, photos that already don't touch stay exactly where they are.
+		const out = spreadPins(far, { ...opts, keepClear: 0 });
 		expect(out.map((p) => [Math.round(p.x), Math.round(p.y)])).toEqual([
 			[200, 450],
 			[520, 800]
 		]);
+		// With it, each photo steps just far enough away from its own real spot, and no further.
+		const clear = spreadPins(far, opts);
+		for (const c of clear) {
+			expect(Math.hypot(c.x - c.ax, c.y - c.ay)).toBeCloseTo(opts.keepClear, 0);
+		}
 	});
 
 	it('separates villas at exactly the same spot', () => {

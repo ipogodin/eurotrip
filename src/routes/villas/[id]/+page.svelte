@@ -178,6 +178,15 @@
 					</p>
 				</header>
 
+				<p class="loc">
+					<Chip tone={villa.exactLocation ? 'sea' : 'sun'} icon="pin">
+						{villa.exactLocation ? 'Exact location' : 'Approximate area'}
+					</Chip>
+					{#if !villa.exactLocation}
+						<span class="muted">The host hides the exact spot until you book.</span>
+					{/if}
+				</p>
+
 				<div class="chips">
 					<Chip icon="bed">{villa.bedrooms} bedrooms</Chip>
 					<Chip icon="bath">{villa.bathrooms} baths</Chip>
@@ -356,6 +365,18 @@
 		margin: 4px 0 0;
 		color: var(--ink-2);
 		font-weight: 700;
+	}
+	.loc {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--s2) var(--s3);
+		margin: 0;
+	}
+	.loc .muted {
+		color: var(--ink-3);
+		font-size: 13px;
+		font-weight: 600;
 	}
 	.chips {
 		display: flex;

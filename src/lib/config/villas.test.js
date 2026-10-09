@@ -24,6 +24,7 @@ describe('villas config', () => {
 		expect(lat).toBeLessThan(30);
 		expect(lng).toBeGreaterThan(-19);
 		expect(lng).toBeLessThan(-13);
+		expect(typeof v.exactLocation, 'exactLocation must be true or false').toBe('boolean');
 		expect(v.url).toMatch(/^https?:\/\//);
 		for (const p of v.photos) {
 			expect(p.src).toBe(`/villas/${v.id}/${p.src.split('/').pop()}`);

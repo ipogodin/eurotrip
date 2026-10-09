@@ -76,5 +76,5 @@ export const PLACES = [
 	{ text: 'Santa Cruz', at: project([28.475, -16.2]) },
 	{ text: 'Puerto de la Cruz', at: project([28.43, -16.62]) },
 	{ text: 'Los Gigantes', at: project([28.255, -16.885]) },
-	{ text: 'Los Cristianos', at: project([27.995, -16.595]) }
+	{ text: 'Los Cristianos', at: project([27.99, -16.565]) }
 ];

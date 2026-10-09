@@ -8,10 +8,12 @@
 
 /**
  * @param {{ id: string, x: number, y: number }[]} anchors  true positions
- * @param {{ minDist: number, bounds: { x: number, y: number, w: number, h: number }, margin: number }} opts
+ * @param {{ minDist: number, bounds: { x: number, y: number, w: number, h: number }, margin: number, keepClear?: number }} opts
+ *   `keepClear`: no photo may sit closer than this to ANY villa's true spot, so the
+ *   dots and rings that mark the real locations stay visible instead of hidden under photos
  * @returns {{ id: string, x: number, y: number, ax: number, ay: number }[]}
  */
-export function spreadPins(anchors, { minDist, bounds, margin }) {
+export function spreadPins(anchors, { minDist, bounds, margin, keepClear = 0 }) {
 	const pts = anchors.map((a) => ({ id: a.id, ax: a.x, ay: a.y, x: a.x, y: a.y }));
 	const clamp = () => {
 		for (const p of pts) {
@@ -42,6 +44,27 @@ export function spreadPins(anchors, { minDist, bounds, margin }) {
 				pts[j].x += (dx / d) * push;
 				pts[j].y += (dy / d) * push;
 				moved = true;
+			}
+		}
+		// Keep every photo off every true spot (its own and the others').
+		if (keepClear > 0) {
+			for (let i = 0; i < pts.length; i++) {
+				for (let j = 0; j < anchors.length; j++) {
+					let dx = pts[i].x - anchors[j].x;
+					let dy = pts[i].y - anchors[j].y;
+					let d = Math.hypot(dx, dy);
+					if (d >= keepClear) continue;
+					if (d < 1e-6) {
+						const angle = (i * 5 + j * 11) * 2.399963;
+						dx = Math.cos(angle);
+						dy = Math.sin(angle);
+						d = 1;
+					}
+					const push = keepClear - d + 0.01;
+					pts[i].x += (dx / d) * push;
+					pts[i].y += (dy / d) * push;
+					moved = true;
+				}
 			}
 		}
 		return moved;

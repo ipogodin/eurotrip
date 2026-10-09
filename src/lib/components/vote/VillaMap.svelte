@@ -22,7 +22,13 @@
 	const pins = new Map(
 		spreadPins(
 			villas.map((v) => ({ id: v.id, ...project(v.coords) })),
-			{ minDist: PIN_UNITS, bounds: VIEWPORT, margin: PIN_UNITS / 2 }
+			{
+				minDist: PIN_UNITS,
+				bounds: VIEWPORT,
+				margin: PIN_UNITS / 2,
+				// Photos stay off every real spot (a dot is 9 units, an "approximate" ring 22).
+				keepClear: PIN_UNITS / 2 + 28
+			}
 		).map((p) => [p.id, p])
 	);
 
@@ -68,7 +74,15 @@
 				{#if !featured && pin && Math.hypot(pin.x - pin.ax, pin.y - pin.ay) > 14}
 					<line class="leader" x1={pin.ax} y1={pin.ay} x2={pin.x} y2={pin.y} />
 				{/if}
-				{#if pin && !featured}<circle class="dot" cx={pin.ax} cy={pin.ay} r="6" />{/if}
+				{#if pin && !featured}
+					{#if row.villa.exactLocation}
+						<circle class="dot" cx={pin.ax} cy={pin.ay} r="9" />
+					{:else}
+						<!-- Airbnb hides this one's exact spot: show the area, not a point -->
+						<circle class="area" cx={pin.ax} cy={pin.ay} r="22" />
+						<circle class="area-core" cx={pin.ax} cy={pin.ay} r="3.5" />
+					{/if}
+				{/if}
 			{/each}
 		</svg>
 
@@ -107,11 +121,19 @@
 		{/each}
 	</div>
 	<figcaption>
-		{#if featured}
-			Tap the photo to see our villa. The position is approximate.
-		{:else}
-			Tap a photo to open the villa and vote. Positions are approximate; thin lines point to the
-			real spot.
+		<span class="caption">
+			{#if featured}
+				Tap the photo to see our villa. The position is approximate.
+			{:else}
+				Tap a photo to open the villa and vote. Positions are approximate; thin lines point to the
+				real spot.
+			{/if}
+		</span>
+		{#if !featured}
+			<span class="legend">
+				<span class="item"><i class="key exact"></i> exact location</span>
+				<span class="item"><i class="key approx"></i> approximate area</span>
+			</span>
 		{/if}
 	</figcaption>
 </figure>
@@ -173,10 +195,19 @@
 		font-size: 20px;
 	}
 	.leader {
-		stroke: rgb(12 59 62 / 0.45);
-		stroke-width: 3;
-		stroke-dasharray: 2 8;
+		stroke: rgb(12 59 62 / 0.7);
+		stroke-width: 4;
+		stroke-dasharray: 5 8;
 		stroke-linecap: round;
+	}
+	.area {
+		fill: rgb(216 27 96 / 0.14);
+		stroke: var(--hibiscus);
+		stroke-width: 3.5;
+		stroke-dasharray: 7 5;
+	}
+	.area-core {
+		fill: var(--hibiscus);
 	}
 	.dot {
 		fill: var(--hibiscus);
@@ -295,6 +326,41 @@
 		background: var(--hibiscus);
 		color: #fff;
 		font-size: 13px;
+	}
+	.caption,
+	.legend {
+		display: block;
+	}
+	.legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px var(--s4);
+		justify-content: center;
+		margin: 6px 0 0;
+		color: var(--ink-3);
+		font-size: 12px;
+		font-weight: 700;
+		text-align: center;
+	}
+	.legend .item {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.key {
+		display: inline-block;
+		flex: none;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		border: 2px solid var(--hibiscus);
+	}
+	.key.exact {
+		background: var(--hibiscus);
+	}
+	.key.approx {
+		background: rgb(216 27 96 / 0.14);
+		border-style: dashed;
 	}
 	figcaption {
 		max-width: 56ch;

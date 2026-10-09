@@ -14,6 +14,9 @@
 	<p class="eyebrow"><Icon name="trophy" size={14} /> Our villa</p>
 	<h2 id="winner-title" class="t-title">{villa.name}</h2>
 	<p class="where"><Icon name="pin" size={14} /> {villa.town}, {villa.island}</p>
+	<Chip tone={villa.exactLocation ? 'sea' : 'sun'} icon="pin">
+		{villa.exactLocation ? 'Exact location' : 'Approximate area'}
+	</Chip>
 	<div class="chips">
 		<Chip icon="bed">{villa.bedrooms} bedrooms</Chip>
 		<Chip icon="bath">{villa.bathrooms} baths</Chip>
