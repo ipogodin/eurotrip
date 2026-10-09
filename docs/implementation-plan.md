@@ -432,11 +432,12 @@ this one is better"**. Everyone else sees the swapped photo too (on their
 next 15 s refresh), so the joke is shared.
 
 **Inputs from the user (I11):**
-- One photo per member (face, roughly square; any size, we crop).
-- The prank pool: the replacement photos, and the exact caption text.
-- Rules to confirm: one fixed replacement per member, or the next one from a
-  shared pool each time they try? Can they ever get their real photo back
-  (e.g. the admin resets it)?
+- DONE 2026-10-08: two photos per member in the git-ignored `avatars/` folder:
+  `<id>_1` (own photo, the default) and `<id>_2` (the prank replacement).
+  So the swap is one fixed replacement per person (no shared pool).
+- Still needed: the exact caption text ("neh, I think this one is better"?).
+- Still to confirm: can the admin put someone's real photo back; do the others
+  get a "Anna has a new photo" note?
 
 **Privacy (decided):** the repo is public and `static/` files are served to
 anyone with the URL, without login. So member photos and the prank pool go
@@ -447,9 +448,10 @@ private`), resized to 96 / 256 px webp at upload time.
 
 **Tasks:**
 1. Provision a private Blob store (load the `vercel:vercel-storage` skill),
-   `scripts/avatars.js` to crop/resize and upload `members/<id>.webp` and
-   `pool/<n>.webp`; record the blob keys, never the files, in config.
-2. Redis `avatar:{memberId}` = `{ src: 'own' | 'pool:<n>', changedAt }`;
+   `scripts/avatars.js upload` to crop/resize and upload `<id>_1.webp` and
+   `<id>_2.webp` (the checker `npm run avatars:check` already exists); record
+   the blob keys, never the files, in config.
+2. Redis `avatar:{memberId}` = `{ photo: 1 | 2, changedAt }` (1 = own, 2 = replacement);
    the vote/trip `load` returns each member's current avatar version so
    polling picks up swaps.
 3. `Avatar.svelte`: photo when available (`<img>` from `/avatars/<id>?v=…`,
@@ -457,7 +459,7 @@ private`), resized to 96 / 256 px webp at upload time.
 4. Account menu → **Change photo** → native file picker (`accept="image/*"`).
    The chosen file is **never uploaded or stored**: the client only shows a
    preview + fake progress (~1.5 s), then posts a form action
-   `?/swapPhoto` (no file) that assigns the next pool photo per the rules.
+   `?/swapPhoto` (no file) that switches the member to photo 2 (and never back, unless the admin resets).
    Then a Sheet reveals the new avatar with the caption.
 5. Optional: a short toast for everyone else on their next refresh, e.g.
    "Anna has a new photo". Confirm with the user.

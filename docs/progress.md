@@ -61,7 +61,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
-| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Put photos in the git-ignored `avatars/` folder as `<member-id>.jpg` (pool: `avatars/pool/<n>.jpg`); `npm run avatars:check` verifies | waiting for the photos |
+| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Photos delivered 2026-10-08 as `avatars/<id>_1` (default) and `<id>_2` (prank); `npm run avatars:check`: 6 of 8 members fine, `illia_1` (149x177) and `marina_1` (196x218) are too small. Still need the caption text + admin-reset/notification answers | partly done |
 | I13 | 1.8      | Admin reset-everyone's-votes button | done 2026-10-08: yes, built (plus removing a villa, points return to voters) |
 | I14 | 1.8      | Sign in as a NON-admin (e.g. the 2nd dev member) and open `/admin`: it must say 403. The agent can't enter phrases; guards are unit-tested and anonymous requests were checked | waiting |
 | I12 | 1.7      | Look at the map vote page (`npm run dev` → `/vote`) on a phone and a computer: photo size, the spread-out positions in Costa Adeje, the compact header. Say what to change. `VOTE_LAYOUT = 'list'` in `src/lib/config/voting.js` brings back the old card list | **waiting** |
@@ -454,6 +454,20 @@ The integration install also added third-party agent skills
 (`.agents/`, `.claude/skills/`, `skills-lock.json`); gitignored on purpose.
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
+
+### Avatar photos delivered (2026-10-08)
+
+The user changed several member ids in `members.json` (now illia, evgen, alex,
+ivan, vika, tanya, chris, marina) and named the photos `<id>_1` (own, default)
+and `<id>_2` (prank replacement), 16 files in `avatars/`. Checker rewritten
+for that convention (per-member lines, stray files, unreadable/oversized,
+identical pair) with realistic sizes: error under 256 px, note under 512 px.
+Result: all names match, all readable, no identical pairs; `illia_1.jpg`
+(149x177, 8 KB) and `marina_1.png` (196x218) are too small and should be
+replaced with bigger photos; 4 more are 412-506 px (fine). Face placement was
+NOT checked (they're center-cropped to a circle). Note: ids changed, so any
+dev ballots keyed by old ids no longer match (dev store is in-memory); the
+production roster is set at launch anyway.
 
 ### Roster loaded + avatar folder (2026-10-08)
 

@@ -7,23 +7,24 @@ stored privately and shown only to signed-in members.
 
 ## Names
 
-| What                      | File                              | Example                  |
-| ------------------------- | --------------------------------- | ------------------------ |
-| A member's real photo     | `avatars/<member-id>.<ext>`       | `avatars/anna.jpg`       |
-| "Neh, this one is better" | `avatars/pool/<number>.<ext>`     | `avatars/pool/1.jpg`     |
-| …for one specific person  | `avatars/pool/<member-id>.<ext>`  | `avatars/pool/anna.jpg`  |
+Two photos per member, named with the member's `id` from `members.json`:
 
-- `<member-id>` is the `id` of the person in `members.json` (lowercase, as
-  written there). Run `npm run avatars:check` to see exactly which names the
-  app expects and which are still missing.
-- `<ext>`: `jpg`, `jpeg`, `png` or `webp`. iPhone photos are often HEIC: export
-  or share them as JPG first.
-- One photo per person per folder. Don't put both `anna.jpg` and `anna.png`.
+| File                       | What it is                                                  |
+| -------------------------- | ----------------------------------------------------------- |
+| `avatars/<member-id>_1.<ext>` | The member's own photo. **This is the default avatar.**  |
+| `avatars/<member-id>_2.<ext>` | The replacement photo for the "neh, this one is better" prank |
+
+Example: `avatars/anna_1.jpg` and `avatars/anna_2.png`.
+
+- `<member-id>` is written exactly as in `members.json` (lowercase).
+- `<ext>`: `jpg`, `jpeg`, `png` or `webp`; the two files may differ. iPhone
+  photos are often HEIC: export or share them as JPG first.
+- Exactly one `_1` and one `_2` per member, and they must be different pictures.
 
 ## Good photos
 
 - Face in the middle, roughly square. We crop to a circle from the centre.
-- At least 512 x 512 px (bigger is fine; we resize). Under 10 MB.
+- At least 256 px on the short side (512+ is sharper in the large view). Under 10 MB.
 
 ## Check
 
