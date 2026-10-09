@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { MAX_PER_VILLA, VOTE_BUDGET } from './config/voting.js';
 import {
 	canIncrement,
 	effectiveDeadline,
@@ -66,8 +67,15 @@ describe('validateBallot', () => {
 		expect(validateBallot({ a: 3, b: 3 }, lowered).ok).toBe(false); // still 6
 		expect(validateBallot({ a: 3, b: 3, c: 1 }, lowered).ok).toBe(false); // 7
 	});
-	it('rejects more than 3 on one villa', () => {
-		expect(validateBallot({ a: 4 }, open)).toMatchObject({ ok: false, code: 'points' });
+	it('allows up to the per-villa cap on one villa, and rejects one more', () => {
+		expect(validateBallot({ a: MAX_PER_VILLA }, open).ok).toBe(true);
+		expect(validateBallot({ a: MAX_PER_VILLA + 1 }, open)).toMatchObject({
+			ok: false,
+			code: 'points'
+		});
+	});
+	it('the per-villa cap is within the budget (a person can use it on one villa)', () => {
+		expect(MAX_PER_VILLA).toBeLessThanOrEqual(VOTE_BUDGET);
 	});
 	it('rejects unknown villas, including prototype keys', () => {
 		expect(validateBallot({ zzz: 1 }, open)).toMatchObject({ ok: false, code: 'unknown-villa' });
@@ -107,8 +115,10 @@ describe('ballot helpers', () => {
 		expect(spent({ a: 3, b: 2 })).toBe(5);
 	});
 	it('canIncrement respects per-villa max and total budget', () => {
-		expect(canIncrement({ a: 3 }, 'a')).toBe(false);
-		expect(canIncrement({ a: 3, b: 3 }, 'c')).toBe(false);
+		expect(canIncrement({ a: MAX_PER_VILLA }, 'a')).toBe(false); // that villa is full
+		expect(canIncrement({ a: MAX_PER_VILLA - 1 }, 'a')).toBe(true);
+		expect(canIncrement({ a: MAX_PER_VILLA }, 'b')).toBe(VOTE_BUDGET > MAX_PER_VILLA); // others still open if points remain
+		expect(canIncrement({ a: 3, b: 3 }, 'c')).toBe(false); // all 6 points used
 		expect(canIncrement({ a: 3, b: 2 }, 'c')).toBe(true);
 		expect(canIncrement({}, 'a')).toBe(true);
 	});

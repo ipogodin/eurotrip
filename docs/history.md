@@ -521,3 +521,13 @@ checks. Mistake during the launch: generating "new invite phrases" overwrote the
 phrases the user had picked by hand for each person; the user caught it, they were
 restored from the ignored `members.md` mirror and redeployed. Phrase generation now
 keeps a backup and must not be run without asking.
+
+---
+
+## 2026-10-08 — Per-villa cap raised from 3 to 5
+
+User asked to raise the most points one person can give a single villa from 3 to 5
+(each person's total stays 6). `MAX_PER_VILLA` in `src/lib/config/voting.js` is the
+single source: the stepper and dots now default to it instead of a hard-coded 3, the
+stored ballot type is just numbers, and the tests follow the constant. Existing votes
+(all ≤3) stay valid.

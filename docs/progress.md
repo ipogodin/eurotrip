@@ -333,7 +333,7 @@ with curl from the shell was much faster for bulk data.
 ### 1.5 — done (2026-10-08), with placeholder villas
 
 `src/lib/config/voting.js` (deadline `2026-10-10T16:30:00Z` = Sat 09:30 PDT,
-budget 6, max 3 per villa), `src/lib/voting.js` (pure, shared client/server:
+budget 6, max 3 per villa at the time; now 5), `src/lib/voting.js` (pure, shared client/server:
 `votingState`, `effectiveDeadline`, `validateBallot`, `spent`, `canIncrement`,
 `withPoints`, `tally` — ties share a rank 1,2,2,4; villas with 0 votes are
 unranked; unknown villas/members ignored), 19 tests incl. prototype-key,

@@ -1,4 +1,5 @@
 <script>
+	import { MAX_PER_VILLA } from '$lib/config/voting.js';
 	import Icon from '$lib/icons/Icon.svelte';
 	import PointDots from './PointDots.svelte';
 
@@ -13,7 +14,15 @@
 	 *   onchange: (next: number) => void
 	 * }}
 	 */
-	let { value, max = 3, canAdd, label, disabled = false, addHint = '', onchange } = $props();
+	let {
+		value,
+		max = MAX_PER_VILLA,
+		canAdd,
+		label,
+		disabled = false,
+		addHint = '',
+		onchange
+	} = $props();
 
 	const canIncrement = $derived(!disabled && canAdd && value < max);
 	const canDecrement = $derived(!disabled && value > 0);

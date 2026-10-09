@@ -54,7 +54,7 @@ export function createUpstashStore({ url, token }, client) {
 				/** @type {import('./types.js').Ballot} */
 				const ballot = {};
 				for (const [villa, pts] of Object.entries(toHash(results[i]))) {
-					ballot[villa] = /** @type {1 | 2 | 3} */ (Number(pts));
+					ballot[villa] = Number(pts);
 				}
 				out[id] = ballot;
 			});

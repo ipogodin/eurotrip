@@ -1,5 +1,5 @@
 /**
- * @typedef {Record<string, 1 | 2 | 3>} Ballot  villaId -> points
+ * @typedef {Record<string, number>} Ballot  villaId -> points (1..MAX_PER_VILLA)
  *
  * @typedef {{
  *   winnerId: string | null;

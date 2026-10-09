@@ -75,7 +75,7 @@
 	<div class="hero-inner">
 		<span class="t-script hero-script">¡Vamos, familia!</span>
 		<h1 class="t-display">Where are we <em>sleeping</em>?</h1>
-		<p class="hero-lede">Six points. Three max per villa. One sunny week in the Canaries.</p>
+		<p class="hero-lede">Six points. Five max per villa. One sunny week in the Canaries.</p>
 		<div class="row" style="flex-wrap: wrap; justify-content: center">
 			<Button size="lg">Cast your votes</Button>
 			<Countdown deadline={soon} />

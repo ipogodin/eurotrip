@@ -13,6 +13,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { villas } from '../config/villas.js';
+import { MAX_PER_VILLA } from '../config/voting.js';
 import { hueForIndex } from '../members-ui.js';
 import { spent } from '../voting.js';
 import { createMemoryStore } from './store/memory.js';
@@ -174,13 +175,13 @@ describe.each(roster.map((m) => [m.short + (m.admin ? ' (admin)' : ''), m]))(
 
 		it('can spend exactly their own budget, no more', async () => {
 			const budget = budgetOf(member);
-			// 3 points per villa, as many villas as it takes.
+			// the per-villa cap, as many villas as it takes.
 			/** @type {Record<string, number>} */
 			const ballot = {};
 			let left = budget;
 			for (const id of V) {
 				if (left <= 0) break;
-				ballot[id] = Math.min(3, left);
+				ballot[id] = Math.min(MAX_PER_VILLA, left);
 				left -= ballot[id];
 			}
 			expect((await outcome(save(member, ballot))).status).toBe(200);
@@ -189,14 +190,21 @@ describe.each(roster.map((m) => [m.short + (m.admin ? ' (admin)' : ''), m]))(
 
 			// One point more than the budget is refused, and the saved ballot is untouched.
 			const over = { ...ballot, [V[V.length - 1]]: (ballot[V[V.length - 1]] ?? 0) + 1 };
-			if (budget < 3 * V.length) expect((await outcome(save(member, over))).status).toBe(400);
+			if (budget < MAX_PER_VILLA * V.length)
+				expect((await outcome(save(member, over))).status).toBe(400);
 			expect((await /** @type {any} */ (h.store).getBallots([member.id]))[member.id]).toEqual(
 				stored
 			);
 		});
 
-		it('is refused for 4 points on one villa, an unknown villa, fractions and junk', async () => {
-			for (const bad of [{ [V[0]]: 4 }, { nope: 1 }, { [V[0]]: 1.5 }, { [V[0]]: '2' }, []]) {
+		it('is refused for one point over the per-villa cap, an unknown villa, fractions and junk', async () => {
+			for (const bad of [
+				{ [V[0]]: MAX_PER_VILLA + 1 },
+				{ nope: 1 },
+				{ [V[0]]: 1.5 },
+				{ [V[0]]: '2' },
+				[]
+			]) {
 				expect((await outcome(save(member, bad))).status).toBe(400);
 			}
 			expect(
