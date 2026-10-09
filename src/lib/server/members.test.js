@@ -104,13 +104,14 @@ describe('matchPhrase', () => {
 describe('toPublic', () => {
 	it('never includes the phrase', () => {
 		const { members } = parseMembers(raw());
-		const pub = toPublic(members[0]);
+		const pub = toPublic(members[0], 3);
 		expect(pub).toEqual({
 			id: 'illia',
 			name: 'Illia Pogodin',
 			short: 'Illia',
 			isAdmin: true,
-			votes: 6
+			votes: 6,
+			hue: 3
 		});
 		expect(JSON.stringify(pub)).not.toContain('heron');
 	});

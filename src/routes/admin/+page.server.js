@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { villas } from '$lib/config/villas.js';
+import { hueForIndex } from '$lib/members-ui.js';
 import { pacificToUtc, utcToPacificInput } from '$lib/time.js';
 import { pruneBallot, tally } from '$lib/voting.js';
 import {
@@ -34,7 +35,13 @@ const text = (form, name) => {
 export async function load({ locals }) {
 	requireAdmin(locals);
 	const store = getStore();
-	const members = getMembers().map(({ id, name, short, votes }) => ({ id, name, short, votes }));
+	const members = getMembers().map(({ id, name, short, votes }, i) => ({
+		id,
+		name,
+		short,
+		votes,
+		hue: hueForIndex(i)
+	}));
 	const [status, rawBallots, stats] = await Promise.all([
 		currentStatus(store, Date.now()),
 		store.getBallots(members.map((m) => m.id)),

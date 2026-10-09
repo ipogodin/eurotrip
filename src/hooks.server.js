@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
 import { toPublic } from '$lib/server/members.js';
-import { findMemberById, getSessionSecret } from '$lib/server/roster.js';
+import { findMemberById, getSessionSecret, hueFor } from '$lib/server/roster.js';
 import { COOKIE_NAME, readSession } from '$lib/server/session.js';
 
 /** Paths an anonymous visitor may reach: only the login splash. */
@@ -15,7 +15,7 @@ export async function handle({ event, resolve }) {
 	if (token) {
 		const session = readSession(token, getSessionSecret());
 		const member = session ? findMemberById(session.memberId) : undefined;
-		if (member) event.locals.member = toPublic(member);
+		if (member) event.locals.member = toPublic(member, hueFor(member.id));
 		else event.cookies.delete(COOKIE_NAME, { path: '/' }); // forged, expired or removed member
 	}
 

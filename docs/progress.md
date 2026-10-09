@@ -61,7 +61,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
-| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Photos delivered 2026-10-08 as `avatars/<id>_1` (default), `<id>_2` ... (versions); `npm run avatars:check`: 8 of 8 fine; faces checked in circle crops. Phrases file done. Still to answer: can the admin reset someone to version 1? | mostly done |
+| I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Photos delivered 2026-10-08 as `avatars/<id>_1` (default), `<id>_2` ... (versions); `npm run avatars:check`: 8 of 8 fine; faces checked in circle crops. Phrases file done. Admin can reset someone to version 1: yes (decided). Remaining: build 3.4 | mostly done |
 | I13 | 1.8      | Admin reset-everyone's-votes button | done 2026-10-08: yes, built (plus removing a villa, points return to voters) |
 | I14 | 1.8      | Sign in as a NON-admin (e.g. the 2nd dev member) and open `/admin`: it must say 403. The agent can't enter phrases; guards are unit-tested and anonymous requests were checked | waiting |
 | I12 | 1.7      | Look at the map vote page (`npm run dev` → `/vote`) on a phone and a computer: photo size, the spread-out positions in Costa Adeje, the compact header. Say what to change. `VOTE_LAYOUT = 'list'` in `src/lib/config/voting.js` brings back the old card list | **waiting** |
@@ -455,6 +455,40 @@ The integration install also added third-party agent skills
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
 
+### Pre-launch verification for all 8 members (2026-10-08)
+
+The user: verify the site for every member, THEN generate the invites.
+- **Found and fixed:** avatar colours came from a hash of the id, so the 8 real
+  members shared only 4 colours (3 people on one colour, two pairs). Colours now
+  follow roster position (`hueForIndex`, `PublicMember.hue`, carried by
+  `toPublic`, `publicMembers`, the admin load): 8 members = 8 colours, and the
+  People view shows 8 different ones. 3 tests.
+- **Per-member scenario test** (`src/lib/server/scenario.test.js`, 63 tests):
+  runs the real vote/admin handlers once per member on the real roster's
+  public fields (phrases are NOT read; placeholders used; without
+  `members.json` it uses 8 made-up members). Each member: sees the vote page
+  and no phrase in the data, opens all 13 villa pages, spends exactly their
+  budget and not a point more, is refused bad ballots (4 on one villa, unknown
+  villa, fractions, junk), can only change their own ballot, can take all points
+  back; the 7 non-admins get 403 on the admin page and on all 7 admin actions
+  with no state changed (this closes I14); the admin can use them. Group
+  scenarios: totals across all 8 ballots, removing a villa returns exactly each
+  voter's points, reset clears all 8, close/winner freezes everyone. Proven
+  not vacuous by deliberately breaking the admin lock (7 tests failed), the
+  budget rule (8) and the points return (1), then restoring.
+- **Privacy scan** of every tracked file and all git history for the members'
+  surnames, full names and nicknames: nothing for the other 7 members (the
+  owner's own name is everywhere, expected). Only first names (as ids) in my own
+  note in `docs/progress.md`, committed in `8d94bed`; removed from the current
+  file; still in that commit's history (decision for the user: leave it, or
+  rewrite history; first names only, no surnames or phrases).
+- Browser smoke test as the admin on the restarted dev server (new roster):
+  map 13 pins, People 8 members/8 colours, My votes, a villa page, admin page
+  with the 7 other members listed as not voted; no console errors.
+- Not verifiable before deploy: real phrase login and the signed session,
+  production-only behaviour (secure cookie, CSRF origin check, Redis), a
+  second person voting live. Those are the 1.9 smoke test.
+
 ### Photos re-verified, faces checked, phrases + versions (2026-10-08)
 
 The user replaced `illia_1` and `marina_1` and asked to re-verify and to check
@@ -477,8 +511,8 @@ others are a later, separate feature.
 
 ### Avatar photos delivered (2026-10-08)
 
-The user changed several member ids in `members.json` (now illia, evgen, alex,
-ivan, vika, tanya, chris, marina) and named the photos `<id>_1` (own, default)
+The user changed several member ids in `members.json` (8 members; the ids
+are kept out of the public repo) and named the photos `<id>_1` (own, default)
 and `<id>_2` (prank replacement), 16 files in `avatars/`. Checker rewritten
 for that convention (per-member lines, stray files, unreadable/oversized,
 identical pair) with realistic sizes: error under 256 px, note under 512 px.

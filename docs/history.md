@@ -450,3 +450,15 @@ gives them the next prepared version (`_2`, then `_3` if added), not the photo
 they picked, with a random phrase from an editable file ("neh, I think this is
 better" and similar). The app tracks which version each member is on.
 Notifying others about a changed photo is a later, separate feature.
+
+---
+
+## 2026-10-08 — Pre-launch verification for all 8 members
+
+Decided with the user: the admin can reset a member's photo to the initial one
+(version 1); everyone keeps the default 6 votes. Before generating any invite,
+the site was verified for each of the 8 real members (see `docs/progress.md`).
+The check found that avatar colours collided (4 colours for 8 people); fixed by
+colouring by roster position. All per-member rules pass in an automated
+scenario test, including the 403s for the 7 non-admins. Invites are generated
+only after this.

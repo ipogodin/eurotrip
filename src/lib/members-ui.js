@@ -1,5 +1,6 @@
 /**
- * @typedef {{ id: string, name: string, short: string, votes?: number }} PublicMember  `votes` = point budget
+ * @typedef {{ id: string, name: string, short: string, votes?: number, hue?: number }} PublicMember
+ *   `votes` = point budget; `hue` = avatar colour slot 1-8 (by roster position)
  */
 
 const HUES = 8;
@@ -16,11 +17,21 @@ export function hueIndex(id) {
 }
 
 /**
- * CSS color for a member (uses the --m1..--m8 tokens).
- * @param {string} id
+ * The colour slot for the n-th member of the roster (0-based): consecutive
+ * members get different colours, so up to 8 people never share one.
+ * @param {number} index
  */
-export function memberColor(id) {
-	return `var(--m${hueIndex(id)})`;
+export function hueForIndex(index) {
+	return (index % HUES) + 1;
+}
+
+/**
+ * CSS color for a member (uses the --m1..--m8 tokens). Prefers the roster
+ * position (`hue`), falling back to a hash of the id.
+ * @param {{ id: string, hue?: number }} member
+ */
+export function memberColor({ id, hue }) {
+	return `var(--m${hue && hue >= 1 && hue <= HUES ? hue : hueIndex(id)})`;
 }
 
 /**

@@ -57,7 +57,7 @@ The old island report is **deleted** in step 1.4 (git history keeps it).
 | 2026-10-08 | Roster editing | Manual, pre-deploy: edit `members.json` → `npm run members:push` → redeploy. No in-app editing           |
 | 2026-10-08 | Kit version    | Stay on SvelteKit 2 for R1/R2; Kit 3 upgrade is step 3.3                                                   |
 | 2026-10-08 | Villas         | 13 Tenerife listings from the user's Airbnb wishlist (was "6–10")                                         |
-| 2026-10-08 | Vote budget    | Default 6; optional per-member `votes` in the roster (1–30) overrides it                                  |
+| 2026-10-08 | Vote budget    | Default 6; optional per-member `votes` in the roster (1–30) overrides it. Launch roster: nobody has a custom number (all 6) |
 | 2026-10-08 | Member photos  | User supplies photos; "change photo" is a prank swap (step 3.4); photos never in `static/` or the repo     |
 
 ## 3. Timeline
@@ -440,7 +440,8 @@ next 15 s refresh), so the joke is shared.
 - DONE 2026-10-08: the phrases live in `src/lib/config/avatar-phrases.txt`
   (one per line, `#` comments; edit freely), picked at random (never the same
   phrase twice in a row), logic in `src/lib/avatar.js` (tested).
-- Still to confirm: can the admin put someone's real photo back (set version 1)?
+- DONE 2026-10-08 (user): yes, the admin can reset a member's profile photo to
+  the initial configuration (version 1). Their vote budget is unaffected.
 - Later, separate feature: notifying the others when someone changes their
   photo (e.g. "Anna has a new photo"). Not part of 3.4.
 
@@ -470,7 +471,7 @@ private`), resized to 96 / 256 px webp at upload time.
    phrases file (and never back, unless the admin resets).
    Then a Sheet reveals the new avatar with the caption.
 5. (Moved to a later feature.) Notifying the others, e.g. "Anna has a new photo".
-6. Admin: "Reset photo" per member (back to `own`).
+6. Admin: "Reset photo" per member (back to version 1; votes and everything else stay as they are).
 
 **Acceptance:** photos never reachable without a session (curl the URL
 logged out → 303); the swap persists across reloads and shows for a second

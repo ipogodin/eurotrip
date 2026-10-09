@@ -1,4 +1,5 @@
 import { villas } from '$lib/config/villas.js';
+import { hueForIndex } from '$lib/members-ui.js';
 import { DEFAULT_DEADLINE } from '$lib/config/voting.js';
 import { effectiveDeadline, pruneBallot, votingState } from '$lib/voting.js';
 import { getMembers } from './roster.js';
@@ -6,7 +7,13 @@ import { getStore } from './store/index.js';
 
 /** Everyone's public identity + point budget, in roster order. Never phrases. */
 export function publicMembers() {
-	return getMembers().map(({ id, name, short, votes }) => ({ id, name, short, votes }));
+	return getMembers().map(({ id, name, short, votes }, i) => ({
+		id,
+		name,
+		short,
+		votes,
+		hue: hueForIndex(i)
+	}));
 }
 
 /** Current deadline, state and winner, always computed with server time. */

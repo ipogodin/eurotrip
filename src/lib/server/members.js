@@ -7,7 +7,7 @@ import { VOTE_BUDGET } from '../config/voting.js';
  * `votes` is the member's point budget: the optional roster field, else the
  * default `VOTE_BUDGET`.
  * @typedef {{ id: string, name: string, short: string, phrase: string, admin: boolean, votes: number }} Member
- * @typedef {{ id: string, name: string, short: string, isAdmin: boolean, votes: number }} PublicMember
+ * @typedef {{ id: string, name: string, short: string, isAdmin: boolean, votes: number, hue: number }} PublicMember
  */
 
 const ID_FORMAT = /^[a-z0-9][a-z0-9-]{1,23}$/;
@@ -108,9 +108,11 @@ export function matchPhrase(members, input) {
 
 /**
  * The only member shape that may leave the server (never the phrase).
+ * `hue` is the avatar colour slot (see `hueForIndex`), from the roster position.
  * @param {Member} m
+ * @param {number} hue
  * @returns {PublicMember}
  */
-export function toPublic(m) {
-	return { id: m.id, name: m.name, short: m.short, isAdmin: m.admin, votes: m.votes };
+export function toPublic(m, hue) {
+	return { id: m.id, name: m.name, short: m.short, isAdmin: m.admin, votes: m.votes, hue };
 }

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
+import { hueForIndex } from '$lib/members-ui.js';
 import { parseMembers } from './members.js';
 import { resolveSecret } from './session.js';
 
@@ -37,6 +38,19 @@ export function getMembers() {
  */
 export function findMemberById(id) {
 	return getMembers().find((m) => m.id === id);
+}
+
+/**
+ * A member's avatar colour slot (1-8), from their position in the roster.
+ * @param {string} id
+ */
+export function hueFor(id) {
+	return hueForIndex(
+		Math.max(
+			0,
+			getMembers().findIndex((m) => m.id === id)
+		)
+	);
 }
 
 /** @returns {string} */

@@ -9,7 +9,7 @@
 	class="avatar"
 	class:ring
 	style:--size="{size}px"
-	style:background={memberColor(member.id)}
+	style:background={memberColor(member)}
 	title={member.name}
 	role="img"
 	aria-label={member.name}
