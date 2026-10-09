@@ -243,6 +243,13 @@ member's name or phrase into a tracked file: ids/names live in `members.json`
 
 ## Deploy
 
+> **A push to `main` deploys to production automatically** (the Vercel project is
+> connected to GitHub; discovered 2026-10-08, after launch). While people are using
+> the site, develop new features on a branch (`git switch -c feature/...`), push the
+> branch (it only makes a protected preview build) and merge to `main` only when
+> the user approves. Docs-only pushes to `main` also redeploy (harmless, same code).
+> Preview builds share the SAME Redis as production: don't test writes on one.
+
 ```bash
 vercel link        # one-time: creates .vercel/project.json (gitignored)
 vercel --prod      # deploy from local
