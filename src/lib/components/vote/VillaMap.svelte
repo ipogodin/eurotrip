@@ -93,6 +93,7 @@
 			{#if pin}
 				<a
 					class="pin"
+					draggable="false"
 					class:featured
 					class:mine={row.myPoints > 0}
 					class:winner={row.villa.id === winnerId}
@@ -232,12 +233,18 @@
 		border: 3px solid #fff;
 		background: var(--surface-2);
 		box-shadow: 0 6px 16px rgb(12 59 62 / 0.35);
+		/* Long-press on iPhone would lift the link as a square photo preview. */
 		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		user-select: none;
+		-webkit-tap-highlight-color: transparent;
 		transition:
 			transform var(--t-ui) var(--spring),
 			box-shadow var(--t-ui) ease;
 	}
 	.pin img {
+		pointer-events: none; /* the link gets the touch, so no image menu or drag */
+		-webkit-user-drag: none;
 		width: 100%;
 		height: 100%;
 		border-radius: 50%;

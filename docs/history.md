@@ -554,3 +554,12 @@ user's own wording as the description ("OMG! This is so nice it is almost illega
 some Spain into your February schedule."), and a beach picture (`static/og.jpg`,
 1200×630, cut from the login background). Chat apps cache previews, so an old one may
 linger for a while.
+
+---
+
+## 2026-10-09 — Long-press on a map photo (iPhone)
+
+Press-and-hold voting from the map was never built (it was an optional idea). The user
+long-pressed a pin on an iPhone and the round photo turned into a square preview: iOS
+lifting the link. Pins now switch that off (no callout, no selection, no image drag).
+Not testable here; the user checks on the phone. Hold-to-vote stays an open idea.
