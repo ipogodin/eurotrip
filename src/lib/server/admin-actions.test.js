@@ -11,7 +11,7 @@ import {
 } from './admin-actions.js';
 import { createMemoryStore } from './store/memory.js';
 
-const NOW = Date.parse('2026-10-09T18:00:00Z'); // before the default deadline (Oct 10, 16:30Z)
+const NOW = Date.parse('2026-10-09T18:00:00Z'); // before the default deadline (Oct 10, 17:00Z)
 const HOUR = 3_600_000;
 const members = ['illia', 'anna', 'tom'];
 const all = ['a', 'b', 'c', 'd'];

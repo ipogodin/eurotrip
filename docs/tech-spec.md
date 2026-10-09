@@ -174,7 +174,7 @@ Villa facts are **not** in Redis; they're in config.
 Constants in `src/lib/config/voting.js`:
 
 ```js
-export const DEFAULT_DEADLINE = '2026-10-10T16:30:00Z'; // Sat 09:30 PDT
+export const DEFAULT_DEADLINE = '2026-10-10T17:00:00Z'; // Sat 10:00 PDT
 export const VOTE_BUDGET = 6;
 export const MAX_PER_VILLA = 3;
 ```

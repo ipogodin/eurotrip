@@ -276,7 +276,7 @@ in `docs/progress.md` (see "Work tracking" above). Key facts for a fresh agent:
   deadline override, winner, trip dates/notes, rate limits) is in Redis.
 - Design direction = **"Tropical Sunset"**, mobile-first (`docs/design.md`,
   live gallery at `/styleguide` in dev).
-- The voting deadline defaults to Sat 2026-10-10 09:30 PDT; the admin can
+- The voting deadline defaults to Sat 2026-10-10 10:00 PDT; the admin can
   extend or close it (step 1.8).
 - Browser testing tip: `resize_window` doesn't change the viewport, so use a
   narrow same-origin iframe (dev allows `SAMEORIGIN` framing); the extension's
