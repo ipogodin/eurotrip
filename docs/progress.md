@@ -457,6 +457,27 @@ The integration install also added third-party agent skills
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
 
+### Winner-only main page (2026-10-08, the user's request)
+
+Once the admin picks a winner, the main page is about that villa only, and a later
+redeploy will add more about the location (surf spots etc.; phase 2). Built:
+- `/vote` in the decided state: the banner "We're staying at <villa>", the map
+  with ONLY the winner (`VillaMap` `featured`: bigger photo at its own spot, name
+  label above it, no leader lines), and a `WinnerCard` (facts, highlights, blurb,
+  "See the photos and details"). No People / My votes tabs, no bottom nav, no
+  points counter or reset button; a leftover `?view=people` is ignored.
+- The winner's villa page: all photos and details, "Winner" sticker, Airbnb link,
+  but no voting controls.
+- Every other villa's page says "<villa> wasn't chosen" with a link to the winner.
+- Undo winner restores normal voting (verified: 13 pins, tabs, bottom nav).
+- Verified in Chrome (picked a winner as the admin, then undid it): desktop and 390 px
+  (no overflow, 81 px photo, no small targets). The label was clipped at the bottom
+  of the map on phones, moved above the photo.
+- The votes are still stored and the admin page still shows the full results.
+- Phase 2 (after the winner is picked): redeploy with the trip hub: more about the
+  location, surf spots and beaches nearby, flights (plan section 6, steps 2.1-2.5).
+  The data and the inputs it needs from the user are listed there.
+
 ### Preferred names filled in (2026-10-08)
 
 The user filled in all 8. `members:check` OK, no warnings; checked without

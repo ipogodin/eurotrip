@@ -489,3 +489,14 @@ remain on their profile. Built as the optional `preferred` field with a
 private-by-construction design (public vs self member shapes) and an automated
 leak check for all 8 members. The values themselves are for the user to add to
 `members.json`.
+
+---
+
+## 2026-10-08 — Winner-only main page
+
+The user asked that, once the winner is picked, the main page show only the
+winner on the map with that villa's information, and that the app be redeployed
+afterwards with more about the location (surf spots and so on). Built the
+decided-state view (winner map + info card, no voting screens, other villas say
+they weren't chosen); the richer trip hub stays phase 2, to be done after the
+winner is known.

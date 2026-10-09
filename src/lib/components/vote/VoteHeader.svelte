@@ -34,7 +34,7 @@
 		{#if state === 'decided'}
 			<span class="t-script tag">¡Nos vamos!</span>
 			<h1 class="t-display">We're staying at <em>{winnerName}</em></h1>
-			<p class="lede">Voting is over. The results stay below for the record.</p>
+			<p class="lede">Voting is over. Tap the photo to see our villa.</p>
 		{:else}
 			{#if !compact}<span class="t-script tag">¡Hola, {name}!</span>{/if}
 			<h1 class="t-display" class:small={compact}>Where are we <em>sleeping</em>?</h1>

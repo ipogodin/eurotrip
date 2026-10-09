@@ -12,6 +12,7 @@
 	import ResetVotes from '$lib/components/vote/ResetVotes.svelte';
 	import VillaGrid from '$lib/components/vote/VillaGrid.svelte';
 	import VillaMap from '$lib/components/vote/VillaMap.svelte';
+	import WinnerCard from '$lib/components/vote/WinnerCard.svelte';
 	import VoteHeader from '$lib/components/vote/VoteHeader.svelte';
 	import { villas } from '$lib/config/villas.js';
 	import { withCallName } from '$lib/members-ui.js';
@@ -40,10 +41,15 @@
 		{ value: 'mine', label: 'My votes', icon: 'check' }
 	];
 
+	// Once the admin picks a winner, the page is just about that villa.
+	const decided = $derived(data.state === 'decided');
+
 	const view = $derived(
-		/** @type {View} */ (
-			VIEWS.find((v) => v.value === page.url.searchParams.get('view'))?.value ?? 'villas'
-		)
+		decided
+			? /** @type {View} */ ('villas')
+			: /** @type {View} */ (
+					VIEWS.find((v) => v.value === page.url.searchParams.get('view'))?.value ?? 'villas'
+				)
 	);
 
 	const client = new BallotClient(() => data.ballots[data.me] ?? {});
@@ -169,11 +175,22 @@
 />
 
 <main class="page stack">
-	<div class="views">
-		<SegmentedControl options={VIEWS} value={view} label="Show" onchange={showView} />
-	</div>
+	{#if decided}
+		{@const winnerRow = villaRows.find((r) => r.villa.id === data.winnerId)}
+		{#if winnerRow}
+			<h2 class="sr-only">Our villa on the map</h2>
+			<VillaMap rows={[winnerRow]} winnerId={data.winnerId} featured />
+			<WinnerCard villa={winnerRow.villa} />
+		{/if}
+	{:else}
+		<div class="views">
+			<SegmentedControl options={VIEWS} value={view} label="Show" onchange={showView} />
+		</div>
+	{/if}
 
-	{#if view === 'people'}
+	{#if decided}
+		<!-- nothing else: voting is over -->
+	{:else if view === 'people'}
 		<h2 class="sr-only">Who voted for what</h2>
 		<PeopleList {people} {notVoted} me={data.me} />
 	{:else if view === 'mine'}
@@ -198,10 +215,12 @@
 	{/if}
 </main>
 
-<BottomNav
-	current="/vote{viewHref(view)}"
-	items={VIEWS.map((v) => ({ href: `/vote${viewHref(v.value)}`, label: v.label, icon: v.icon }))}
-/>
+{#if !decided}
+	<BottomNav
+		current="/vote{viewHref(view)}"
+		items={VIEWS.map((v) => ({ href: `/vote${viewHref(v.value)}`, label: v.label, icon: v.icon }))}
+	/>
+{/if}
 
 <style>
 	.views {

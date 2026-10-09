@@ -9,10 +9,11 @@
 	 * page (where you vote). The photo shows your points and the group rank.
 	 * @type {{
 	 *   rows: import('./types.js').VillaRow[],
-	 *   winnerId: string | null
+	 *   winnerId: string | null,
+	 *   featured?: boolean
 	 * }}
 	 */
-	let { rows, winnerId } = $props();
+	let { rows, winnerId, featured = false } = $props();
 
 	// Pin size is 12.5% of the map width (capped), so the spreading distance
 	// matches the on-screen size. Laid out in config order, so pins never jump
@@ -58,10 +59,10 @@
 			<!-- Thin leader from each photo back to the villa's true spot -->
 			{#each rows as row (row.villa.id)}
 				{@const pin = pins.get(row.villa.id)}
-				{#if pin && Math.hypot(pin.x - pin.ax, pin.y - pin.ay) > 14}
+				{#if !featured && pin && Math.hypot(pin.x - pin.ax, pin.y - pin.ay) > 14}
 					<line class="leader" x1={pin.ax} y1={pin.ay} x2={pin.x} y2={pin.y} />
 				{/if}
-				{#if pin}<circle class="dot" cx={pin.ax} cy={pin.ay} r="6" />{/if}
+				{#if pin && !featured}<circle class="dot" cx={pin.ax} cy={pin.ay} r="6" />{/if}
 			{/each}
 		</svg>
 
@@ -71,11 +72,12 @@
 			{#if pin}
 				<a
 					class="pin"
+					class:featured
 					class:mine={row.myPoints > 0}
 					class:winner={row.villa.id === winnerId}
 					href={resolve('/villas/[id]', { id: row.villa.id })}
-					style:left={pct(pin.x, VIEW.w)}
-					style:top={pct(pin.y, VIEW.h)}
+					style:left={pct(featured ? pin.ax : pin.x, VIEW.w)}
+					style:top={pct(featured ? pin.ay : pin.y, VIEW.h)}
 					aria-label="{row.villa.name}, {row.villa.town}. {row.myPoints
 						? `You gave ${row.myPoints} point${row.myPoints === 1 ? '' : 's'}. `
 						: ''}{row.total} point{row.total === 1 ? '' : 's'} in total{row.rank
@@ -99,8 +101,12 @@
 		{/each}
 	</div>
 	<figcaption>
-		Tap a photo to open the villa and vote. Positions are approximate; thin lines point to the real
-		spot.
+		{#if featured}
+			Tap the photo to see our villa. The position is approximate.
+		{:else}
+			Tap a photo to open the villa and vote. Positions are approximate; thin lines point to the
+			real spot.
+		{/if}
 	</figcaption>
 </figure>
 
@@ -194,6 +200,21 @@
 		border-radius: 50%;
 		object-fit: cover;
 		display: block;
+	}
+	/* The chosen villa: bigger, always named, at its own spot (nothing else to avoid). */
+	.pin.featured {
+		--size: min(24cqw, 200px);
+		border-width: 5px;
+	}
+	.pin.featured .name {
+		/* Above the photo: the chosen villa can sit near the bottom edge of the map. */
+		top: auto;
+		bottom: 100%;
+		translate: -50% -4px;
+		opacity: 1;
+		font-size: 14px;
+		line-height: 22px;
+		padding: 2px 12px;
 	}
 	.pin:hover,
 	.pin:focus-visible {

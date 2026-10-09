@@ -38,6 +38,10 @@
 	const row = $derived(view.rowById.get(villa.id));
 	const perNight = $derived(Math.round(villa.price.total / villa.price.nights));
 	const isWinner = $derived(data.winnerId === villa.id);
+	/** Voting is over: the page is about the chosen villa; the others weren't chosen. */
+	const decided = $derived(data.state === 'decided');
+	const notChosen = $derived(decided && !isWinner);
+	const winnerVilla = $derived(data.winnerId ? findVilla(data.winnerId) : undefined);
 
 	useAdminNotices({
 		resetAt: () => data.resetAt,
@@ -89,6 +93,18 @@
 			<p>The admin took this villa off the list, so it can't get votes any more.</p>
 			<a class="btn btn-primary" href={resolve('/vote')}>Back to the map</a>
 		</div>
+	{:else if notChosen}
+		<div class="gone" role="status">
+			<h1 class="t-title">{villa.name} wasn't chosen</h1>
+			<p>
+				Voting is over{#if winnerVilla}: we're staying at <b>{winnerVilla.name}</b>{/if}.
+			</p>
+			{#if winnerVilla}
+				<a class="btn btn-primary" href={resolve('/villas/[id]', { id: winnerVilla.id })}>
+					See our villa
+				</a>
+			{/if}
+		</div>
 	{:else}
 		<article class="villa" class:winner={isWinner} aria-labelledby="title">
 			<div class="media">
@@ -134,16 +150,18 @@
 				{/if}
 			</div>
 
-			<VoteBar
-				name={villa.name}
-				voters={row.voters}
-				total={row.total}
-				myPoints={row.myPoints}
-				canAdd={row.canAdd}
-				addHint={row.addHint}
-				{open}
-				onchange={(points) => client.set(villa.id, points)}
-			/>
+			{#if !decided}
+				<VoteBar
+					name={villa.name}
+					voters={row.voters}
+					total={row.total}
+					myPoints={row.myPoints}
+					canAdd={row.canAdd}
+					addHint={row.addHint}
+					{open}
+					onchange={(points) => client.set(villa.id, points)}
+				/>
+			{/if}
 
 			<div class="body">
 				<header>
