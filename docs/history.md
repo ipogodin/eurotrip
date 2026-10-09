@@ -563,3 +563,15 @@ Press-and-hold voting from the map was never built (it was an optional idea). Th
 long-pressed a pin on an iPhone and the round photo turned into a square preview: iOS
 lifting the link. Pins now switch that off (no callout, no selection, no image drag).
 Not testable here; the user checks on the phone. Hold-to-vote stays an open idea.
+
+---
+
+## 2026-10-09 — Custom error pages (404, 403)
+
+The user generated two illustrations with ChatGPT from prompts written here: a lost
+traveller on a tiny island (404) and a grumpy crab guarding a beach-club gate (403).
+`src/routes/+error.svelte` shows the right one with fixed copy ("This page took a wrong
+turn." / "Staff only."), a generic version for other errors, and a button back to the
+map (or to sign-in when signed out). Images are compressed WebPs in `static/errors/`;
+the 1254 px originals were moved out of the repo to `~/Downloads`. Anonymous visitors
+never see a 404 (the login gate redirects first), so the page is mostly for members.
