@@ -457,6 +457,47 @@ The integration install also added third-party agent skills
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
 
+### Comments + exact/approximate locations (2026-10-09, BRANCH `feature/comments-and-location-flags`, NOT yet on production)
+
+Waiting for the user's OK to merge to `main` (a merge deploys to production at once).
+**Exact vs approximate locations (option C):** each villa has `exactLocation` (Airbnb's
+own `isExactLocation` flag: Sunset, Silvia, Evita, Beach, Rocavista exact; H20, Duke,
+Bonita Salvaje approximate). Map: solid dot = exact, dashed ring = approximate area, a
+line out to the photo, a short legend; photos now keep clear of EVERY real spot
+(`keepClear` in `spreadPins`) so the dots aren't hidden under photos; the villa page
+and winner card say "Exact location" / "Approximate area" (+ "the host hides the exact
+spot until you book"). Real addresses only come after booking.
+**Public comments** (user's answers: no editing; after a winner is picked only the
+winner's comments exist, the others "not visible at all"; no reactions for now):
+- Villa page: comments list (photo, name or "You", "x min ago"), a text box (500
+  chars, plain text, Ctrl/Cmd+Enter posts), a delete button on your own comments (the
+  admin sees it on all), a confirm sheet. Chat-bubble count on each villa's photo on
+  the map and in the winner card. Names are the public short name, never the private
+  preferred name.
+- Rules in `server/comments.js`: visible only for active villas and, once a winner is
+  picked, only for the winner (the others are not listed, not counted, not sent in the
+  page data, and can't be posted to; they come back if the winner is undone); 1-500
+  characters, control characters stripped, 10 posts per person per hour, 200 per villa.
+  Redis: a hash `comments:<villaId>` (comment id -> JSON).
+- Tests (+36): rules, both stores, and for EVERY member through the real handlers:
+  post, see others', delete only their own (admin any), no preferred-name leak, and
+  the group scenario for the winner-only rule. Proven by breaking it on purpose (the
+  winner rule: 6 tests failed; the delete rule: 8 failed).
+- Verified in Chrome: post (line break + emoji kept), a comment trying to run HTML/JS
+  shows as plain text and nothing runs, delete with confirm, the map badge, and after
+  picking a test winner the other villa's page data contains NO trace of its comment
+  while the winner's stays; 360 px: no overflow even with a 270-character single word.
+- NOT done: editing, reactions, "new comment" indicators, notifications.
+
+### Production changes since launch (2026-10-09)
+
+- The user changed Tetiana's phrase in `members.json`; pushed with `members:push` and
+  redeployed from `main` (not the feature branch, so only the roster changed). Live
+  checks fine. `members.md` (the ignored mirror) was synced afterwards, since it
+  is what the earlier phrase restore used.
+- **A push to `main` deploys to production** (the project is connected to GitHub);
+  AGENTS.md now says so and new features go on branches.
+
 ### 1.9 — SHIPPED (2026-10-08): live at https://2027eurotrip.vercel.app
 
 Done, in order: default deadline set to **Sat 2026-10-10 10:00 am Pacific (PDT,

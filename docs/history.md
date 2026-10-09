@@ -521,3 +521,15 @@ checks. Mistake during the launch: generating "new invite phrases" overwrote the
 phrases the user had picked by hand for each person; the user caught it, they were
 restored from the ignored `members.md` mirror and redeployed. Phrase generation now
 keeps a backup and must not be run without asking.
+
+---
+
+## 2026-10-09 — Comments, exact/approximate locations, roster update
+
+Planned with the user: public comments per villa (no editing; after a winner is
+picked only the winner's comments remain, the others fully hidden; no reactions yet)
+and a clearer map. The map answer was option C: show which locations Airbnb says are
+exact or approximate. Both are built on a branch and wait for the user's approval to go
+live. Discovered that the Vercel project is connected to GitHub, so every push to
+`main` deploys to production; new features now go on branches. Tetiana's phrase was
+updated by the user and pushed to production from `main`.
