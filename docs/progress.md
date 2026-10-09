@@ -61,7 +61,7 @@ The **single source of truth for where the work is.** Plan details are in
 | I2 | 1.1       | Accept Upstash marketplace terms | done 2026-10-08 |
 | I3 | 1.5       | 6–10 villa listing URLs (+ any notes per villa)                                         | done 2026-10-08: 13 Tenerife villas from the Airbnb wishlist |
 | I4 | 1.9       | The 8 members: full name + short name (Illia Pogodin = admin)                          | waiting |
-| I16 | 1.9      | Add a `"preferred"` name per member in `members.json` (optional; otherwise the short name is used), then `npm run members:check` | waiting |
+| I16 | 1.9      | Add a `"preferred"` name per member in `members.json` | done 2026-10-08: 8 of 8 filled in (no duplicates, none over the limit); verified through a fresh dev server |
 | I15 | 1.9      | Go-ahead to run `npm run avatars:upload` against the live Redis (writes only avatar keys; 158 KB) | waiting |
 | I11 | 3.4      | Member photos (one each), the prank pool photos + exact caption, and the swap rules (see plan 3.4). Photos delivered 2026-10-08 as `avatars/<id>_1` (default), `<id>_2` ... (versions); `npm run avatars:check`: 8 of 8 fine; faces checked in circle crops. Phrases file done. Admin can reset someone to version 1: yes (decided). Remaining: build 3.4 | mostly done |
 | I13 | 1.8      | Admin reset-everyone's-votes button | done 2026-10-08: yes, built (plus removing a villa, points return to voters) |
@@ -456,6 +456,20 @@ The integration install also added third-party agent skills
 (`.agents/`, `.claude/skills/`, `skills-lock.json`); gitignored on purpose.
 The CLI re-adds a bare `.env*` line to `.gitignore` on `vercel link`; don't keep
 it (it would override the `!.env.example` exception).
+
+### Preferred names filled in (2026-10-08)
+
+The user filled in all 8. `members:check` OK, no warnings; checked without
+printing them: 8 of 8, no duplicates, longest 8 characters, no emoji/odd
+characters, none matches another member's name; one equals its own short name
+(no visible difference). Verified through the app: the signed-in member sees
+their own preferred name in the menu, the People row and the profile line, other
+members stay full names, and the data sent to the browser holds 1 copy of the
+`preferred` key. **Gotcha:** two dev servers were listening on port 5193 (an
+older one started with `--host 127.0.0.1`, which `pkill -f "vite dev --port
+5193"` does not match), and the old one kept serving a stale roster. The dev
+server reads `members.json` once at start, so after editing it, kill by port
+(`lsof -nP -t -iTCP:5193 -sTCP:LISTEN`) and check one process is left.
 
 ### Preferred name (2026-10-08, the user's request)
 
